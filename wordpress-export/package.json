@@ -1,0 +1,20 @@
+{
+  "name": "sousa-araujo-advocacia-wp",
+  "version": "1.0.0",
+  "description": "WordPress theme with React components for Sousa Araújo Advocacia",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:wp": "npm run build && npm run copy:wp",
+    "copy:wp": "node scripts/copy-to-wordpress.js",
+    "export:images": "node scripts/export-images.js"
+  },
+  "keywords": [
+    "wordpress",
+    "react",
+    "law-firm",
+    "advocacia"
+  ],
+  "author": "Sousa Araújo Advocacia",
+  "license": "ISC"
+}
