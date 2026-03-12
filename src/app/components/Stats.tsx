@@ -1,4 +1,5 @@
 import { siteContent } from '../../data/content';
+import { usePanel } from '../hooks/usePanelContent';
 
 /**
  * Stats Component
@@ -8,7 +9,13 @@ import { siteContent } from '../../data/content';
 export function Stats(props?: {
   stats?: Array<{ number: string; label: string }>;
 }) {
-  const stats = props?.stats || siteContent.stats;
+  const panelStats = [
+    { number: usePanel('home.stat1.number', siteContent.stats[0].number), label: usePanel('home.stat1.label', siteContent.stats[0].label) },
+    { number: usePanel('home.stat2.number', siteContent.stats[1].number), label: usePanel('home.stat2.label', siteContent.stats[1].label) },
+    { number: usePanel('home.stat3.number', siteContent.stats[2].number), label: usePanel('home.stat3.label', siteContent.stats[2].label) },
+    { number: usePanel('home.stat4.number', siteContent.stats[3].number), label: usePanel('home.stat4.label', siteContent.stats[3].label) },
+  ];
+  const stats = props?.stats || panelStats;
 
   return (
     <section className="bg-[#161312] py-[60px] md:py-[80px] lg:py-[100px]">

@@ -9,6 +9,12 @@ import imgArticle1 from "figma:asset/8f998da633bb92dcab13a208c71a97e2986d6c06.pn
 import imgArticle2 from "figma:asset/a6246b350004d1d692b469864824af4843190e94.png";
 import imgArticle3 from "figma:asset/a417229c957cdd5306763b4c6f5b421056127f88.png";
 import svgPaths from "../../imports/svg-od596xq1d5";
+import { readPanel, usePanel } from '../hooks/usePanelContent';
+
+function panelImage(key: string, fallback: string): string {
+  const val = readPanel(key, fallback);
+  return val.startsWith('figma:asset/') ? fallback : val;
+}
 
 interface Article {
   id: number;
@@ -23,30 +29,30 @@ interface Article {
 const articles: Article[] = [
   {
     id: 1,
-    day: '01',
-    month: 'Nov',
-    category: 'Direito Imobiliário e Usucapião',
-    title: 'Imóvel sem escritura: 5 caminhos reais para regularizar e destravar venda/financiamento',
-    image: imgArticle1,
-    href: '#artigo-1',
+    day: readPanel('home.article1.day', '01'),
+    month: readPanel('home.article1.month', 'Nov'),
+    category: readPanel('home.article1.category', 'Direito Imobiliário e Usucapião'),
+    title: readPanel('home.article1.title', 'Imóvel sem escritura: 5 caminhos reais para regularizar e destravar venda/financiamento'),
+    image: panelImage('home.article1.image', imgArticle1),
+    href: readPanel('home.article1.href', '/blog/imovel-sem-escritura-caminhos-regularizar-brasilia'),
   },
   {
     id: 2,
-    day: '01',
-    month: 'Nov',
-    category: 'Homologação e Direito Internacional',
-    title: 'Posso vender um imóvel no Brasil com um divórcio pendente no exterior?',
-    image: imgArticle2,
-    href: '#artigo-2',
+    day: readPanel('home.article2.day', '01'),
+    month: readPanel('home.article2.month', 'Nov'),
+    category: readPanel('home.article2.category', 'Homologação e Direito Internacional'),
+    title: readPanel('home.article2.title', 'Posso vender um imóvel no Brasil com um divórcio pendente no exterior?'),
+    image: panelImage('home.article2.image', imgArticle2),
+    href: readPanel('home.article2.href', '/blog/posso-vender-imovel-brasil-divorcio-pendente-exterior'),
   },
   {
     id: 3,
-    day: '01',
-    month: 'Nov',
-    category: 'Direito de Família',
-    title: 'União Estável x Casamento: O que muda no seu patrimônio?',
-    image: imgArticle3,
-    href: '#artigo-3',
+    day: readPanel('home.article3.day', '01'),
+    month: readPanel('home.article3.month', 'Nov'),
+    category: readPanel('home.article3.category', 'Direito de Família'),
+    title: readPanel('home.article3.title', 'União Estável x Casamento: O que muda no seu patrimônio?'),
+    image: panelImage('home.article3.image', imgArticle3),
+    href: readPanel('home.article3.href', '/blog/uniao-estavel-x-casamento-diferencas-patrimonio'),
   },
 ];
 
@@ -77,6 +83,10 @@ function ArrowRight() {
 export function Blog() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  const sectionTitle = usePanel('home.articles.title', 'Quem se informa, se protege');
+  const viewAllText = usePanel('home.articles.viewAllText', 'Ver todos os artigos');
+  const viewAllHref = usePanel('home.articles.viewAllHref', '/blog');
+
   const handlePrev = () => {
     setCurrentSlide((prev) => (prev === 0 ? articles.length - 1 : prev - 1));
   };
@@ -90,7 +100,7 @@ export function Blog() {
       <div className="max-w-[1440px] mx-auto px-[20px] md:px-[40px] lg:px-[110px]">
         {/* Title */}
         <h2 className="font-['Marcellus'] text-[26px] md:text-[34px] lg:text-[43px] leading-[1.25] md:leading-[1.2] lg:leading-[52px] tracking-[-0.516px] text-white mb-[40px] md:mb-[50px] lg:mb-[70px]">
-          Quem se informa, se protege
+          {sectionTitle}
         </h2>
 
         {/* Cards with arrows */}
@@ -177,10 +187,10 @@ export function Blog() {
         {/* View all articles link */}
         <div className="flex justify-center mt-[40px] md:mt-[60px] lg:mt-[80px]">
           <a
-            href="#todos-artigos"
+            href={viewAllHref}
             className="inline-flex items-center gap-2 font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white hover:text-[#a57255] transition-colors group"
           >
-            Ver todos os artigos
+            {viewAllText}
             <svg
               className="w-[10px] h-[10px] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
               fill="none"

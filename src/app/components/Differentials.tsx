@@ -5,8 +5,10 @@
  * Conteudo centralizado em /src/data/content.ts
  */
 
+import { usePanel, readPanel } from '../hooks/usePanelContent';
 import { motion } from 'motion/react';
 import { siteContent } from '../../data/content';
+import imgDifferentials from 'figma:asset/e131e0fb7fa0de846a06e6f0060eba49c87abac7.png';
 
 interface Differential {
   id: number;
@@ -15,14 +17,6 @@ interface Differential {
   linkText: string;
   linkHref: string;
 }
-
-const defaultDifferentials: Differential[] = siteContent.differentials.items.map((item, index) => ({
-  id: index + 1,
-  title: item.title,
-  description: item.description,
-  linkText: item.link.text,
-  linkHref: item.link.href,
-}));
 
 function ArrowUpRight() {
   return (
@@ -49,11 +43,22 @@ export function Differentials(props?: {
   subtitle?: string;
   items?: Differential[];
 }) {
+  const panelItems: Differential[] = siteContent.differentials.items.map((item, index) => ({
+    id: index + 1,
+    title: readPanel(`home.diff.item${index+1}.title`, item.title),
+    description: readPanel(`home.diff.item${index+1}.desc`, item.description),
+    linkText: readPanel(`home.diff.item${index+1}.linkText`, item.link.text),
+    linkHref: readPanel(`home.diff.item${index+1}.linkHref`, item.link.href),
+  }));
+
   const content = {
-    title: props?.title || siteContent.differentials.title,
-    subtitle: props?.subtitle || siteContent.differentials.description,
-    items: props?.items || defaultDifferentials,
+    title: usePanel('home.diff.title', props?.title || siteContent.differentials.title),
+    subtitle: usePanel('home.diff.desc', props?.subtitle || siteContent.differentials.description),
+    items: props?.items || panelItems,
   };
+
+  const diffImage = usePanel('home.diff.image', imgDifferentials);
+  const resolvedDiffImage = diffImage.startsWith('figma:asset/') ? imgDifferentials : diffImage;
 
   return (
     <section className="bg-[#161312] w-full">
@@ -71,9 +76,16 @@ export function Differentials(props?: {
               <br className="hidden lg:block" />
               {content.title.split(' ').slice(5).join(' ')}
             </h2>
-            <p className="font-['Noto_Sans'] text-[14px] md:text-[15px] leading-[22px] md:leading-[23px] tracking-[-0.225px] text-white/70 max-w-[380px]">
+            <p className="font-['Noto_Sans'] text-[14px] md:text-[15px] leading-[22px] md:leading-[23px] tracking-[-0.225px] text-white/70 max-w-[380px] mb-8 md:mb-10">
               {content.subtitle}
             </p>
+            <div className="overflow-hidden">
+              <img
+                src={resolvedDiffImage}
+                alt="Planejamento jurídico estratégico — Sousa Araújo Advocacia"
+                className="w-full h-auto object-cover"
+              />
+            </div>
           </motion.div>
 
           {/* Right Column — Differentials list */}

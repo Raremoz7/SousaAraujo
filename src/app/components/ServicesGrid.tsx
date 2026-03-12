@@ -16,6 +16,7 @@ import imgInventario from "figma:asset/0a485a946753f4d21e08d3ed3d8d9779909dd212.
 import imgUniao from "figma:asset/4a36bb11fdcdbb05a48be1bedc1e4dcfd7d3dee4.png";
 import imgEmpresarial from "figma:asset/b9e6fa721be691a0274735fd458f8e585f0501ff.png";
 import imgMarca from "figma:asset/a6a19f7d74d4d71fe6c9f1d51fd5ad4a4f1a5b98.png";
+import { readPanel } from '../hooks/usePanelContent';
 
 interface ServiceCard {
   id: number;
@@ -24,42 +25,47 @@ interface ServiceCard {
   image: string;
 }
 
+function panelImage(key: string, fallback: string): string {
+  const val = readPanel(key, fallback);
+  return val.startsWith('figma:asset/') ? fallback : val;
+}
+
 const services: ServiceCard[] = [
   {
     id: 1,
-    title: 'Pensão Alimentícia e Execução',
-    description: 'Atuação completa para fixar, revisar ou cobrar alimentos com base em provas e estratégia processual. Orientação prática sobre documentos, prazos e medidas cabíveis — inclusive para situações urgentes e inadimplência recorrente.',
-    image: imgPensao,
+    title: readPanel('home.service1.title', 'Pensão Alimentícia e Execução'),
+    description: readPanel('home.service1.desc', 'Atuação completa para fixar, revisar ou cobrar alimentos com base em provas e estratégia processual. Orientação prática sobre documentos, prazos e medidas cabíveis — inclusive para situações urgentes e inadimplência recorrente.'),
+    image: panelImage('home.service1.image', imgPensao),
   },
   {
     id: 2,
-    title: 'Guarda e Plano de Convivência',
-    description: 'Estruturação de acordos e medidas para garantir previsibilidade, estabilidade e proteção dos vínculos familiares. Atuação com foco no melhor interesse da criança, com regras claras de convivência, férias, datas especiais e comunicação entre as partes.',
-    image: imgGuarda,
+    title: readPanel('home.service2.title', 'Guarda e Plano de Convivência'),
+    description: readPanel('home.service2.desc', 'Estruturação de acordos e medidas para garantir previsibilidade, estabilidade e proteção dos vínculos familiares. Atuação com foco no melhor interesse da criança, com regras claras de convivência, férias, datas especiais e comunicação entre as partes.'),
+    image: panelImage('home.service2.image', imgGuarda),
   },
   {
     id: 3,
-    title: 'Inventário e Sucessões',
-    description: 'Planejamento e condução do inventário com organização documental rigorosa e comunicação clara em cada etapa. Sempre que viável, prioriza-se a via extrajudicial para reduzir desgaste e tempo, preservando patrimônio e evitando conflitos familiares.',
-    image: imgInventario,
+    title: readPanel('home.service3.title', 'Inventário e Sucessões'),
+    description: readPanel('home.service3.desc', 'Planejamento e condução do inventário com organização documental rigorosa e comunicação clara em cada etapa. Sempre que viável, prioriza-se a via extrajudicial para reduzir desgaste e tempo, preservando patrimônio e evitando conflitos familiares.'),
+    image: panelImage('home.service3.image', imgInventario),
   },
   {
     id: 4,
-    title: 'União Estável e Proteção Patrimonial',
-    description: 'Reconhecimento, dissolução e partilha com orientação clara sobre direitos, provas e riscos. Estruturação de acordos e medidas para evitar insegurança patrimonial e conflitos que se prolongam por falta de formalização.',
-    image: imgUniao,
+    title: readPanel('home.service4.title', 'União Estável e Proteção Patrimonial'),
+    description: readPanel('home.service4.desc', 'Reconhecimento, dissolução e partilha com orientação clara sobre direitos, provas e riscos. Estruturação de acordos e medidas para evitar insegurança patrimonial e conflitos que se prolongam por falta de formalização.'),
+    image: panelImage('home.service4.image', imgUniao),
   },
   {
     id: 5,
-    title: 'Empresarial Consultivo para PMEs',
-    description: 'Suporte preventivo para empresários com foco em contratos, notificações e rotinas jurídicas essenciais. Modelo ideal para recorrência (retainer), reduzindo riscos e protegendo o negócio antes que o problema vire processo.',
-    image: imgEmpresarial,
+    title: readPanel('home.service5.title', 'Empresarial Consultivo para PMEs'),
+    description: readPanel('home.service5.desc', 'Suporte preventivo para empresários com foco em contratos, notificações e rotinas jurídicas essenciais. Modelo ideal para recorrência (retainer), reduzindo riscos e protegendo o negócio antes que o problema vire processo.'),
+    image: panelImage('home.service5.image', imgEmpresarial),
   },
   {
     id: 6,
-    title: 'Registro de Marca no INPI',
-    description: 'Da busca de viabilidade ao protocolo e acompanhamento do processo, com orientação para reduzir riscos de indeferimento e conflitos. Proteja sua marca e organize sua base jurídica para crescer com mais segurança.',
-    image: imgMarca,
+    title: readPanel('home.service6.title', 'Registro de Marca no INPI'),
+    description: readPanel('home.service6.desc', 'Da busca de viabilidade ao protocolo e acompanhamento do processo, com orientação para reduzir riscos de indeferimento e conflitos. Proteja sua marca e organize sua base jurídica para crescer com mais segurança.'),
+    image: panelImage('home.service6.image', imgMarca),
   },
 ];
 

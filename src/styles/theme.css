@@ -183,3 +183,38 @@
     line-height: 1.5;
   }
 }
+
+/* ─── Painel Admin — Minimal Scrollbars ─── */
+.painel-scrollbar,
+.painel-scrollbar * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(165, 114, 85, 0.18) transparent;
+}
+
+.painel-scrollbar ::-webkit-scrollbar,
+.painel-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.painel-scrollbar ::-webkit-scrollbar-track,
+.painel-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.painel-scrollbar ::-webkit-scrollbar-thumb,
+.painel-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(165, 114, 85, 0.15);
+  border-radius: 9999px;
+  transition: background 0.2s;
+}
+
+.painel-scrollbar ::-webkit-scrollbar-thumb:hover,
+.painel-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(165, 114, 85, 0.35);
+}
+
+.painel-scrollbar ::-webkit-scrollbar-corner,
+.painel-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}

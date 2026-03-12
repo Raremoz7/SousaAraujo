@@ -6,6 +6,7 @@
  */
 
 import imgBackground from "figma:asset/fcf68d553754923b39d9072139ccfeb443b32d57.png";
+import { usePanel } from '../hooks/usePanelContent';
 
 export function CtaBanner(props?: {
   title?: string;
@@ -14,20 +15,22 @@ export function CtaBanner(props?: {
   backgroundImage?: string;
 }) {
   const content = {
-    title: props?.title || 'Quem entende o processo, controla o resultado',
-    buttonText: props?.buttonText || 'Agendar Consulta de Viabilidade',
-    buttonHref: props?.buttonHref || '#contato',
-    backgroundImage: props?.backgroundImage || imgBackground,
+    title: usePanel('home.cta.title', props?.title || 'Quem entende o processo, controla o resultado'),
+    buttonText: usePanel('home.cta.buttonText', props?.buttonText || 'Agendar Consulta de Viabilidade'),
+    buttonHref: usePanel('home.cta.buttonHref', props?.buttonHref || '#contato'),
+    backgroundImage: usePanel('home.cta.bgImage', props?.backgroundImage || imgBackground),
   };
+
+  const resolvedBgImage = content.backgroundImage.startsWith('figma:asset/') ? imgBackground : content.backgroundImage;
 
   return (
     <section className="relative w-full h-[360px] md:h-[420px] lg:h-[520px] overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 pointer-events-none">
         <img
-          alt=""
+          alt="Advocacia estratégica em Brasília — Sousa Araújo Advocacia"
           className="absolute max-w-none object-cover size-full"
-          src={content.backgroundImage}
+          src={resolvedBgImage}
         />
         <div className="absolute inset-0 bg-[rgba(22,19,18,0.4)]" />
       </div>

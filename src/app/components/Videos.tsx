@@ -9,6 +9,7 @@ import imgA from "figma:asset/9346a42e7477eb1ee3bca02820f0bd1d03362e6a.png";
 import imgA1 from "figma:asset/b6d4d8fd5a23bfafd55ed737639515ae2a9678d6.png";
 import imgA2 from "figma:asset/f919780634dcebfb98522182d1a622a904e92e1c.png";
 import svgPaths from "../../imports/svg-od596xq1d5";
+import { readPanel, usePanel } from '../hooks/usePanelContent';
 
 interface VideoCard {
   id: number;
@@ -17,27 +18,29 @@ interface VideoCard {
   description: string;
 }
 
+function panelImage(key: string, fallback: string): string {
+  const val = readPanel(key, fallback);
+  return val.startsWith('figma:asset/') ? fallback : val;
+}
+
 const defaultVideos: VideoCard[] = [
   {
     id: 1,
-    image: imgA,
-    title: 'O risco de não homologar sua sentença internacional: Imóveis e Herança',
-    description:
-      'Entenda quando uma decisão obtida no exterior precisa ser validada no Brasil para produzir efeitos — e como a falta de homologação pode travar divórcio, guarda, pensão e até questões patrimoniais.',
+    image: panelImage('home.video1.image', imgA),
+    title: readPanel('home.video1.title', 'O risco de não homologar sua sentença internacional: Imóveis e Herança'),
+    description: readPanel('home.video1.desc', 'Entenda quando uma decisão obtida no exterior precisa ser validada no Brasil para produzir efeitos — e como a falta de homologação pode travar divórcio, guarda, pensão e até questões patrimoniais.'),
   },
   {
     id: 2,
-    image: imgA1,
-    title: 'Seu imóvel não tem escritura? Veja o que você pode fazer',
-    description:
-      'Imóvel sem registro ou documentação em dia não pode ser vendido, financiado ou deixado em herança com segurança. Neste vídeo mostramos os caminhos disponíveis — usucapião extrajudicial no cartório ou ação judicial — e como saber qual é o melhor para o seu caso.',
+    image: panelImage('home.video2.image', imgA1),
+    title: readPanel('home.video2.title', 'Seu imóvel não tem escritura? Veja o que você pode fazer'),
+    description: readPanel('home.video2.desc', 'Imóvel sem registro ou documentação em dia não pode ser vendido, financiado ou deixado em herança com segurança. Neste vídeo mostramos os caminhos disponíveis — usucapião extrajudicial no cartório ou ação judicial — e como saber qual é o melhor para o seu caso.'),
   },
   {
     id: 3,
-    image: imgA2,
-    title: 'Conflitos familiares: quando um acordo bem feito evita um processo longo',
-    description:
-      'Divórcio, guarda e inventário não precisam virar batalha judicial. Neste vídeo explicamos como acordos bem estruturados protegem todas as partes, reduzem custo, tempo e desgaste emocional — especialmente quando há filhos envolvidos.',
+    image: panelImage('home.video3.image', imgA2),
+    title: readPanel('home.video3.title', 'Conflitos familiares: quando um acordo bem feito evita um processo longo'),
+    description: readPanel('home.video3.desc', 'Divórcio, guarda e inventário não precisam virar batalha judicial. Neste vídeo explicamos como acordos bem estruturados protegem todas as partes, reduzem custo, tempo e desgaste emocional — especialmente quando há filhos envolvidos.'),
   },
 ];
 
@@ -60,10 +63,10 @@ export function Videos(props?: {
   viewAllHref?: string;
 }) {
   const content = {
-    title: props?.title || 'Vídeos educativos: entenda antes de decidir',
+    title: usePanel('home.videos.title', props?.title || 'Vídeos educativos: entenda antes de decidir'),
     items: props?.items || defaultVideos,
-    viewAllText: props?.viewAllText || 'Ver todos os vídeos',
-    viewAllHref: props?.viewAllHref || '#todos-videos',
+    viewAllText: usePanel('home.videos.viewAllText', props?.viewAllText || 'Ver todos os vídeos'),
+    viewAllHref: usePanel('home.videos.viewAllHref', props?.viewAllHref || '#todos-videos'),
   };
 
   return (

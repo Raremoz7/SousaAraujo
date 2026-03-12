@@ -1,7 +1,9 @@
 import { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Link } from 'react-router';
 import { imgCardHomologacao, imgCardFamilia, imgCardImoveis, imgCardEmpresarial } from '../../imports/images';
 import svgPaths from '../../imports/svg-practice-arrow';
+import { readPanel } from '../hooks/usePanelContent';
 
 /**
  * Practice Areas Component
@@ -18,38 +20,48 @@ interface PracticeArea {
   description: string;
   image: string;
   number: string;
+  href: string;
+}
+
+function panelImage(key: string, fallback: string): string {
+  const val = readPanel(key, fallback);
+  return val.startsWith('figma:asset/') ? fallback : val;
 }
 
 const practiceAreas: PracticeArea[] = [
   {
     id: 1,
-    number: '01',
-    title: 'Homologacao de',
-    subtitle: 'Sentenca Estrangeira',
-    description: 'Validamos no STJ decisoes judiciais obtidas no exterior, como divorcios e guardas. Atendimento agil e especializado para brasileiros em todo o mundo.',
-    image: imgCardHomologacao,
+    number: readPanel('home.area1.number', '01'),
+    title: readPanel('home.area1.title', 'Homologacao de'),
+    subtitle: readPanel('home.area1.subtitle', 'Sentenca Estrangeira'),
+    description: readPanel('home.area1.desc', 'Validamos no STJ decisoes judiciais obtidas no exterior, como divorcios e guardas. Atendimento agil e especializado para brasileiros em todo o mundo.'),
+    image: panelImage('home.area1.image', imgCardHomologacao),
+    href: readPanel('home.area1.href', '/homologacao-de-sentenca-estrangeira'),
   },
   {
     id: 2,
-    number: '02',
-    title: 'Direito de Familia e',
-    subtitle: 'Sucessoes',
-    description: 'Divorcio consensual ou litigioso, uniao estavel, partilha e protecao patrimonial. Estrategia clara para reduzir desgaste e evitar prejuizos na divisao de bens.',
-    image: imgCardFamilia,
+    number: readPanel('home.area2.number', '02'),
+    title: readPanel('home.area2.title', 'Direito de Familia e'),
+    subtitle: readPanel('home.area2.subtitle', 'Sucessoes'),
+    description: readPanel('home.area2.desc', 'Divorcio consensual ou litigioso, uniao estavel, partilha e protecao patrimonial. Estrategia clara para reduzir desgaste e evitar prejuizos na divisao de bens.'),
+    image: panelImage('home.area2.image', imgCardFamilia),
+    href: readPanel('home.area2.href', '/divorcio'),
   },
   {
     id: 3,
-    number: '03',
-    title: 'Imoveis e Usucapiao',
-    description: 'Divorcio consensual ou litigioso, uniao estavel, partilha e protecao patrimonial. Estrategia clara para reduzir desgaste e evitar prejuizos na divisao de bens.',
-    image: imgCardImoveis,
+    number: readPanel('home.area3.number', '03'),
+    title: readPanel('home.area3.title', 'Imoveis e Usucapiao'),
+    description: readPanel('home.area3.desc', 'Regularizacao de imoveis sem escritura ou com documentacao irregular. Prioridade a via extrajudicial em cartorio — mais rapida e previsivel.'),
+    image: panelImage('home.area3.image', imgCardImoveis),
+    href: readPanel('home.area3.href', '/imoveis'),
   },
   {
     id: 4,
-    number: '04',
-    title: 'Empresarial',
-    description: 'Divorcio consensual ou litigioso, uniao estavel, partilha e protecao patrimonial. Estrategia clara para reduzir desgaste e evitar prejuizos na divisao de bens.',
-    image: imgCardEmpresarial,
+    number: readPanel('home.area4.number', '04'),
+    title: readPanel('home.area4.title', 'Empresarial'),
+    description: readPanel('home.area4.desc', 'Consultoria juridica para empresas: contratos, compliance, societario e protecao patrimonial. Prevencao de conflitos e suporte estrategico nas decisoes do negocio.'),
+    image: panelImage('home.area4.image', imgCardEmpresarial),
+    href: readPanel('home.area4.href', '/consultoria-empresarial-pmes'),
   },
 ];
 
@@ -65,7 +77,7 @@ const CONTENT_IN_DELAY = EXPAND_DUR * 0.55;
 const COLLAPSE_DELAY   = FADE_OUT_DUR + 0.08;
 
 const EASE_EXPAND  = [0.22, 0.61, 0.36, 1] as const;   // suave saída
-const EASE_CONTENT = [0.25, 0.46, 0.45, 0.94] as const; // ease-out-quad
+const EASE_CONTENT = [0.4, 0, 0.2, 1] as const; // ease padrao
 
 function ArrowIcon({ className = "" }: { className?: string }) {
   return (
@@ -276,9 +288,7 @@ function DesktopCard({
             </motion.p>
 
             {/* Button */}
-            <motion.a
-              href="#contato"
-              className="inline-flex items-center justify-center bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[40px] px-[29px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white"
+            <motion.div
               initial={false}
               animate={{
                 opacity: isExpanded ? 1 : 0,
@@ -296,10 +306,15 @@ function DesktopCard({
                   delay: isExpanded ? CONTENT_IN_DELAY + 0.2 : 0,
                 },
               }}
-              onClick={(e: React.MouseEvent) => e.stopPropagation()}
             >
-              Saiba Mais
-            </motion.a>
+              <Link
+                to={area.href}
+                className="inline-flex items-center justify-center bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[40px] px-[29px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white"
+                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+              >
+                Saiba Mais
+              </Link>
+            </motion.div>
           </div>
         </div>
       </motion.div>
@@ -401,16 +416,19 @@ function MobileCard({
               </motion.div>
 
               {/* Button */}
-              <motion.a
-                href="#contato"
-                className="inline-flex items-center justify-center bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[40px] px-[29px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white"
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.45, delay: 0.5 }}
               >
-                Saiba Mais
-              </motion.a>
+                <Link
+                  to={area.href}
+                  className="inline-flex items-center justify-center bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[40px] px-[29px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white"
+                >
+                  Saiba Mais
+                </Link>
+              </motion.div>
             </div>
           </motion.div>
         )}

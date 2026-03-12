@@ -11,8 +11,16 @@ import { useState } from 'react';
 import imgBackground from "figma:asset/5ef7c5358541da50c7d84d33ae870248235d1b9f.png";
 import imgPin from "figma:asset/3e71c6d61aa0e57d1a665be82b28cb9ea6a34e93.png";
 import imgPhone from "figma:asset/39e61b656ddd5fe3d719f00ef6da22c2fe461e03.png";
+import { usePanel } from '../hooks/usePanelContent';
 
 export function Contact() {
+  const panelAddress = usePanel('contato.address', 'Edifício Varig - Asa Norte, Brasília - DF, 70714-020');
+  const panelPhone = usePanel('contato.phone', '+55 61 99599-1322');
+  const panelSubmitText = usePanel('contato.submitText', 'Enviar Mensagem');
+  const panelTitle = usePanel('contato.title', 'Fale Conosco\nAgende sua Consulta');
+  const panelBgImage = usePanel('contato.bgImage', imgBackground);
+  const panelSuccessMsg = usePanel('contato.successMessage', 'Mensagem enviada com sucesso! Entraremos em contato em breve.');
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -34,7 +42,7 @@ export function Contact() {
     setTimeout(() => {
       setSubmitStatus({
         type: 'success',
-        message: 'Mensagem enviada com sucesso! Entraremos em contato em breve.',
+        message: panelSuccessMsg,
       });
       setFormData({ name: '', email: '', message: '' });
       setIsSubmitting(false);
@@ -52,9 +60,9 @@ export function Contact() {
       {/* Background Image */}
       <div className="absolute inset-0 pointer-events-none">
         <img
-          alt=""
+          alt="Fachada do escritório Sousa Araújo Advocacia em Brasília — contato e localização"
           className="absolute inset-0 w-full h-full object-cover"
-          src={imgBackground}
+          src={panelBgImage.startsWith('figma:asset/') ? imgBackground : panelBgImage}
         />
         {/* Dark overlay for mobile readability */}
         <div className="absolute inset-0 bg-[#161312]/40 md:bg-transparent" />
@@ -65,9 +73,9 @@ export function Contact() {
         <div className="px-[20px] sm:px-[30px] md:px-[40px] lg:px-[60px] py-[40px] md:py-[40px] lg:py-[50px] h-full flex flex-col">
           {/* Title */}
           <h2 className="font-['Lora'] text-[28px] sm:text-[32px] md:text-[38px] lg:text-[43px] leading-[1.2] lg:leading-[52px] tracking-[-0.516px] text-white mb-[16px] md:mb-[20px]">
-            Fale Conosco
-            <br />
-            Agende sua Consulta
+            {panelTitle.split('\n').map((line, i) => (
+              <span key={i}>{line}{i < panelTitle.split('\n').length - 1 && <br />}</span>
+            ))}
           </h2>
 
           {/* Address & Phone */}
@@ -80,7 +88,7 @@ export function Contact() {
                 className="font-['Roboto'] text-[14px] md:text-[15px] leading-[23px] tracking-[-0.225px] text-white"
                 style={{ fontVariationSettings: "'wdth' 100" }}
               >
-                Edifício Varig - Asa Norte, Brasília - DF, 70714-020
+                {panelAddress}
               </span>
             </div>
             <div className="flex items-center gap-[10px]">
@@ -91,7 +99,7 @@ export function Contact() {
                 className="font-['Roboto'] text-[14px] md:text-[15px] leading-[23px] tracking-[-0.225px] text-white"
                 style={{ fontVariationSettings: "'wdth' 100" }}
               >
-                +55 61 99599-1322
+                {panelPhone}
               </span>
             </div>
           </div>
@@ -156,7 +164,7 @@ export function Contact() {
               disabled={isSubmitting}
               className="self-start bg-[#452b1e] border border-transparent hover:bg-[#5a3a2a] transition-colors h-[46px] px-[25px] md:px-[35px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? 'Enviando...' : 'Enviar Mensagem'}
+              {isSubmitting ? 'Enviando...' : panelSubmitText}
             </button>
           </form>
         </div>

@@ -7,6 +7,7 @@
 import { imgAboutOffice, imgGallery1, imgGallery2, imgGallery3 } from '../../imports/images';
 import svgPaths from "../../imports/svg-pqlr98z98v";
 import { siteContent } from '../../data/content';
+import { usePanel } from '../hooks/usePanelContent';
 
 export function About(props?: {
   title?: string;
@@ -16,11 +17,17 @@ export function About(props?: {
   linkHref?: string;
 }) {
   const content = {
-    title: props?.title || siteContent.about.title,
-    paragraphs: props?.paragraphs || siteContent.about.paragraphs,
-    quotes: props?.quotes || siteContent.about.quotes,
-    linkText: props?.linkText || siteContent.about.link.text,
-    linkHref: props?.linkHref || siteContent.about.link.href,
+    title: usePanel('home.about.title', props?.title || siteContent.about.title),
+    paragraphs: [
+      usePanel('home.about.paragraph1', props?.paragraphs?.[0] || siteContent.about.paragraphs[0]),
+      usePanel('home.about.paragraph2', props?.paragraphs?.[1] || siteContent.about.paragraphs[1]),
+    ],
+    quotes: [
+      { text: usePanel('home.about.quote1', props?.quotes?.[0]?.text || siteContent.about.quotes[0].text), color: (props?.quotes?.[0]?.color || siteContent.about.quotes[0].color) as 'accent' | 'white' },
+      { text: usePanel('home.about.quote2', props?.quotes?.[1]?.text || siteContent.about.quotes[1].text), color: (props?.quotes?.[1]?.color || siteContent.about.quotes[1].color) as 'accent' | 'white' },
+    ],
+    linkText: usePanel('home.about.linkText', props?.linkText || siteContent.about.link.text),
+    linkHref: usePanel('home.about.linkHref', props?.linkHref || siteContent.about.link.href),
   };
 
   return (

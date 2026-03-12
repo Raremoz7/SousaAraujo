@@ -1,0 +1,42 @@
+ Error: You cannot render a <Router> inside another <Router>. You should never have more than one in your app.
+    at invariant (https://ta-01kkhbjtnvp3zqv894y7sge54y-1380-6em5zpzgui5dhrxzqghd4fq4d.makeproxy-m.figma.site/node_modules/.vite/deps/react-router.js?v=4c500bac:626:11)
+    at Router (https://ta-01kkhbjtnvp3zqv894y7sge54y-1380-6em5zpzgui5dhrxzqghd4fq4d.makeproxy-m.figma.site/node_modules/.vite/deps/react-router.js?v=4c500bac:7094:3)
+    at ms (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:68027)
+    at _S (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:114634)
+    at _4 (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:127720)
+    at HTMLUnknownElement.y (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:77:54006)
+    at HTMLUnknownElement.i (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:28:4861)
+    at Object.ik (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:77:54331)
+    at ij (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:77:55284)
+    at ep (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:166948)
+    at SX (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:160942)
+    at Sz (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:160557)
+    at Sj (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:160323)
+    at SS (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:156357)
+    at https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:3:4482
+    at V (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:113:1842)
+    at B (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:113:1559)
+    at MessagePort.eo (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:113:3433)
+❌ Error handled by React Router default ErrorBoundary: Error: You cannot render a <Router> inside another <Router>. You should never have more than one in your app.
+❌ Error: You cannot render a <Router> inside another <Router>. You should never have more than one in your app.
+    at invariant (https://ta-01kkhbjtnvp3zqv894y7sge54y-1380-6em5zpzgui5dhrxzqghd4fq4d.makeproxy-m.figma.site/node_modules/.vite/deps/react-router.js?v=4c500bac:626:11)
+    at Router (https://ta-01kkhbjtnvp3zqv894y7sge54y-1380-6em5zpzgui5dhrxzqghd4fq4d.makeproxy-m.figma.site/node_modules/.vite/deps/react-router.js?v=4c500bac:7094:3)
+    at ms (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:68027)
+    at _S (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:114634)
+    at _4 (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:127720)
+    at HTMLUnknownElement.y (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:77:54006)
+    at HTMLUnknownElement.i (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:28:4861)
+    at Object.ik (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:77:54331)
+    at ij (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:77:55284)
+    at ep (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:166948)
+    at SX (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:160942)
+    at Sz (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:160557)
+    at Sj (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:160323)
+    at SI (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:156868)
+    at SS (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:89:156422)
+    at https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:3:4482
+    at V (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:113:1842)
+    at B (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:113:1559)
+    at MessagePort.eo (https://www.figma.com/webpack-artifacts/assets/code_components_preview_iframe-7412fd47a5113f44.min.js.br:113:3433)
+❌ Error handled by React Router default ErrorBoundary: Error: You cannot render a <Router> inside another <Router>. You should never have more than one in your app.
+❌ React Router caught the following error during render Error: You cannot render a <Router> inside another <Router>. You should never have more than one in your app.

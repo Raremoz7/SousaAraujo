@@ -1,50 +1,89 @@
+import { useEffect, useRef } from 'react';
 import { imgRectangle4 } from '../../imports/images';
-import svgPaths from '../../imports/svg-hero-play';
+import { PlayButton } from './ui/PlayButton';
+import { usePanel } from '../hooks/usePanelContent';
+import svgArrow from '../../imports/svg-od596xq1d5';
+import LidianeSousaAraujo from '../../imports/LidianeSousaAraujo';
 
 /**
  * Hero Component
- * Full-screen hero com imagem de fundo e gradiente
- * Mobile-first: usa flexbox + padding em vez de absolute positioning
+ * Full-screen hero com imagem de fundo parallax e gradiente
+ * Play button com efeito radial pulsante posicionado à esquerda
+ * CTA outline com seta padrão do site
  */
 export function Hero(props?: {
   backgroundImage?: string;
   subtitle?: string;
   title?: string;
   signature?: string;
+  videoUrl?: string;
+  ctaText?: string;
+  ctaHref?: string;
 }) {
   const content = {
-    backgroundImage: props?.backgroundImage || imgRectangle4,
-    subtitle: props?.subtitle || 'A solução mais inteligente começa antes do processo',
-    title: props?.title || 'Escritório de advocacia em Brasília com atuação nacional e para brasileiros no exterior',
-    signature: props?.signature || 'Lidiane Sousa Araújo',
+    backgroundImage: props?.backgroundImage || usePanel('home.hero.bgImage', imgRectangle4),
+    subtitle: usePanel('home.hero.subtitle', props?.subtitle || 'A solução mais inteligente começa antes do processo'),
+    title: usePanel('home.hero.title', props?.title || 'Escritório de advocacia em Brasília com atuação nacional e para brasileiros no exterior'),
+    signature: usePanel('home.hero.signature', props?.signature || 'Lidiane Sousa Araújo'),
+    videoUrl: usePanel('home.hero.videoUrl', props?.videoUrl || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'),
+    ctaText: usePanel('home.hero.ctaText', props?.ctaText || 'Agendar Consulta'),
+    ctaHref: usePanel('home.hero.ctaHref', props?.ctaHref || '#contato'),
   };
+
+  // Safety: if panel returned a raw 'figma:asset/...' string (not a valid URL), fall back to imported image
+  const bgImage = content.backgroundImage.startsWith('figma:asset/') ? imgRectangle4 : content.backgroundImage;
+
+  /* ─── Parallax effect ─── */
+  const parallaxRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    const img = parallaxRef.current;
+    if (!img) return;
+
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(() => {
+          const rect = img.parentElement?.parentElement?.getBoundingClientRect();
+          if (rect) {
+            // Move image at 40% of scroll speed for parallax
+            const offset = -rect.top * 0.4;
+            img.style.transform = `translate3d(0, ${offset}px, 0)`;
+          }
+          ticking = false;
+        });
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
     <section id="home" className="relative w-full min-h-[520px] h-screen max-h-[850px] overflow-hidden">
-      {/* Background Image with Gradient */}
-      <div className="absolute inset-0 pointer-events-none">
-        <img 
-          alt="" 
-          className="absolute max-w-none object-cover w-full h-full" 
-          src={content.backgroundImage} 
+      {/* Background Image with Parallax + Gradient */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <img
+          ref={parallaxRef}
+          alt="Escritório de advocacia em Brasília — Sousa Araújo Advocacia"
+          className="absolute max-w-none object-cover object-[center_20%] w-full h-[130%] top-[-5%] will-change-transform"
+          src={bgImage}
         />
-        <div 
-          className="absolute inset-0" 
-          style={{ 
-            backgroundImage: "linear-gradient(210.536deg, rgba(22, 19, 18, 0) 33.101%, rgba(22, 19, 18, 0.7) 82.021%), linear-gradient(182.823deg, rgba(22, 19, 18, 0) 49.957%, rgb(22, 19, 18) 86.803%)" 
-          }} 
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: "linear-gradient(210.536deg, rgba(22, 19, 18, 0) 33.101%, rgba(22, 19, 18, 0.7) 82.021%), linear-gradient(182.823deg, rgba(22, 19, 18, 0) 49.957%, rgb(22, 19, 18) 86.803%)"
+          }}
         />
       </div>
 
       {/* Content Container — mobile-first com flexbox */}
       <div className="relative max-w-[1440px] mx-auto h-full flex flex-col justify-end px-[20px] md:px-[40px] lg:px-0 pb-[60px] md:pb-[80px] lg:pb-0 lg:block">
-        
-        {/* Desktop: absolute positioning preservado */}
-        {/* Mobile/Tablet: flow normal via flexbox */}
-        
+
         {/* Subtitle */}
         <div className="lg:absolute lg:left-[81px] lg:top-[384px] mb-[16px] lg:mb-0">
-          <p 
+          <p
             className="font-['Roboto'] font-normal text-[16px] md:text-[18px] lg:text-[20px] leading-[22px] md:leading-[24px] lg:leading-[26px] tracking-[-0.95px] text-white max-w-[257px]"
             style={{ fontVariationSettings: "'wdth' 100" }}
           >
@@ -54,59 +93,42 @@ export function Hero(props?: {
 
         {/* Main Title */}
         <div className="lg:absolute lg:left-[80px] lg:top-[437px] mb-[20px] lg:mb-0">
-          <h1 className="font-['Marcellus'] text-[28px] sm:text-[36px] md:text-[44px] lg:text-[54px] leading-[34px] sm:leading-[42px] md:leading-[52px] lg:leading-[62px] tracking-[-0.87px] text-white max-w-[736px]">
+          <h1 className="font-['Marcellus'] text-[28px] sm:text-[36px] md:text-[44px] lg:text-[54px] leading-[34px] sm:leading-[42px] md:leading-[52px] lg:leading-[62px] tracking-[-0.87px] text-white max-w-[900px]">
             {content.title}
           </h1>
         </div>
 
-        {/* Signature */}
-        <div className="lg:absolute lg:left-[81px] lg:top-[668px]">
-          <p className="font-['Allura'] text-[20px] lg:text-[24px] leading-[22px] text-white">
-            {content.signature}
-          </p>
+        {/* Signature + CTA row */}
+        <div className="lg:absolute lg:left-[81px] lg:top-[668px] flex items-center gap-[32px]">
+          {/* SVG assinatura Lidiane Sousa Araújo */}
+          <div className="w-[160px] lg:w-[200px] h-[30px] lg:h-[38px] text-white">
+            <LidianeSousaAraujo />
+          </div>
+
+          {/* CTA Button — outline marrom 1.5px, fundo transparente, seta do site */}
+          <a
+            href={content.ctaHref}
+            className="inline-flex items-center gap-[10px] px-[22px] py-[10px] border-[1.5px] border-[#a57255] bg-transparent text-white font-['Noto_Sans'] font-medium text-[13px] md:text-[14px] leading-[25px] tracking-[-0.225px] hover:bg-[#a57255]/10 transition-all duration-300 group"
+          >
+            <span>{content.ctaText}</span>
+            <svg
+              className="w-[10px] h-[10px] transition-transform duration-300 group-hover:translate-x-[3px] group-hover:-translate-y-[1px]"
+              fill="none"
+              viewBox="0 0 10 10"
+            >
+              <path d={svgArrow.p1238f200} stroke="currentColor" strokeWidth="1.02093" />
+            </svg>
+          </a>
         </div>
 
-        {/* Play Button — hidden on mobile, visible on desktop */}
-        <div className="hidden lg:block absolute left-[1035px] top-[468px]">
-          {/* Outer Circle with stroke */}
-          <div className="relative w-[133px] h-[133px]">
-            <svg className="absolute block w-full h-full" fill="none" preserveAspectRatio="none" viewBox="0 0 133 133">
-              <circle 
-                cx="66.5" 
-                cy="66.5" 
-                r="65" 
-                stroke="#AC795F" 
-                strokeOpacity="0.4" 
-                strokeWidth="3" 
-              />
-            </svg>
+        {/* Play Button — posicionado mais à esquerda, com pulse radial */}
+        <div className="hidden lg:block absolute left-[1000px] top-[440px]">
+          <PlayButton videoUrl={content.videoUrl} />
+        </div>
 
-            {/* Inner Circle with blur */}
-            <div className="absolute left-[14.78px] top-[14.78px] w-[103.444px] h-[103.444px]">
-              <svg className="absolute block w-full h-full" fill="none" preserveAspectRatio="none" viewBox="0 0 103.444 103.444">
-                <circle 
-                  cx="51.7222" 
-                  cy="51.7222" 
-                  fill="white" 
-                  fillOpacity="0.3" 
-                  r="51.7222"
-                  style={{ filter: 'blur(3.11111px)' }}
-                />
-              </svg>
-            </div>
-
-            {/* Play Icon */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[39px] h-[39px]">
-              <div className="rotate-90 w-full h-full flex items-center justify-center">
-                <svg className="w-[28.09px] h-[25.36px]" fill="none" viewBox="0 0 28.0929 25.3611">
-                  <path 
-                    d={svgPaths.p184ba280} 
-                    fill="white" 
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
+        {/* Mobile Play Button */}
+        <div className="lg:hidden mt-[24px]">
+          <PlayButton size={80} videoUrl={content.videoUrl} />
         </div>
       </div>
     </section>

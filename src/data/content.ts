@@ -215,7 +215,7 @@ export const siteContent = {
   // Artigos / Blog
   articles: {
     title: 'Quem se informa, se protege',
-    viewAllLink: { text: 'Ver todos os artigos', href: '#todos-artigos' },
+    viewAllLink: { text: 'Ver todos os artigos', href: '/blog' },
     items: [
       {
         id: 1,
@@ -223,7 +223,7 @@ export const siteContent = {
         month: 'Nov',
         category: 'Direito Imobiliario e Usucapiao',
         title: 'Imovel sem escritura: 5 caminhos reais para regularizar e destravar venda/financiamento',
-        href: '#artigo-1',
+        href: '/blog/imovel-sem-escritura-caminhos-regularizar-brasilia',
       },
       {
         id: 2,
@@ -231,7 +231,7 @@ export const siteContent = {
         month: 'Nov',
         category: 'Homologacao e Direito Internacional',
         title: 'Posso vender um imovel no Brasil com um divorcio pendente no exterior?',
-        href: '#artigo-2',
+        href: '/blog/posso-vender-imovel-brasil-divorcio-pendente-exterior',
       },
       {
         id: 3,
@@ -239,7 +239,7 @@ export const siteContent = {
         month: 'Nov',
         category: 'Direito de Familia',
         title: 'Uniao Estavel x Casamento: O que muda no seu patrimonio?',
-        href: '#artigo-3',
+        href: '/blog/uniao-estavel-x-casamento-diferencas-patrimonio',
       },
     ],
   },
