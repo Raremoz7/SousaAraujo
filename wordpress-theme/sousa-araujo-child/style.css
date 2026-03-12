@@ -1,0 +1,28 @@
+/*
+Theme Name: Sousa Araujo Advocacia
+Theme URI: https://sousaaraujo.adv.br
+Author: Mix7
+Author URI: https://mix7.com.br
+Description: Tema customizado para o escritorio Sousa Araujo Advocacia. Child theme do Hello Elementor com widgets personalizados para cada secao do site.
+Template: hello-elementor
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.5
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: sousa-araujo
+*/
+
+/* ═══════════════════════════════════════
+   INSTALACAO
+   ═══════════════════════════════════════
+   1. Instale o tema "Hello Elementor" (gratuito)
+   2. Coloque esta pasta "sousa-araujo-child" em wp-content/themes/
+   3. Ative o tema "Sousa Araujo Advocacia" no painel WP
+   4. Instale e ative o Elementor (gratuito ou Pro)
+   5. Crie uma pagina "Home" e edite com Elementor
+   6. Os widgets "SA -" aparecerao na aba de widgets do Elementor
+   7. Arraste cada widget na ordem desejada
+   8. Clique em cada widget para editar textos e imagens pela sidebar
+   ═══════════════════════════════════════ */

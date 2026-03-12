@@ -5,13 +5,10 @@ import svgPaths from '../../imports/svg-practice-arrow';
 
 /**
  * Practice Areas Component
- * WordPress Block: sousa-araujo/practice-areas
- * Animações sequenciadas estilo Dictum:
- * - Expandir: painel cresce lentamente, conteúdo aparece só no final
- * - Recolher: conteúdo some primeiro, painel recolhe só depois
- * 
- * WP Migration: Props podem vir do WordPress block attributes.
- * Imagens devem ser mapeadas para WP Media Library URLs.
+ * Animacoes sequenciadas estilo Dictum:
+ * - Expandir: painel cresce lentamente, conteudo aparece so no final
+ * - Recolher: conteudo some primeiro, painel recolhe so depois
+ * Conteudo centralizado em /src/data/content.ts
  */
 
 interface PracticeArea {
@@ -27,31 +24,31 @@ const practiceAreas: PracticeArea[] = [
   {
     id: 1,
     number: '01',
-    title: 'Homologação de',
-    subtitle: 'Sentença Estrangeira',
-    description: 'Validamos no STJ decisões judiciais obtidas no exterior, como divórcios e guardas. Atendimento ágil e especializado para brasileiros em todo o mundo.',
+    title: 'Homologacao de',
+    subtitle: 'Sentenca Estrangeira',
+    description: 'Validamos no STJ decisoes judiciais obtidas no exterior, como divorcios e guardas. Atendimento agil e especializado para brasileiros em todo o mundo.',
     image: imgCardHomologacao,
   },
   {
     id: 2,
     number: '02',
-    title: 'Direito de Família e',
-    subtitle: 'Sucessões',
-    description: 'Divórcio consensual ou litigioso, união estável, partilha e proteção patrimonial. Estratégia clara para reduzir desgaste e evitar prejuízos na divisão de bens.',
+    title: 'Direito de Familia e',
+    subtitle: 'Sucessoes',
+    description: 'Divorcio consensual ou litigioso, uniao estavel, partilha e protecao patrimonial. Estrategia clara para reduzir desgaste e evitar prejuizos na divisao de bens.',
     image: imgCardFamilia,
   },
   {
     id: 3,
     number: '03',
-    title: 'Imóveis e Usucapião',
-    description: 'Divórcio consensual ou litigioso, união estável, partilha e proteção patrimonial. Estratégia clara para reduzir desgaste e evitar prejuízos na divisão de bens.',
+    title: 'Imoveis e Usucapiao',
+    description: 'Divorcio consensual ou litigioso, uniao estavel, partilha e protecao patrimonial. Estrategia clara para reduzir desgaste e evitar prejuizos na divisao de bens.',
     image: imgCardImoveis,
   },
   {
     id: 4,
     number: '04',
     title: 'Empresarial',
-    description: 'Divórcio consensual ou litigioso, união estável, partilha e proteção patrimonial. Estratégia clara para reduzir desgaste e evitar prejuízos na divisão de bens.',
+    description: 'Divorcio consensual ou litigioso, uniao estavel, partilha e protecao patrimonial. Estrategia clara para reduzir desgaste e evitar prejuizos na divisao de bens.',
     image: imgCardEmpresarial,
   },
 ];

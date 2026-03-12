@@ -5,7 +5,8 @@ import { siteContent } from '../../data/content';
 
 /**
  * Navbar Component
- * WordPress Widget: sousa-araujo-navbar
+ * Navegacao fixa com menu responsivo (hamburger no mobile)
+ * Conteudo centralizado em /src/data/content.ts
  */
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);

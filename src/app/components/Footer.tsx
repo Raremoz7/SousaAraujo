@@ -1,14 +1,10 @@
 /**
  * Footer Component — matches Figma design exactly
- * WordPress Widget: sousa-araujo/footer
  * Row 1: Logo + description
- * Row 2: Newsletter | Iniciar uma Conversa | Nossa Localização | Redes Sociais
+ * Row 2: Newsletter | Iniciar uma Conversa | Nossa Localizacao | Redes Sociais
  * Divider
  * Row 3: Navigation links | Agendar Atendimento
  * Row 4: Legal text
- * 
- * WP Migration: Navigation links podem vir de wp_nav_menu().
- * Social links e contact info devem vir do WordPress Customizer ou ACF options page.
  */
 
 import svgLogoPaths from '../../imports/svg-r0rdaxikom';
@@ -143,10 +139,10 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Nossa Localização */}
+          {/* Nossa Localizacao */}
           <div>
             <h3 className="font-['Noto_Sans'] font-medium text-[18px] leading-[26px] tracking-[-0.36px] text-[#a57255] mb-[18px]">
-              Nossa Localização
+              Nossa Localizacao
             </h3>
             <div className="flex items-start gap-[10px]">
               <svg className="w-[12px] h-[17px] shrink-0 mt-[3px]" fill="none" viewBox="0 0 12 17">

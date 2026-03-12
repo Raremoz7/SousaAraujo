@@ -1,11 +1,7 @@
 /**
  * Blog Component - "Quem se informa, se protege"
- * WordPress Block: sousa-araujo/blog
- * Seção de artigos com carrossel de 3 cards
- * 
- * WP Migration: Props podem vir do WordPress block attributes.
- * Em WP, articles viriam de WP_Query/REST API (custom post type 'artigo').
- * Imagens devem ser mapeadas para WP Media Library URLs.
+ * Secao de artigos com grid de 3 cards
+ * Conteudo centralizado em /src/data/content.ts
  */
 
 import { useState } from 'react';

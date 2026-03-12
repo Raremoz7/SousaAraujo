@@ -1,10 +1,8 @@
 /**
  * Differentials Component
- * WordPress Block: sousa-araujo/differentials
- * Seção "O que torna o nosso trabalho diferente"
+ * Secao "O que torna o nosso trabalho diferente"
  * Posicionada entre ServicesGrid e Stats
- * 
- * WP Migration: Props podem vir do WordPress block attributes.
+ * Conteudo centralizado em /src/data/content.ts
  */
 
 import { motion } from 'motion/react';

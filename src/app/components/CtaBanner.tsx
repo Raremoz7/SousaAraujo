@@ -1,11 +1,8 @@
 /**
  * CTA Banner Component
- * WordPress Block: sousa-araujo/cta-banner
  * "Quem entende o processo, controla o resultado"
  * Banner full-width com imagem de fundo e overlay escuro
- * 
- * WP Migration: Props podem vir do WordPress block attributes.
- * backgroundImage deve ser mapeada para WP Media Library URL.
+ * Conteudo centralizado em /src/data/content.ts
  */
 
 import imgBackground from "figma:asset/fcf68d553754923b39d9072139ccfeb443b32d57.png";

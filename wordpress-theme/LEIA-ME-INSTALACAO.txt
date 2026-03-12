@@ -1,0 +1,130 @@
+═══════════════════════════════════════════════════════
+SOUSA ARAUJO ADVOCACIA — GUIA DE INSTALACAO NO WORDPRESS
+═══════════════════════════════════════════════════════
+
+REQUISITOS:
+- WordPress 6.0+
+- PHP 7.4+
+- Tema pai: Hello Elementor (gratuito, instalar antes)
+- Plugin: Elementor (gratuito) — recomendado Elementor Pro para CSS customizado por widget
+
+═══════════════════════════════════════════════════════
+PASSO A PASSO
+═══════════════════════════════════════════════════════
+
+1. INSTALAR HELLO ELEMENTOR
+   - Painel WP > Aparencia > Temas > Adicionar Novo
+   - Buscar "Hello Elementor" > Instalar (NAO ativar ainda)
+
+2. SUBIR O CHILD THEME
+   - Compactar a pasta "sousa-araujo-child" em ZIP
+   - Painel WP > Aparencia > Temas > Adicionar Novo > Enviar Tema
+   - Selecionar o ZIP > Instalar > Ativar
+
+3. VERIFICAR QUE OS WIDGETS CARREGARAM
+   - Painel WP > Paginas > Adicionar Nova > "Home"
+   - Clicar "Editar com Elementor"
+   - Na aba de widgets (icone de cubo), procurar a categoria "Sousa Araujo"
+   - Voce vera 11 widgets: SA - Hero, SA - Quem Somos, SA - Servicos, etc.
+
+4. MONTAR A PAGINA
+   Arraste os widgets na seguinte ordem:
+   1. SA - Hero
+   2. SA - Quem Somos
+   3. SA - Servicos
+   4. SA - Diferenciais
+   5. SA - Estatisticas
+   6. SA - Areas de Atuacao
+   7. SA - CTA Banner
+   8. SA - Videos
+   9. SA - Blog
+   10. SA - Contato
+   11. SA - Footer
+
+5. EDITAR CONTEUDO
+   - Clique em cada widget
+   - A sidebar do Elementor mostrara os campos editaveis:
+     textos, imagens, links, URLs
+   - Altere o que quiser e clique "Atualizar"
+
+6. SUBIR IMAGENS
+   - Para cada widget que pede imagem, clique no campo de midia
+   - Faca upload da imagem correspondente do Figma
+   - Imagens recomendadas:
+     * Hero: foto principal do escritorio (1920x1080+)
+     * CTA Banner: foto ambiente (1920x600+)
+     * Contato: foto fachada/escritorio (1920x780+)
+     * Servicos: 6 fotos tematicas (496x316 cada)
+     * Areas de Atuacao: 4 fotos por area (415x516 cada)
+     * Videos: 3 thumbnails (400x238 cada)
+     * Blog: 3 imagens de artigo (400x235 cada)
+
+7. CONFIGURAR FORMULARIO DE CONTATO
+   O widget SA - Contato tem um formulario visual, mas SEM processamento.
+   Para funcionar de verdade:
+   a) Instale WPForms Lite ou Contact Form 7
+   b) Crie um formulario com campos: Nome, Email, Mensagem
+   c) Copie o shortcode (ex: [wpforms id="123"])
+   d) No widget SA - Contato, cole no campo "Shortcode do Formulario"
+   e) Estilize o plugin para manter visual escuro (CSS customizado)
+
+8. DEFINIR COMO PAGINA INICIAL
+   - Painel WP > Configuracoes > Leitura
+   - "Sua pagina inicial mostra: Uma pagina estatica"
+   - Selecionar "Home" como pagina inicial
+
+═══════════════════════════════════════════════════════
+ESTRUTURA DOS ARQUIVOS
+═══════════════════════════════════════════════════════
+
+sousa-araujo-child/
+├── style.css                    → Metadados do tema
+├── functions.php                → Carrega fontes, CSS, JS e registra widgets
+├── assets/
+│   ├── css/
+│   │   └── sousa-araujo.css     → Todo o CSS customizado (750+ linhas)
+│   └── js/
+│       ├── animations.js        → IntersectionObserver (substitui Framer Motion)
+│       └── practice-areas.js    → Acordeao + Swiper carousel
+└── widgets/
+    ├── class-hero-widget.php           → SA - Hero
+    ├── class-about-widget.php          → SA - Quem Somos
+    ├── class-services-grid-widget.php  → SA - Servicos
+    ├── class-differentials-widget.php  → SA - Diferenciais
+    ├── class-stats-widget.php          → SA - Estatisticas
+    ├── class-practice-areas-widget.php → SA - Areas de Atuacao
+    ├── class-cta-banner-widget.php     → SA - CTA Banner
+    ├── class-videos-widget.php         → SA - Videos
+    ├── class-blog-widget.php           → SA - Blog
+    ├── class-contact-widget.php        → SA - Contato
+    └── class-footer-widget.php         → SA - Footer
+
+═══════════════════════════════════════════════════════
+NOTAS IMPORTANTES
+═══════════════════════════════════════════════════════
+
+ANIMACOES:
+As animacoes Framer Motion do React foram convertidas para
+CSS transitions + IntersectionObserver. O comportamento e similar
+mas nao identico — as transicoes sao mais simples.
+
+ACORDEAO (AREAS DE ATUACAO):
+O efeito "Dictum" (expand lento com conteudo delayed) funciona
+via CSS transitions no desktop. O JS apenas alterna classes.
+
+CAROUSEL (SERVICOS):
+Usa Swiper.js 11 via CDN. O autoplay e loop funcionam como o
+react-slick original.
+
+FONTES:
+Carregadas via Google Fonts CDN. A fonte "Allura" substitui
+"Signaturex Demo" (fonte paga nao disponivel via CDN).
+Se tiver a fonte Signaturex, adicione-a como @font-face no CSS.
+
+SEO:
+- H1 obrigatorio no Hero (keyword "escritorio de advocacia em Brasilia")
+- H2 sr-only nos widgets ServicesGrid e Stats para hierarquia semantica
+- Estrutura de headings: H1 > H2 > H3 em todas as secoes
+
+ZERO CANTOS ARREDONDADOS:
+Nenhum border-radius e aplicado. Todas as formas sao retas e pontiagudas.

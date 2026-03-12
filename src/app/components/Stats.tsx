@@ -2,9 +2,8 @@ import { siteContent } from '../../data/content';
 
 /**
  * Stats Component
- * WordPress Block: sousa-araujo/stats
- * 
- * @param {Object} props - Component props (podem vir do WordPress)
+ * Numeros e resultados do escritorio em grid 2x2 (mobile) / 4 colunas (desktop)
+ * Conteudo centralizado em /src/data/content.ts
  */
 export function Stats(props?: {
   stats?: Array<{ number: string; label: string }>;

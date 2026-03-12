@@ -1,10 +1,7 @@
 /**
- * About Component - Seção Quem Somos
- * WordPress Block: sousa-araujo/about
- * Layout com texto na esquerda, imagens na direita e galeria de 3 imagens
- * 
- * WP Migration: Props podem vir do WordPress block attributes.
- * Imagens devem ser mapeadas para WP Media Library URLs.
+ * About Component - Secao Quem Somos
+ * Layout com texto na esquerda, quotes na direita
+ * Conteudo centralizado em /src/data/content.ts
  */
 
 import { imgAboutOffice, imgGallery1, imgGallery2, imgGallery3 } from '../../imports/images';

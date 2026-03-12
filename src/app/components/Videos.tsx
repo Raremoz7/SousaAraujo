@@ -1,11 +1,8 @@
 /**
  * Videos Component
- * WordPress Block: sousa-araujo/videos
- * Seção "Vídeos educativos: entenda antes de decidir"
- * 3 cards com thumbnails, play button, título e descrição
- * 
- * WP Migration: Props podem vir do WordPress block attributes.
- * Imagens devem ser mapeadas para WP Media Library URLs.
+ * Secao "Videos educativos: entenda antes de decidir"
+ * 3 cards com thumbnails, play button, titulo e descricao
+ * Conteudo centralizado em /src/data/content.ts
  */
 
 import imgA from "figma:asset/9346a42e7477eb1ee3bca02820f0bd1d03362e6a.png";

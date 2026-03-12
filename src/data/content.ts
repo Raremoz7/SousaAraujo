@@ -1,62 +1,62 @@
 /**
  * Arquivo de Conteudo Central
- * WordPress Integration: sousa-araujo-content
  * 
  * Este arquivo centraliza todo o conteudo do site para facilitar:
- * - Exportacao para WordPress via WP React Plugin
+ * - Edicao de conteudo sem tocar nos componentes
  * - Traducao e multilingue
- * - Edicao de conteudo sem tocar no codigo
+ * - Rebuild rapido antes de re-upload ao WordPress
  * 
  * ═══════════════════════════════════════════════════════
- * GUIA DE MIGRACAO PARA WORDPRESS (WP React Plugin)
+ * INTEGRACAO COM WORDPRESS — CENARIO REAL
  * ═══════════════════════════════════════════════════════
  * 
- * 1. IMAGENS:
- *    - Imports `figma:asset/...` devem ser substituidos por URLs
- *      da WP Media Library (wp_get_attachment_url)
- *    - Usar ACF Image Field ou Featured Image para cada bloco
- *    - Exemplo: imgRectangle4 → get_field('hero_background')
+ * Este projeto React NAO se converte automaticamente em blocos
+ * editaveis do Gutenberg. A aplicacao e construida (build) e
+ * embutida "fechada" dentro de uma pagina do WordPress usando
+ * um dos plugins reais abaixo:
  * 
- * 2. COMPONENTES → BLOCOS WP:
- *    Cada componente React mapeia para um Gutenberg Block:
- *    - Hero        → sousa-araujo/hero
- *    - About       → sousa-araujo/about
- *    - ServicesGrid → sousa-araujo/services-grid
- *    - Differentials → sousa-araujo/differentials
- *    - Stats       → sousa-araujo/stats
- *    - PracticeAreas → sousa-araujo/practice-areas
- *    - CtaBanner   → sousa-araujo/cta-banner
- *    - Videos      → sousa-araujo/videos
- *    - Blog        → sousa-araujo/blog (usa WP_Query)
- *    - Contact     → sousa-araujo/contact (CF7 ou Gravity Forms)
- *    - Footer      → sousa-araujo/footer (Widget Area)
- *    - Navbar      → sousa-araujo/navbar (wp_nav_menu)
+ * PLUGINS REAIS PARA EMBED:
  * 
- * 3. DADOS DINAMICOS:
- *    - Blog: substituir array estatico por fetch ao WP REST API
- *      GET /wp-json/wp/v2/posts?categories=artigos&per_page=3
- *    - Contact: integrar com Contact Form 7 shortcode ou
- *      Gravity Forms REST API
- *    - Footer nav: usar wp_nav_menu('footer-menu')
+ * 1. ReactPress (mais maduro)
+ *    - Pega a pasta de build finalizada e encapsula dentro de
+ *      uma pagina WP
+ *    - Nao converte componentes em blocos editaveis
+ *    - https://developer.wordpress.org/plugins/reactpress/
  * 
- * 4. FORMULARIO DE CONTATO:
- *    - Substituir handleSubmit simulado por integracoes reais:
- *      a) Contact Form 7: [contact-form-7 id="123"]
- *      b) Gravity Forms: AJAX submission via gform_submit
- *      c) WP REST API: POST /wp-json/contact/v1/send
+ * 2. Embed React Build
+ *    - Le o asset-manifest.json gerado pelo build
+ *    - Usa shortcode simples para carregar no front-end
  * 
- * 5. FONTES:
- *    - Marcellus, Roboto, Lora, Noto Sans: Google Fonts via
- *      wp_enqueue_style ou theme.json fontFamily
- *    - Allura (substituto de Signaturex Demo): Google Fonts
+ * 3. Embed React App
+ *    - Upload manual dos arquivos finais (.js, .css)
+ *    - Shortcode: [reactapp id="root" js="caminho.js" css="caminho.css"]
  * 
- * 6. ANIMACOES:
- *    - Motion (Framer Motion) funciona no WP React Plugin
- *    - Alternativa leve: usar CSS animations + IntersectionObserver
+ * FLUXO DE TRABALHO:
  * 
- * 7. CARROSSÉIS:
- *    - react-slick funciona no WP React Plugin
- *    - Alternativa WP-native: Swiper.js ou Splide
+ * 1. Editar conteudo neste arquivo (content.ts)
+ * 2. Substituir imagens figma:asset por URLs reais (ver secao IMAGENS)
+ * 3. Rodar `npm run build` para gerar a pasta dist/
+ * 4. Fazer upload da pasta dist/ no WordPress via plugin escolhido
+ * 5. Para atualizar conteudo: repetir passos 1-4
+ * 
+ * IMAGENS:
+ * Os imports `figma:asset/...` sao um esquema virtual do Figma Make.
+ * Antes do build para producao, substituir por:
+ * - URLs absolutas de imagens hospedadas (ex: CDN, WP Media Library)
+ * - Ou importar imagens locais da pasta /public ou /src/assets
+ * 
+ * FORMULARIO DE CONTATO:
+ * O handleSubmit atual e simulado. Para producao, substituir por:
+ * - Servico externo: Formspree, Getform, EmailJS
+ * - API propria: endpoint POST no seu servidor
+ * - Se usando Headless WP: WP REST API + plugin de email
+ * 
+ * ALTERNATIVA HEADLESS (mais flexivel):
+ * Se quiser conteudo editavel pelo painel WP:
+ * - WordPress como backend (CMS) via REST API
+ * - Este React app como frontend (Next.js ou Vite)
+ * - Buscar dados de content.ts via fetch ao WP REST API
+ * - Requer mais infra mas da controle editorial total
  * ═══════════════════════════════════════════════════════
  */
 
@@ -107,7 +107,6 @@ export const siteContent = {
 
   // Hero Section
   hero: {
-    // WP: get_field('hero_background') ou Featured Image
     backgroundImage: 'figma:asset/4fee0ccd87db6dd900796a349711620cb85c2755.png',
     subtitle: 'A solucao mais inteligente comeca antes do processo',
     title: 'Escritorio de advocacia em Brasilia com atuacao nacional e para brasileiros no exterior',
@@ -124,7 +123,6 @@ export const siteContent = {
 
   // Quem Somos
   about: {
-    // WP: get_field('about_image')
     image: 'figma:asset/4fee0ccd87db6dd900796a349711620cb85c2755.png',
     title: 'Quem Somos',
     paragraphs: [
@@ -138,7 +136,7 @@ export const siteContent = {
     quotes: [
       {
         text: 'Desenvolvemos a estrategia juridica mais inteligente para cada situacao — extrajudicial sempre que possivel, judicial quando necessario',
-        color: 'accent' as const, // #a57255
+        color: 'accent' as const,
       },
       {
         text: 'Mais de 14 anos de atuacao, checklist rigoroso em cada etapa e comunicacao clara do inicio ao fim. Voce nunca fica sem saber o que esta acontecendo.',
@@ -149,7 +147,6 @@ export const siteContent = {
 
   // Diferenciais
   differentials: {
-    // WP: get_field('differentials_image')
     image: 'figma:asset/6daa36a69df9600539a5261e4be774bd12f5fa67.png',
     teamImage: 'figma:asset/b1f5c9d022e2869246b5bf9dee8631b24df008f4.png',
     title: 'O que torna o nosso trabalho diferente',
@@ -188,7 +185,6 @@ export const siteContent = {
     title: 'Quem entende o processo, controla o resultado',
     buttonText: 'Agendar Consulta de Viabilidade',
     buttonHref: '#contato',
-    // WP: get_field('cta_background')
     backgroundImage: 'figma:asset/fcf68d553754923b39d9072139ccfeb443b32d57.png',
   },
 
@@ -197,7 +193,6 @@ export const siteContent = {
     title: 'Videos educativos: entenda antes de decidir',
     viewAllText: 'Ver todos os videos',
     viewAllHref: '#todos-videos',
-    // WP: Custom Post Type 'video' com ACF fields
     items: [
       {
         id: 1,
@@ -218,7 +213,6 @@ export const siteContent = {
   },
 
   // Artigos / Blog
-  // WP: GET /wp-json/wp/v2/posts?categories=artigos&per_page=3
   articles: {
     title: 'Quem se informa, se protege',
     viewAllLink: { text: 'Ver todos os artigos', href: '#todos-artigos' },
@@ -251,7 +245,6 @@ export const siteContent = {
   },
 
   // Contato
-  // WP: Contact Form 7 ou Gravity Forms
   contact: {
     title: 'Fale Conosco\nAgende sua Consulta',
     address: 'Edificio Varig - Asa Norte, Brasilia - DF, 70714-020',
@@ -267,7 +260,6 @@ export const siteContent = {
   },
 
   // Footer
-  // WP: Widget Area + wp_nav_menu + ACF Options Page
   footer: {
     description: 'Escritorio de advocacia especializada em Brasilia, fundado pela Dra. Lidiane Sousa Araujo, OAB/DF 34.876. Estrutura presencial no Distrito Federal e atendimento online para todo o Brasil e brasileiros no exterior, com apoio de uma rede de parceiros qualificados. Atuacao estrategica em Direito de Familia, Regularizacao de Imoveis, Homologacao de Sentenca Estrangeira e Consultoria Empresarial.',
     newsletter: {

@@ -1,12 +1,10 @@
 /**
  * Contact Component - "Fale Conosco / Agende sua Consulta"
- * WordPress Block: sousa-araujo/contact
  * Full-width background image with blurred overlay form on the right
  * Mobile: form overlay covers full width, auto-height
  * 
- * WP Migration: Form submission should be replaced with WP REST API
- * or Contact Form 7 / Gravity Forms integration.
- * backgroundImage deve ser mapeada para WP Media Library URL.
+ * PRODUCAO: Substituir handleSubmit simulado por servico real
+ * (Formspree, EmailJS, ou endpoint proprio)
  */
 
 import { useState } from 'react';

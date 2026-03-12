@@ -1,11 +1,8 @@
 /**
  * Services Grid Component
- * WordPress Block: sousa-araujo/services-grid
- * Carrossel full width de cards de serviços com imagens de fundo e overlay
- * 
- * WP Migration: Props podem vir do WordPress block attributes.
- * Imagens devem ser mapeadas para WP Media Library URLs.
- * react-slick pode ser substituído por Swiper.js ou Splide no WP.
+ * Carrossel full width de cards de servicos com imagens de fundo e overlay
+ * Desktop: react-slick carousel | Mobile: snap scroll horizontal
+ * Conteudo centralizado em /src/data/content.ts
  */
 
 import Slider from 'react-slick';

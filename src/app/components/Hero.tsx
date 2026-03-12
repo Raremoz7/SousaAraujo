@@ -3,7 +3,6 @@ import svgPaths from '../../imports/svg-hero-play';
 
 /**
  * Hero Component
- * WordPress Block: sousa-araujo/hero
  * Full-screen hero com imagem de fundo e gradiente
  * Mobile-first: usa flexbox + padding em vez de absolute positioning
  */
