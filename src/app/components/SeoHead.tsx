@@ -12,6 +12,7 @@ import { useLocation } from 'react-router';
 import { useMemo } from 'react';
 
 import { usePanel, readPanel } from '../hooks/usePanelContent';
+import { SEO_DEFAULTS } from '../../data/panelDefaults';
 
 /* ─── Route → SEO page ID mapping ─── */
 const ROUTE_TO_SEO_ID: Record<string, string> = {
@@ -51,10 +52,13 @@ export function SeoHead() {
 
 /* Separate component so hooks are not called conditionally */
 function SeoHelmet({ seoId, pathname }: { seoId: string; pathname: string }) {
-  // Read all SEO fields from panel data
-  const title = usePanel(`seo.${seoId}.title`, '');
-  const description = usePanel(`seo.${seoId}.description`, '');
-  const keyword = usePanel(`seo.${seoId}.keyword`, '');
+  // Resolve defaults for this page (title, description, keyword)
+  const pageDefaults = SEO_DEFAULTS[seoId] ?? {};
+
+  // Read all SEO fields from panel data — with structured defaults as fallback
+  const title = usePanel(`seo.${seoId}.title`, pageDefaults.title ?? '');
+  const description = usePanel(`seo.${seoId}.description`, pageDefaults.description ?? '');
+  const keyword = usePanel(`seo.${seoId}.keyword`, pageDefaults.keyword ?? '');
   const canonical = usePanel(`seo.${seoId}.canonical`, `${SITE_URL}${pathname}`);
   const robots = usePanel(`seo.${seoId}.robots`, 'index, follow');
   const ogTitle = usePanel(`seo.${seoId}.ogTitle`, '');

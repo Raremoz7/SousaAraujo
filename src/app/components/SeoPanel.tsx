@@ -18,6 +18,7 @@ import {
   CircleCheck, CircleX, CircleMinus, Image as ImageIcon, Link2,
   Heading1, Heading2, Hash, Type, Tag, Share2, Zap
 } from 'lucide-react';
+import { SiteSeoEditor } from './SiteSeoEditor';
 
 /* ─── Types ─── */
 interface SeoPanelProps {
@@ -1120,6 +1121,18 @@ function JsonLdTab({ data, getSeoVal, onChange }: { data: Record<string, string>
 
   return (
     <div className="space-y-[10px]">
+      {/* Site data editor — fields that feed LocalBusiness JSON-LD */}
+      <SiteSeoEditor data={data} onChange={onChange} />
+
+      {/* Separator */}
+      <div className="flex items-center gap-[10px]">
+        <div className="flex-1 h-px bg-white/[0.06]" />
+        <span className="font-['Noto_Sans'] text-[9px] text-white/20 uppercase tracking-[1px] shrink-0">
+          Schemas gerados automaticamente
+        </span>
+        <div className="flex-1 h-px bg-white/[0.06]" />
+      </div>
+
       {/* Schema blocks — grid layout */}
       <div className="grid grid-cols-2 gap-[10px]">
         {/* LocalBusiness */}

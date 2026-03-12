@@ -832,3 +832,98 @@ export const panelDefaults: Record<string, string> = {
   'seo.videos.description': 'Vídeos educativos sobre direito de família, divórcio, inventário e outros temas jurídicos. Conteúdo informativo pela Dra. Lidiane Sousa Araújo.',
   'seo.videos.keyword': 'vídeos direito de família',
 };
+
+/* ─── Structured SEO defaults by page ID (used by SeoHead.tsx as fallback) ─── */
+export interface SeoPageDefaults {
+  title: string;
+  description: string;
+  keyword: string;
+}
+
+export const SEO_DEFAULTS: Record<string, SeoPageDefaults> = {
+  home: {
+    title: 'Sousa Araújo Advocacia | Escritório em Brasília com Atuação Nacional',
+    description: 'Escritório de advocacia em Brasília especializado em direito de família, imobiliário, empresarial e homologação de sentença estrangeira. Atendimento presencial e online para brasileiros no Brasil e exterior.',
+    keyword: 'advocacia brasília',
+  },
+  sobre: {
+    title: 'Sobre a Dra. Lidiane Sousa Araújo | Sousa Araújo Advocacia',
+    description: 'Conheça a trajetória da Dra. Lidiane Sousa Araújo, advogada em Brasília com experiência em direito de família, sucessões e direito internacional privado.',
+    keyword: 'advogada brasília',
+  },
+  areas: {
+    title: 'Áreas de Atuação | Sousa Araújo Advocacia',
+    description: 'Conheça nossas áreas de atuação: direito de família, divórcio, guarda, pensão alimentícia, inventário, direito imobiliário, empresarial e homologação de sentença estrangeira.',
+    keyword: 'áreas de atuação advocacia',
+  },
+  blog: {
+    title: 'Blog Jurídico | Sousa Araújo Advocacia',
+    description: 'Artigos, dicas e orientações jurídicas sobre direito de família, divórcio, inventário, direito imobiliário e mais. Conteúdo atualizado pela Dra. Lidiane Sousa Araújo.',
+    keyword: 'blog jurídico',
+  },
+  faq: {
+    title: 'Perguntas Frequentes (FAQ) | Sousa Araújo Advocacia',
+    description: 'Tire suas dúvidas sobre divórcio, guarda de filhos, pensão alimentícia, inventário, homologação de sentença estrangeira e outros temas jurídicos.',
+    keyword: 'perguntas frequentes advocacia',
+  },
+  contato: {
+    title: 'Contato | Sousa Araújo Advocacia — Agende sua Consulta',
+    description: 'Entre em contato com o escritório Sousa Araújo Advocacia em Brasília. Atendimento presencial e online. Agende sua consulta pelo WhatsApp ou formulário.',
+    keyword: 'contato advogado brasília',
+  },
+  parceiros: {
+    title: 'Rede de Parceiros | Sousa Araújo Advocacia',
+    description: 'Conheça a rede de parceiros estratégicos do escritório Sousa Araújo Advocacia para oferecer soluções jurídicas completas aos nossos clientes.',
+    keyword: 'parceiros advocacia',
+  },
+  videos: {
+    title: 'Vídeos Educativos | Sousa Araújo Advocacia',
+    description: 'Vídeos educativos sobre direito de família, divórcio, inventário e outros temas jurídicos. Conteúdo informativo pela Dra. Lidiane Sousa Araújo.',
+    keyword: 'vídeos direito de família',
+  },
+  imoveis: {
+    title: 'Direito Imobiliário em Brasília | Sousa Araújo Advocacia',
+    description: 'Assessoria jurídica em compra, venda, locação, usucapião e regularização de imóveis em Brasília. Segurança nas suas transações imobiliárias.',
+    keyword: 'advogado imobiliário brasília',
+  },
+  homologacao: {
+    title: 'Homologação de Sentença Estrangeira no Brasil | Sousa Araújo Advocacia',
+    description: 'Precisa homologar uma sentença estrangeira no Brasil? Especialistas em homologação pelo STJ. Divórcio, guarda, alimentos e decisões judiciais do exterior.',
+    keyword: 'homologação sentença estrangeira',
+  },
+  divorcio: {
+    title: 'Advogado de Divórcio em Brasília | Sousa Araújo Advocacia',
+    description: 'Assessoria jurídica completa em divórcio consensual e litigioso em Brasília. Partilha de bens, guarda dos filhos e pensão alimentícia.',
+    keyword: 'advogado divórcio brasília',
+  },
+  guarda: {
+    title: 'Guarda de Filhos e Plano de Convivência | Sousa Araújo Advocacia',
+    description: 'Especialistas em guarda compartilhada, unilateral e plano de convivência em Brasília. Proteja os direitos dos seus filhos com orientação jurídica especializada.',
+    keyword: 'guarda de filhos brasília',
+  },
+  pensao: {
+    title: 'Pensão Alimentícia | Sousa Araújo Advocacia em Brasília',
+    description: 'Ação de alimentos, revisão e execução de pensão alimentícia em Brasília. Advogada especialista em direito de família para garantir seus direitos.',
+    keyword: 'pensão alimentícia brasília',
+  },
+  inventario: {
+    title: 'Inventário e Sucessões | Sousa Araújo Advocacia',
+    description: 'Assessoria em inventário judicial e extrajudicial, partilha de bens e planejamento sucessório em Brasília. Resolva a sucessão com segurança jurídica.',
+    keyword: 'inventário brasília',
+  },
+  uniao: {
+    title: 'União Estável | Reconhecimento e Dissolução | Sousa Araújo Advocacia',
+    description: 'Contrato de união estável, reconhecimento judicial e dissolução em Brasília. Proteja seus direitos patrimoniais e familiares com assessoria especializada.',
+    keyword: 'união estável brasília',
+  },
+  pmes: {
+    title: 'Consultoria Jurídica para PMEs | Sousa Araújo Advocacia',
+    description: 'Consultoria empresarial para pequenas e médias empresas em Brasília. Contratos, societário, compliance e proteção jurídica para o seu negócio.',
+    keyword: 'consultoria jurídica PME',
+  },
+  inpi: {
+    title: 'Registro de Marca no INPI | Sousa Araújo Advocacia',
+    description: 'Registro de marca no INPI com acompanhamento completo. Proteja sua marca com assessoria jurídica especializada em propriedade intelectual.',
+    keyword: 'registro marca INPI',
+  },
+};

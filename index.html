@@ -1,15 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Site-SA | SOUZA ARAUJO ADVOGADOS</title>
-    </head>
+    <!-- ═══ Fallback estatico para crawlers de redes sociais ═══ -->
+    <!-- Crawlers (Facebook, WhatsApp, LinkedIn, Twitter/X) nao executam JS, -->
+    <!-- entao nao leem as OG tags do react-helmet-async. Estas tags servem  -->
+    <!-- de fallback para a rota raiz (/). O SeoHead.tsx sobrescreve no       -->
+    <!-- client-side para usuarios reais.                                     -->
 
-    <body>
-      <div id="root"></div>
-      <script type="module" src="/src/main.tsx"></script>
-    </body>
-  </html>
-  
+    <title>Sousa Araújo Advocacia | Brasília com Atuação Nacional</title>
+    <meta name="description" content="Escritório de advocacia em Brasília especializado em direito de família, inventário, registro de marcas e imóveis." />
+    <meta name="keywords" content="advocacia brasília, advogado brasília" />
+    <link rel="canonical" href="https://sousaaraujo.adv.br/" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph -->
+    <meta property="og:type"         content="website" />
+    <meta property="og:url"          content="https://sousaaraujo.adv.br/" />
+    <meta property="og:site_name"    content="Sousa Araújo Advocacia" />
+    <meta property="og:locale"       content="pt_BR" />
+    <meta property="og:title"        content="Sousa Araújo Advocacia | Brasília com Atuação Nacional" />
+    <meta property="og:description"  content="Escritório de advocacia em Brasília especializado em direito de família, inventário, registro de marcas e imóveis." />
+    <meta property="og:image"        content="https://sousaaraujo.adv.br/og-cover.jpg" />
+    <meta property="og:image:width"  content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt"    content="Sousa Araújo Advocacia — Brasília" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card"        content="summary_large_image" />
+    <meta name="twitter:title"       content="Sousa Araújo Advocacia | Brasília com Atuação Nacional" />
+    <meta name="twitter:description" content="Escritório de advocacia em Brasília especializado em direito de família, inventário, registro de marcas e imóveis." />
+    <meta name="twitter:image"       content="https://sousaaraujo.adv.br/og-cover.jpg" />
+
+    <!-- ═══ Fim do bloco de fallback estatico ═══ -->
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
