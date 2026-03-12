@@ -1182,8 +1182,8 @@ function InlineField({ field, value, onChange }: {
   const isTextArea = field.type === 'textarea' || field.type === 'html';
 
   return (
-    <div className="mb-[14px]">
-      <div className="flex items-center gap-[8px] mb-[5px]">
+    <div className="mb-[10px]">
+      <div className="flex items-center gap-[8px] mb-[4px]">
         <FieldBadge type={field.type} />
         <span className="font-['Noto_Sans'] text-[12px] text-white/50 truncate flex-1">
           {field.label}
@@ -1237,14 +1237,14 @@ function GroupCard({ group, data, onChange }: {
   const totalCount = group.fields.length + (group.imageField ? 1 : 0);
 
   return (
-    <div className="bg-[#1a1715] border border-white/[0.06] rounded-lg overflow-hidden mb-[10px] hover:border-white/[0.1] transition-colors">
+    <div className="bg-[#1a1715] border border-white/[0.06] rounded-lg overflow-hidden hover:border-white/[0.1] transition-colors">
       {/* Card header */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="w-full flex items-center gap-[12px] px-[16px] py-[12px] hover:bg-white/[0.02] transition-colors"
+        className="w-full flex items-center gap-[10px] px-[14px] py-[10px] hover:bg-white/[0.02] transition-colors"
       >
         {/* Mini image preview */}
-        <div className="w-[40px] h-[40px] rounded-md overflow-hidden bg-[#161312] border border-white/[0.06] shrink-0">
+        <div className="w-[36px] h-[36px] rounded-md overflow-hidden bg-[#161312] border border-white/[0.06] shrink-0">
           {hasImage ? (
             <img src={imageVal} alt="" className="w-full h-full object-cover" />
           ) : (
@@ -1277,10 +1277,10 @@ function GroupCard({ group, data, onChange }: {
 
       {/* Card content */}
       {!collapsed && (
-        <div className="px-[16px] pb-[16px] border-t border-white/[0.04]">
+        <div className="px-[14px] pb-[12px] border-t border-white/[0.04]">
           {/* Image field at top if present */}
           {group.imageField && (
-            <div className="pt-[12px]">
+            <div className="pt-[10px]">
               <ImagePreview
                 value={data[group.imageField.key] || ''}
                 onChange={onChange}
@@ -1325,14 +1325,14 @@ function VisualSectionBlock({ section, data, onChange }: {
   const grouped = useMemo(() => groupFieldsIntoCards(section.fields), [section.fields]);
 
   return (
-    <div className="mb-[8px] rounded-lg overflow-hidden border border-white/[0.06] bg-[#1e1b19] hover:border-white/[0.1] transition-colors">
+    <div className="mb-[6px] rounded-lg overflow-hidden border border-white/[0.06] bg-[#1e1b19] hover:border-white/[0.1] transition-colors">
       {/* Section header with visual preview */}
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-[14px] px-[20px] py-[14px] hover:bg-white/[0.02] transition-colors text-left"
+        className="w-full flex items-center gap-[12px] px-[16px] py-[10px] hover:bg-white/[0.02] transition-colors text-left"
       >
         {/* Visual indicator */}
-        <div className="relative w-[44px] h-[44px] rounded-lg overflow-hidden bg-[#161312] border border-white/[0.06] shrink-0">
+        <div className="relative w-[38px] h-[38px] rounded-lg overflow-hidden bg-[#161312] border border-white/[0.06] shrink-0">
           {firstImageVal ? (
             <img src={firstImageVal} alt="" className="w-full h-full object-cover" />
           ) : (
@@ -1372,42 +1372,63 @@ function VisualSectionBlock({ section, data, onChange }: {
 
       {/* Section content */}
       {open && (
-        <div className="px-[20px] pb-[20px] border-t border-white/[0.04]">
-          <div className="pt-[16px]">
-            {grouped.map((item, idx) => {
-              if (isGroup(item)) {
-                return (
-                  <GroupCard
-                    key={`group-${item.groupLabel}-${item.groupNum}`}
-                    group={item}
-                    data={data}
-                    onChange={onChange}
-                  />
-                );
+        <div className="px-[20px] pb-[16px] border-t border-white/[0.04]">
+          <div className="pt-[14px]">
+            {(() => {
+              // Separate items into groups and standalone fields
+              const groups: FieldGroup[] = [];
+              const standaloneImages: FieldConfig[] = [];
+              const standaloneFields: FieldConfig[] = [];
+
+              for (const item of grouped) {
+                if (isGroup(item)) {
+                  groups.push(item);
+                } else if (item.type === 'image') {
+                  standaloneImages.push(item);
+                } else {
+                  standaloneFields.push(item);
+                }
               }
 
-              // Standalone image field → visual card
-              if (item.type === 'image') {
-                return (
-                  <ImagePreview
-                    key={item.key}
-                    value={data[item.key] || ''}
-                    onChange={onChange}
-                    field={item}
-                  />
-                );
-              }
+              const shortFields = standaloneFields.filter(f => f.type !== 'textarea' && f.type !== 'html');
+              const longFields = standaloneFields.filter(f => f.type === 'textarea' || f.type === 'html');
 
-              // Regular field
               return (
-                <InlineField
-                  key={item.key}
-                  field={item}
-                  value={data[item.key] || ''}
-                  onChange={onChange}
-                />
+                <>
+                  {/* Short standalone fields in 2-col grid */}
+                  {shortFields.length > 0 && (
+                    <div className={shortFields.length > 1 ? 'grid grid-cols-2 gap-x-[16px]' : ''}>
+                      {shortFields.map(field => (
+                        <InlineField key={field.key} field={field} value={data[field.key] || ''} onChange={onChange} />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Long standalone fields full width */}
+                  {longFields.map(field => (
+                    <InlineField key={field.key} field={field} value={data[field.key] || ''} onChange={onChange} />
+                  ))}
+
+                  {/* Standalone images in grid */}
+                  {standaloneImages.length > 0 && (
+                    <div className={standaloneImages.length > 1 ? 'grid grid-cols-3 gap-[8px] mb-[12px]' : 'mb-[12px]'}>
+                      {standaloneImages.map(field => (
+                        <ImagePreview key={field.key} value={data[field.key] || ''} onChange={onChange} field={field} />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* GroupCards in responsive grid */}
+                  {groups.length > 0 && (
+                    <div className={groups.length >= 2 ? 'grid grid-cols-2 gap-[10px]' : ''}>
+                      {groups.map(g => (
+                        <GroupCard key={`group-${g.groupLabel}-${g.groupNum}`} group={g} data={data} onChange={onChange} />
+                      ))}
+                    </div>
+                  )}
+                </>
               );
-            })}
+            })()}
           </div>
         </div>
       )}
@@ -2184,14 +2205,14 @@ export function PainelPage() {
 
           {/* Editor panel */}
           <div ref={contentRef} className={`overflow-y-auto transition-all duration-300 ${showPreview ? 'w-[50%] shrink-0' : 'flex-1'}`}>
-            <div className={`${showPreview ? 'max-w-full px-[16px]' : activePage === 'seo' ? 'max-w-full px-[20px]' : 'max-w-[780px] px-[20px]'} mx-auto py-[28px] transition-all`}>
+            <div className={`max-w-full ${showPreview ? 'px-[16px]' : 'px-[24px]'} mx-auto py-[20px] transition-all`}>
 
               {/* Page header card */}
               {currentPage && (
-                <div className="mb-[20px] rounded-xl overflow-hidden">
+                <div className="mb-[16px] rounded-xl overflow-hidden">
                   {/* Visual page header with gradient */}
-                  <div className="bg-gradient-to-br from-[#a57255]/15 via-[#1e1b19] to-[#1e1b19] border border-white/[0.08] rounded-xl px-[24px] py-[20px]">
-                    <div className="flex items-start justify-between">
+                  <div className="bg-gradient-to-br from-[#a57255]/15 via-[#1e1b19] to-[#1e1b19] border border-white/[0.08] rounded-xl px-[20px] py-[14px]">
+                    <div className="flex items-center justify-between">
                       <div>
                         <div className="flex items-center gap-[10px] mb-[6px]">
                           <span className="text-[#a57255]">{currentPage.icon}</span>
@@ -2269,7 +2290,7 @@ export function PainelPage() {
               })()}
 
               {/* Bottom spacer */}
-              <div className="h-[80px]" />
+              <div className="h-[40px]" />
             </div>
           </div>
 

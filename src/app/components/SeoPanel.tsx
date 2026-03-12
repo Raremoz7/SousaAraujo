@@ -317,19 +317,19 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
                 </h3>
                 <span className="font-['Noto_Sans'] text-[10px] text-white/25">{SEO_PAGES.length} paginas</span>
               </div>
-              <div className="grid grid-cols-2">
+              <div className="grid grid-cols-3">
                 {SEO_PAGES.map((page, idx) => {
                   const { score, checks } = pageAnalysis[page.id];
                   const errors = checks.filter(c => c.status === 'fail').length;
                   const warnings = checks.filter(c => c.status === 'warning').length;
-                  // Add borders: right border for left column items, bottom border for all except last row
-                  const isLeft = idx % 2 === 0;
-                  const isLastRow = idx >= SEO_PAGES.length - (SEO_PAGES.length % 2 === 0 ? 2 : 1);
+                  const col = idx % 3;
+                  const remainder = SEO_PAGES.length % 3;
+                  const isLastRow = idx >= SEO_PAGES.length - (remainder === 0 ? 3 : remainder);
                   return (
                     <button
                       key={page.id}
                       onClick={() => { setSelectedPage(page.id); setActiveTab('metatags'); }}
-                      className={`flex items-center gap-[8px] px-[12px] py-[8px] hover:bg-white/[0.02] transition-colors text-left group ${isLeft ? 'border-r border-white/[0.04]' : ''} ${!isLastRow ? 'border-b border-white/[0.04]' : ''}`}
+                      className={`flex items-center gap-[8px] px-[12px] py-[8px] hover:bg-white/[0.02] transition-colors text-left group ${col < 2 ? 'border-r border-white/[0.04]' : ''} ${!isLastRow ? 'border-b border-white/[0.04]' : ''}`}
                     >
                       <CircularScore score={score} size={28} />
                       <div className="flex-1 min-w-0">
@@ -354,7 +354,7 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
 
             {/* Issues panel — right side */}
             {allIssues.length > 0 && (
-              <div className="w-[380px] shrink-0 bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
+              <div className="w-[340px] shrink-0 bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
                 <div className="px-[14px] py-[9px] border-b border-white/[0.06]">
                   <h3 className="font-['Noto_Sans'] text-[12px] font-semibold text-white flex items-center gap-[6px]">
                     <AlertTriangle size={13} className="text-yellow-500" />
@@ -405,196 +405,164 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
             </div>
           </div>
 
-          {/* Meta Tags Section */}
-          <CollapsibleSection
-            id="meta"
-            title="Meta Tags Basicas"
-            icon={<Tag size={14} />}
-            expanded={expandedSections.has('meta')}
-            onToggle={() => toggleSection('meta')}
-          >
-            <div className="space-y-[12px]">
-              {/* Title */}
-              <SeoField
-                label="Titulo da Pagina (title tag)"
-                help="Aparece na aba do navegador e nos resultados do Google. Ideal: 50-60 caracteres."
-                value={getSeoVal(selectedPage, 'title')}
-                onChange={v => setSeoVal(selectedPage, 'title', v)}
-                placeholder={`${SEO_PAGES.find(p => p.id === selectedPage)?.label} | Sousa Araujo Advocacia`}
-                maxRecommended={60}
-                charWarning={70}
-              />
-              {/* Description */}
-              <SeoField
-                label="Meta Description"
-                help="Texto exibido nos resultados do Google abaixo do titulo. Ideal: 150-160 caracteres."
-                value={getSeoVal(selectedPage, 'description')}
-                onChange={v => setSeoVal(selectedPage, 'description', v)}
-                placeholder="Descreva o conteudo desta pagina de forma atrativa para o usuario..."
-                multiline
-                maxRecommended={160}
-                charWarning={200}
-              />
-              {/* Keyword */}
-              <SeoField
-                label="Palavra-chave Principal"
-                help="Termo principal pelo qual esta pagina deve ser encontrada. Deve aparecer no titulo e descricao."
-                value={getSeoVal(selectedPage, 'keyword')}
-                onChange={v => setSeoVal(selectedPage, 'keyword', v)}
-                placeholder="ex: advocacia em brasilia"
-              />
-              {/* Canonical */}
-              <SeoField
-                label="URL Canonica"
-                help="URL preferida desta pagina. Use para evitar conteudo duplicado."
-                value={getSeoVal(selectedPage, 'canonical')}
-                onChange={v => setSeoVal(selectedPage, 'canonical', v)}
-                placeholder={`https://sousaaraujo.adv.br${SEO_PAGES.find(p => p.id === selectedPage)?.route || ''}`}
-              />
-              {/* Robots */}
-              <div>
-                <label className="font-['Noto_Sans'] text-[11px] text-white/50 mb-[4px] block">Robots (indexacao)</label>
-                <select
-                  value={getSeoVal(selectedPage, 'robots') || 'index, follow'}
-                  onChange={e => setSeoVal(selectedPage, 'robots', e.target.value)}
-                  className="w-full h-[36px] bg-[#161413] border border-white/[0.08] rounded-lg px-[12px] font-['Noto_Sans'] text-[12px] text-white/80 focus:border-[#a57255]/40 focus:outline-none transition-colors appearance-none cursor-pointer"
-                >
-                  <option value="index, follow">index, follow (padrao — indexar e seguir links)</option>
-                  <option value="noindex, follow">noindex, follow (nao indexar, seguir links)</option>
-                  <option value="index, nofollow">index, nofollow (indexar, nao seguir links)</option>
-                  <option value="noindex, nofollow">noindex, nofollow (nao indexar, nao seguir)</option>
-                </select>
-              </div>
-            </div>
-          </CollapsibleSection>
-
-          {/* Open Graph Section */}
-          <CollapsibleSection
-            id="og"
-            title="Open Graph (Redes Sociais)"
-            icon={<Share2 size={14} />}
-            expanded={expandedSections.has('og')}
-            onToggle={() => toggleSection('og')}
-          >
-            <div className="space-y-[12px]">
-              <SeoField
-                label="OG Title"
-                help="Titulo exibido ao compartilhar no Facebook, LinkedIn, WhatsApp, etc."
-                value={getSeoVal(selectedPage, 'ogTitle')}
-                onChange={v => setSeoVal(selectedPage, 'ogTitle', v)}
-                placeholder={getSeoVal(selectedPage, 'title') || 'Mesmo do titulo da pagina'}
-              />
-              <SeoField
-                label="OG Description"
-                help="Descricao exibida nas redes sociais ao compartilhar o link."
-                value={getSeoVal(selectedPage, 'ogDescription')}
-                onChange={v => setSeoVal(selectedPage, 'ogDescription', v)}
-                placeholder={getSeoVal(selectedPage, 'description') || 'Mesmo da meta description'}
-                multiline
-              />
-              <SeoField
-                label="OG Image URL"
-                help="Imagem exibida nas redes sociais. Recomendado: 1200x630px."
-                value={getSeoVal(selectedPage, 'ogImage')}
-                onChange={v => setSeoVal(selectedPage, 'ogImage', v)}
-                placeholder="https://sousaaraujo.adv.br/og-image.jpg"
-              />
-              {/* OG Image Preview */}
-              {getSeoVal(selectedPage, 'ogImage') && (
-                <div className="rounded-lg overflow-hidden border border-white/[0.06]">
-                  <img src={getSeoVal(selectedPage, 'ogImage')} alt="OG Preview" className="w-full h-[160px] object-cover bg-[#111]" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                </div>
-              )}
-              <SeoField
-                label="OG Type"
-                help="Tipo do conteudo. Padrao: website"
-                value={getSeoVal(selectedPage, 'ogType')}
-                onChange={v => setSeoVal(selectedPage, 'ogType', v)}
-                placeholder="website"
-              />
-            </div>
-          </CollapsibleSection>
-
-          {/* Twitter Card */}
-          <CollapsibleSection
-            id="twitter"
-            title="Twitter Card"
-            icon={<Hash size={14} />}
-            expanded={expandedSections.has('twitter')}
-            onToggle={() => toggleSection('twitter')}
-          >
-            <div className="space-y-[12px]">
-              <div>
-                <label className="font-['Noto_Sans'] text-[11px] text-white/50 mb-[4px] block">Card Type</label>
-                <select
-                  value={getSeoVal(selectedPage, 'twitterCard') || 'summary_large_image'}
-                  onChange={e => setSeoVal(selectedPage, 'twitterCard', e.target.value)}
-                  className="w-full h-[36px] bg-[#161413] border border-white/[0.08] rounded-lg px-[12px] font-['Noto_Sans'] text-[12px] text-white/80 focus:border-[#a57255]/40 focus:outline-none transition-colors appearance-none cursor-pointer"
-                >
-                  <option value="summary_large_image">summary_large_image (imagem grande)</option>
-                  <option value="summary">summary (imagem pequena)</option>
-                </select>
-              </div>
-              <SeoField
-                label="Twitter Title"
-                value={getSeoVal(selectedPage, 'twitterTitle')}
-                onChange={v => setSeoVal(selectedPage, 'twitterTitle', v)}
-                placeholder={getSeoVal(selectedPage, 'ogTitle') || getSeoVal(selectedPage, 'title') || 'Herda do OG Title'}
-              />
-              <SeoField
-                label="Twitter Description"
-                value={getSeoVal(selectedPage, 'twitterDescription')}
-                onChange={v => setSeoVal(selectedPage, 'twitterDescription', v)}
-                placeholder={getSeoVal(selectedPage, 'ogDescription') || getSeoVal(selectedPage, 'description') || 'Herda do OG Description'}
-              />
-            </div>
-          </CollapsibleSection>
-
-          {/* Previews — side by side */}
+          {/* 2-column layout: Forms left, Previews+Diagnostics right */}
           <div className="flex gap-[12px] items-start">
-            {/* SERP Preview */}
-            <div className="flex-1 bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px] min-w-0">
-              <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-white/70 mb-[10px] flex items-center gap-[6px]">
-                <Eye size={12} className="text-[#a57255]" />
-                Preview Google (SERP)
-              </h3>
-              <SerpPreview
-                title={getSeoVal(selectedPage, 'title') || `${SEO_PAGES.find(p => p.id === selectedPage)?.label} | Sousa Araujo Advocacia`}
-                description={getSeoVal(selectedPage, 'description') || 'Adicione uma meta description para ver como ficara nos resultados do Google.'}
-                url={`sousaaraujo.adv.br${SEO_PAGES.find(p => p.id === selectedPage)?.route || ''}`}
-              />
-            </div>
-
-            {/* Social Preview */}
-            <div className="flex-1 bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px] min-w-0">
-              <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-white/70 mb-[10px] flex items-center gap-[6px]">
-                <Share2 size={12} className="text-[#a57255]" />
-                Preview Redes Sociais (OG)
-              </h3>
-              <OgPreview
-                title={getSeoVal(selectedPage, 'ogTitle') || getSeoVal(selectedPage, 'title') || SEO_PAGES.find(p => p.id === selectedPage)?.label || ''}
-                description={getSeoVal(selectedPage, 'ogDescription') || getSeoVal(selectedPage, 'description') || ''}
-                image={getSeoVal(selectedPage, 'ogImage')}
-                url={`sousaaraujo.adv.br${SEO_PAGES.find(p => p.id === selectedPage)?.route || ''}`}
-              />
-            </div>
-          </div>
-
-          {/* Per-check results — compact horizontal */}
-          <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px]">
-            <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-white/70 mb-[8px] flex items-center gap-[6px]">
-              <Zap size={12} className="text-[#a57255]" />
-              Diagnostico desta Pagina
-            </h3>
-            <div className="grid grid-cols-2 gap-x-[10px] gap-y-[4px]">
-              {pageAnalysis[selectedPage]?.checks.map((check, i) => (
-                <div key={i} className="flex items-center gap-[6px] py-[5px] px-[8px] rounded-lg bg-white/[0.01]">
-                  <StatusIcon status={check.status} />
-                  <span className="font-['Noto_Sans'] text-[10px] text-white/60 font-medium shrink-0">{check.label}</span>
-                  <span className="font-['Noto_Sans'] text-[10px] text-white/35 flex-1 truncate">{check.detail}</span>
-                  <span className="font-['Noto_Sans'] text-[10px] font-semibold shrink-0" style={{ color: getScoreColor(check.score) }}>{check.score}</span>
+            {/* Left — Form sections */}
+            <div className="flex-1 min-w-0 space-y-[8px]">
+              {/* Meta Tags Section */}
+              <CollapsibleSection
+                id="meta"
+                title="Meta Tags Basicas"
+                icon={<Tag size={14} />}
+                expanded={expandedSections.has('meta')}
+                onToggle={() => toggleSection('meta')}
+              >
+                <div className="space-y-[10px]">
+                  <div className="grid grid-cols-2 gap-[10px]">
+                    <SeoField
+                      label="Titulo da Pagina (title tag)"
+                      help="Aparece na aba do navegador e nos resultados do Google. Ideal: 50-60 caracteres."
+                      value={getSeoVal(selectedPage, 'title')}
+                      onChange={v => setSeoVal(selectedPage, 'title', v)}
+                      placeholder={`${SEO_PAGES.find(p => p.id === selectedPage)?.label} | Sousa Araujo Advocacia`}
+                      maxRecommended={60}
+                      charWarning={70}
+                    />
+                    <SeoField
+                      label="Palavra-chave Principal"
+                      help="Termo principal pelo qual esta pagina deve ser encontrada."
+                      value={getSeoVal(selectedPage, 'keyword')}
+                      onChange={v => setSeoVal(selectedPage, 'keyword', v)}
+                      placeholder="ex: advocacia em brasilia"
+                    />
+                  </div>
+                  <SeoField
+                    label="Meta Description"
+                    help="Texto exibido nos resultados do Google abaixo do titulo. Ideal: 150-160 caracteres."
+                    value={getSeoVal(selectedPage, 'description')}
+                    onChange={v => setSeoVal(selectedPage, 'description', v)}
+                    placeholder="Descreva o conteudo desta pagina de forma atrativa para o usuario..."
+                    multiline
+                    maxRecommended={160}
+                    charWarning={200}
+                  />
+                  <div className="grid grid-cols-2 gap-[10px]">
+                    <SeoField
+                      label="URL Canonica"
+                      help="URL preferida para evitar conteudo duplicado."
+                      value={getSeoVal(selectedPage, 'canonical')}
+                      onChange={v => setSeoVal(selectedPage, 'canonical', v)}
+                      placeholder={`https://sousaaraujo.adv.br${SEO_PAGES.find(p => p.id === selectedPage)?.route || ''}`}
+                    />
+                    <div>
+                      <label className="font-['Noto_Sans'] text-[11px] text-white/50 mb-[4px] block">Robots (indexacao)</label>
+                      <select
+                        value={getSeoVal(selectedPage, 'robots') || 'index, follow'}
+                        onChange={e => setSeoVal(selectedPage, 'robots', e.target.value)}
+                        className="w-full h-[36px] bg-[#161413] border border-white/[0.08] rounded-lg px-[12px] font-['Noto_Sans'] text-[12px] text-white/80 focus:border-[#a57255]/40 focus:outline-none transition-colors appearance-none cursor-pointer"
+                      >
+                        <option value="index, follow">index, follow (padrao)</option>
+                        <option value="noindex, follow">noindex, follow</option>
+                        <option value="index, nofollow">index, nofollow</option>
+                        <option value="noindex, nofollow">noindex, nofollow</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
-              ))}
+              </CollapsibleSection>
+
+              {/* Open Graph Section */}
+              <CollapsibleSection
+                id="og"
+                title="Open Graph (Redes Sociais)"
+                icon={<Share2 size={14} />}
+                expanded={expandedSections.has('og')}
+                onToggle={() => toggleSection('og')}
+              >
+                <div className="space-y-[10px]">
+                  <div className="grid grid-cols-2 gap-[10px]">
+                    <SeoField label="OG Title" help="Titulo ao compartilhar no Facebook, LinkedIn, WhatsApp." value={getSeoVal(selectedPage, 'ogTitle')} onChange={v => setSeoVal(selectedPage, 'ogTitle', v)} placeholder={getSeoVal(selectedPage, 'title') || 'Mesmo do titulo'} />
+                    <SeoField label="OG Type" help="Tipo do conteudo. Padrao: website" value={getSeoVal(selectedPage, 'ogType')} onChange={v => setSeoVal(selectedPage, 'ogType', v)} placeholder="website" />
+                  </div>
+                  <SeoField label="OG Description" help="Descricao exibida nas redes sociais." value={getSeoVal(selectedPage, 'ogDescription')} onChange={v => setSeoVal(selectedPage, 'ogDescription', v)} placeholder={getSeoVal(selectedPage, 'description') || 'Mesmo da meta description'} multiline />
+                  <SeoField label="OG Image URL" help="Imagem exibida nas redes sociais. Recomendado: 1200x630px." value={getSeoVal(selectedPage, 'ogImage')} onChange={v => setSeoVal(selectedPage, 'ogImage', v)} placeholder="https://sousaaraujo.adv.br/og-image.jpg" />
+                </div>
+              </CollapsibleSection>
+
+              {/* Twitter Card */}
+              <CollapsibleSection
+                id="twitter"
+                title="Twitter Card"
+                icon={<Hash size={14} />}
+                expanded={expandedSections.has('twitter')}
+                onToggle={() => toggleSection('twitter')}
+              >
+                <div className="space-y-[10px]">
+                  <div className="grid grid-cols-3 gap-[10px]">
+                    <div>
+                      <label className="font-['Noto_Sans'] text-[11px] text-white/50 mb-[4px] block">Card Type</label>
+                      <select
+                        value={getSeoVal(selectedPage, 'twitterCard') || 'summary_large_image'}
+                        onChange={e => setSeoVal(selectedPage, 'twitterCard', e.target.value)}
+                        className="w-full h-[36px] bg-[#161413] border border-white/[0.08] rounded-lg px-[12px] font-['Noto_Sans'] text-[12px] text-white/80 focus:border-[#a57255]/40 focus:outline-none transition-colors appearance-none cursor-pointer"
+                      >
+                        <option value="summary_large_image">summary_large_image</option>
+                        <option value="summary">summary</option>
+                      </select>
+                    </div>
+                    <SeoField label="Twitter Title" value={getSeoVal(selectedPage, 'twitterTitle')} onChange={v => setSeoVal(selectedPage, 'twitterTitle', v)} placeholder={getSeoVal(selectedPage, 'ogTitle') || 'Herda do OG Title'} />
+                    <SeoField label="Twitter Description" value={getSeoVal(selectedPage, 'twitterDescription')} onChange={v => setSeoVal(selectedPage, 'twitterDescription', v)} placeholder={getSeoVal(selectedPage, 'ogDescription') || 'Herda do OG Description'} />
+                  </div>
+                </div>
+              </CollapsibleSection>
+            </div>
+
+            {/* Right — Previews + Diagnostics sticky */}
+            <div className="w-[380px] shrink-0 space-y-[8px] sticky top-[20px]">
+              {/* SERP Preview */}
+              <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px]">
+                <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-white/70 mb-[8px] flex items-center gap-[6px]">
+                  <Eye size={12} className="text-[#a57255]" />
+                  Preview Google (SERP)
+                </h3>
+                <SerpPreview
+                  title={getSeoVal(selectedPage, 'title') || `${SEO_PAGES.find(p => p.id === selectedPage)?.label} | Sousa Araujo Advocacia`}
+                  description={getSeoVal(selectedPage, 'description') || 'Adicione uma meta description para ver como ficara nos resultados do Google.'}
+                  url={`sousaaraujo.adv.br${SEO_PAGES.find(p => p.id === selectedPage)?.route || ''}`}
+                />
+              </div>
+
+              {/* Social Preview */}
+              <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px]">
+                <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-white/70 mb-[8px] flex items-center gap-[6px]">
+                  <Share2 size={12} className="text-[#a57255]" />
+                  Preview Redes Sociais (OG)
+                </h3>
+                <OgPreview
+                  title={getSeoVal(selectedPage, 'ogTitle') || getSeoVal(selectedPage, 'title') || SEO_PAGES.find(p => p.id === selectedPage)?.label || ''}
+                  description={getSeoVal(selectedPage, 'ogDescription') || getSeoVal(selectedPage, 'description') || ''}
+                  image={getSeoVal(selectedPage, 'ogImage')}
+                  url={`sousaaraujo.adv.br${SEO_PAGES.find(p => p.id === selectedPage)?.route || ''}`}
+                />
+              </div>
+
+              {/* Diagnostics */}
+              <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px]">
+                <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-white/70 mb-[8px] flex items-center gap-[6px]">
+                  <Zap size={12} className="text-[#a57255]" />
+                  Diagnostico
+                </h3>
+                <div className="space-y-[3px]">
+                  {pageAnalysis[selectedPage]?.checks.map((check, i) => (
+                    <div key={i} className="flex items-center gap-[6px] py-[4px] px-[8px] rounded-lg bg-white/[0.01]">
+                      <StatusIcon status={check.status} />
+                      <span className="font-['Noto_Sans'] text-[10px] text-white/60 font-medium shrink-0">{check.label}</span>
+                      <span className="font-['Noto_Sans'] text-[10px] text-white/35 flex-1 truncate">{check.detail}</span>
+                      <span className="font-['Noto_Sans'] text-[10px] font-semibold shrink-0" style={{ color: getScoreColor(check.score) }}>{check.score}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -817,7 +785,7 @@ function ContentAnalysisTab({ data, getSeoVal, pageAnalysis }: { data: Record<st
           <span className="font-['Noto_Sans'] text-[10px] text-white/25">Conteudo detectado via painel</span>
         </div>
         {/* Table header */}
-        <div className="grid grid-cols-[2fr_1fr_1fr_1fr_60px] gap-[6px] px-[14px] py-[7px] border-b border-white/[0.04] text-white/30 font-['Noto_Sans'] text-[9px] font-semibold uppercase tracking-wider">
+        <div className="grid grid-cols-[2fr_1fr_80px_1.5fr_60px] gap-[8px] px-[14px] py-[7px] border-b border-white/[0.04] text-white/30 font-['Noto_Sans'] text-[9px] font-semibold uppercase tracking-wider">
           <span>Pagina</span>
           <span>Conteudo</span>
           <span>Imagens</span>
@@ -829,7 +797,7 @@ function ContentAnalysisTab({ data, getSeoVal, pageAnalysis }: { data: Record<st
             const score = pageAnalysis[item.pageId]?.score || 0;
             const contentStatus = item.textLength > 500 ? 'pass' : item.textLength > 100 ? 'warning' : 'fail';
             return (
-              <div key={item.pageId} className="grid grid-cols-[2fr_1fr_1fr_1fr_60px] gap-[6px] px-[14px] py-[7px] items-center hover:bg-white/[0.01] transition-colors">
+              <div key={item.pageId} className="grid grid-cols-[2fr_1fr_80px_1.5fr_60px] gap-[8px] px-[14px] py-[7px] items-center hover:bg-white/[0.01] transition-colors">
                 <span className="font-['Noto_Sans'] text-[11px] text-white font-medium truncate">{item.label}</span>
                 <div className="flex items-center gap-[4px]">
                   <StatusIcon status={contentStatus} />
@@ -1021,8 +989,8 @@ function TechnicalChecklist({ data, getSeoVal, globalScore }: { data: Record<str
         </div>
       </div>
 
-      {/* Categories — 2 column grid */}
-      <div className="grid grid-cols-2 gap-[10px]">
+      {/* Categories — responsive grid */}
+      <div className="grid grid-cols-3 gap-[10px]">
         {checks.map((cat, ci) => (
           <div key={ci} className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
             <div className="px-[14px] py-[8px] border-b border-white/[0.06] flex items-center justify-between">
