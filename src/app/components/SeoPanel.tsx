@@ -17,10 +17,11 @@ import {
   Smartphone, Monitor, ExternalLink, Info, TrendingUp, ArrowRight,
   CircleCheck, CircleX, CircleMinus, Image as ImageIcon, Link2,
   Heading1, Heading2, Hash, Type, Tag, Share2, Zap, ClipboardCopy, Check,
-  History, Sparkles, RotateCcw, Clock, Loader2, Trash2
+  History, Sparkles, RotateCcw, Clock, Loader2, Trash2, BookOpen
 } from 'lucide-react';
 import { callGeoAI, GEO_PROVIDERS_DEFAULT } from '../../data/geoDefaults';
 import { SiteSeoEditor } from './SiteSeoEditor';
+import { projectId } from '/utils/supabase/info';
 
 /* ─── SEO History (localStorage) ─── */
 const SEO_HISTORY_KEY = 'seo_history_v1';
@@ -722,7 +723,7 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
                       help="URL preferida para evitar conteudo duplicado."
                       value={getSeoVal(selectedPage, 'canonical')}
                       onChange={v => setSeoVal(selectedPage, 'canonical', v)}
-                      placeholder={`https://souza-araujo-advogados.figma.site${SEO_PAGES.find(p => p.id === selectedPage)?.route || ''}`}
+                      placeholder={`https://sousaaraujo.adv.br${SEO_PAGES.find(p => p.id === selectedPage)?.route || ''}`}
                     />
                     <div>
                       <label className="font-['Noto_Sans'] text-[11px] text-white/50 mb-[4px] block">Robots (indexacao)</label>
@@ -755,7 +756,7 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
                     <SeoField label="OG Type" help="Tipo do conteudo. Padrao: website" value={getSeoVal(selectedPage, 'ogType')} onChange={v => setSeoVal(selectedPage, 'ogType', v)} placeholder="website" />
                   </div>
                   <SeoField label="OG Description" help="Descricao exibida nas redes sociais." value={getSeoVal(selectedPage, 'ogDescription')} onChange={v => setSeoVal(selectedPage, 'ogDescription', v)} placeholder={getSeoVal(selectedPage, 'description') || 'Mesmo da meta description'} multiline />
-                  <SeoField label="OG Image URL" help="Imagem exibida nas redes sociais. Recomendado: 1200x630px." value={getSeoVal(selectedPage, 'ogImage')} onChange={v => setSeoVal(selectedPage, 'ogImage', v)} placeholder="https://souza-araujo-advogados.figma.site/og-image.jpg" />
+                  <SeoField label="OG Image URL" help="Imagem exibida nas redes sociais. Recomendado: 1200x630px." value={getSeoVal(selectedPage, 'ogImage')} onChange={v => setSeoVal(selectedPage, 'ogImage', v)} placeholder="https://sousaaraujo.adv.br/og-image.jpg" />
                 </div>
               </CollapsibleSection>
 
@@ -889,7 +890,7 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
                   title={getSeoVal(selectedPage, 'ogTitle') || getSeoVal(selectedPage, 'title') || SEO_PAGES.find(p => p.id === selectedPage)?.label || ''}
                   description={getSeoVal(selectedPage, 'ogDescription') || getSeoVal(selectedPage, 'description') || ''}
                   image={getSeoVal(selectedPage, 'ogImage')}
-                  url={`souza-araujo-advogados.figma.site${SEO_PAGES.find(p => p.id === selectedPage)?.route || ''}`}
+                  url={`sousaaraujo.adv.br${SEO_PAGES.find(p => p.id === selectedPage)?.route || ''}`}
                 />
               </div>
 
@@ -1075,12 +1076,61 @@ function OgPreview({ title, description, image, url }: { title: string; descript
 }
 
 
+/* ─── Readability Analysis (client-side, no API) ─── */
+interface ReadabilityResult {
+  score: number;
+  level: 'facil' | 'medio' | 'dificil';
+  avgWordsPerSentence: number;
+  avgCharsPerWord: number;
+  estimatedReadTime: number;
+  longSentences: number;
+  totalWords: number;
+  checks: { label: string; status: 'pass' | 'warning' | 'fail'; detail: string }[];
+}
+
+function analyzeReadability(text: string): ReadabilityResult {
+  if (!text.trim()) {
+    return { score: 0, level: 'dificil', avgWordsPerSentence: 0, avgCharsPerWord: 0, estimatedReadTime: 0, longSentences: 0, totalWords: 0, checks: [] };
+  }
+  const sentences = text.replace(/\n+/g, ' ').split(/[.!?]+/).map(s => s.trim()).filter(s => s.length > 10);
+  const words = text.replace(/[^a-zA-ZÀ-ú\s]/g, ' ').split(/\s+/).filter(w => w.length > 1);
+  const totalWords = words.length;
+  const totalSentences = Math.max(sentences.length, 1);
+  const avgWordsPerSentence = Math.round(totalWords / totalSentences);
+  const avgCharsPerWord = Math.round(words.reduce((acc, w) => acc + w.length, 0) / Math.max(words.length, 1));
+  const longSentences = sentences.filter(s => s.split(/\s+/).length > 25).length;
+  const estimatedReadTime = Math.max(1, Math.round(totalWords / 200));
+  const checks: ReadabilityResult['checks'] = [];
+
+  if (avgWordsPerSentence <= 15) checks.push({ label: 'Comprimento das frases', status: 'pass', detail: `Média de ${avgWordsPerSentence} palavras por frase — ótimo` });
+  else if (avgWordsPerSentence <= 22) checks.push({ label: 'Comprimento das frases', status: 'warning', detail: `Média de ${avgWordsPerSentence} palavras por frase — ideal é abaixo de 15` });
+  else checks.push({ label: 'Comprimento das frases', status: 'fail', detail: `Média de ${avgWordsPerSentence} palavras por frase — texto muito denso` });
+
+  if (longSentences === 0) checks.push({ label: 'Frases longas (+25 palavras)', status: 'pass', detail: 'Nenhuma frase excessivamente longa detectada' });
+  else if (longSentences <= 2) checks.push({ label: 'Frases longas (+25 palavras)', status: 'warning', detail: `${longSentences} frase(s) muito longa(s) — considere quebrar` });
+  else checks.push({ label: 'Frases longas (+25 palavras)', status: 'fail', detail: `${longSentences} frases muito longas — dificulta leitura no mobile` });
+
+  if (totalWords >= 300) checks.push({ label: 'Volume de conteúdo', status: 'pass', detail: `${totalWords} palavras — suficiente para indexação` });
+  else if (totalWords >= 150) checks.push({ label: 'Volume de conteúdo', status: 'warning', detail: `${totalWords} palavras — recomendado mínimo 300` });
+  else checks.push({ label: 'Volume de conteúdo', status: 'fail', detail: `${totalWords} palavras — conteúdo muito escasso para SEO` });
+
+  if (avgCharsPerWord <= 5) checks.push({ label: 'Complexidade das palavras', status: 'pass', detail: 'Vocabulário acessível ao público geral' });
+  else if (avgCharsPerWord <= 7) checks.push({ label: 'Complexidade das palavras', status: 'warning', detail: 'Vocabulário moderadamente técnico' });
+  else checks.push({ label: 'Complexidade das palavras', status: 'fail', detail: 'Vocabulário muito técnico — pode afastar leitores leigos' });
+
+  const passCount = checks.filter(c => c.status === 'pass').length;
+  const score = Math.round((passCount / checks.length) * 100);
+  const level: ReadabilityResult['level'] = score >= 75 ? 'facil' : score >= 40 ? 'medio' : 'dificil';
+  return { score, level, avgWordsPerSentence, avgCharsPerWord, estimatedReadTime, longSentences, totalWords, checks };
+}
+
+
 /* ─── Content Analysis Tab ─── */
 function ContentAnalysisTab({ data, getSeoVal, pageAnalysis }: { data: Record<string, string>; getSeoVal: (pageId: string, field: string) => string; pageAnalysis: Record<string, { checks: SeoCheckResult[]; score: number }> }) {
   
   // Analyze panel content for SEO signals
   const contentAudit = useMemo(() => {
-    const results: { pageId: string; label: string; images: number; imagesWithoutAlt: number; textLength: number; hasH1: boolean; keyword: string; keywordCount: number }[] = [];
+    const results: { pageId: string; label: string; images: number; imagesWithoutAlt: number; textLength: number; hasH1: boolean; keyword: string; keywordCount: number; readability: ReadabilityResult }[] = [];
     
     for (const page of SEO_PAGES) {
       // Collect all text content for this page from panel data
@@ -1102,16 +1152,18 @@ function ContentAnalysisTab({ data, getSeoVal, pageAnalysis }: { data: Record<st
       const keyword = getSeoVal(page.id, 'keyword').toLowerCase();
       const keywordCount = keyword ? (textContent.toLowerCase().match(new RegExp(keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'))?.length || 0) : 0;
       const hasH1 = Object.keys(data).some(k => k.startsWith(pagePrefix) && (k.includes('title') || k.includes('heading')) && data[k]?.length > 10);
+      const readability = analyzeReadability(textContent);
       
       results.push({
         pageId: page.id,
         label: page.label,
         images: imageCount,
-        imagesWithoutAlt: 0, // In this architecture, alt is hardcoded in components
+        imagesWithoutAlt: 0,
         textLength: textContent.trim().length,
         hasH1,
         keyword,
         keywordCount,
+        readability,
       });
     }
     return results;
@@ -1187,6 +1239,57 @@ function ContentAnalysisTab({ data, getSeoVal, pageAnalysis }: { data: Record<st
               <span className="font-['Noto_Sans'] text-[10px] text-white/40 leading-[14px]">{tip.text}</span>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* ── Análise de Legibilidade ── */}
+      <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
+        <div className="px-[14px] py-[10px] border-b border-white/[0.04] flex items-center gap-[6px]">
+          <BookOpen size={12} className="text-[#a57255]" />
+          <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-white">Legibilidade por Página</h3>
+          <span className="font-['Noto_Sans'] text-[10px] text-white/25 ml-auto">Calculado sobre textos editados no painel</span>
+        </div>
+        <div className="divide-y divide-white/[0.03]">
+          {contentAudit.map(page => {
+            const r = page.readability;
+            const levelColor = { facil: '#22c55e', medio: '#eab308', dificil: '#ef4444' }[r.level];
+            const levelLabel = { facil: 'Fácil', medio: 'Médio', dificil: 'Difícil' }[r.level];
+            return (
+              <details key={page.pageId} className="group">
+                <summary className="flex items-center gap-[10px] px-[14px] py-[8px] cursor-pointer hover:bg-white/[0.01] transition-colors list-none">
+                  <span className="font-['Noto_Sans'] text-[11px] font-bold w-[28px] text-right tabular-nums shrink-0" style={{ color: levelColor }}>{r.score}</span>
+                  <div className="w-[40px] h-[3px] bg-white/[0.06] rounded-full shrink-0">
+                    <div className="h-[3px] rounded-full" style={{ width: `${r.score}%`, background: levelColor }} />
+                  </div>
+                  <span className="font-['Noto_Sans'] text-[11px] text-white/70 flex-1 truncate">{page.label}</span>
+                  <div className="flex items-center gap-[8px] shrink-0">
+                    <span className="font-['Noto_Sans'] text-[9px] text-white/25 tabular-nums">{r.totalWords} palavras</span>
+                    <span className="font-['Noto_Sans'] text-[9px] text-white/25 tabular-nums">~{r.estimatedReadTime}min leitura</span>
+                    <span className="font-['Noto_Sans'] text-[9px] font-medium px-[5px] py-[1px] rounded" style={{ background: `${levelColor}20`, color: levelColor }}>{levelLabel}</span>
+                    <ChevronRight size={11} className="text-white/20 group-open:rotate-90 transition-transform" />
+                  </div>
+                </summary>
+                <div className="px-[14px] pb-[10px] space-y-[4px]">
+                  {r.checks.map((check, i) => (
+                    <div key={i} className="flex items-start gap-[8px]">
+                      {check.status === 'pass' ? <CircleCheck size={11} className="text-emerald-400 mt-[1px] shrink-0" />
+                        : check.status === 'warning' ? <CircleMinus size={11} className="text-yellow-400 mt-[1px] shrink-0" />
+                        : <CircleX size={11} className="text-red-400 mt-[1px] shrink-0" />}
+                      <div>
+                        <span className="font-['Noto_Sans'] text-[10px] text-white/60 font-medium">{check.label}</span>
+                        <span className="font-['Noto_Sans'] text-[10px] text-white/30 ml-[6px]">{check.detail}</span>
+                      </div>
+                    </div>
+                  ))}
+                  {r.totalWords < 50 && (
+                    <p className="font-['Noto_Sans'] text-[10px] text-white/20 italic mt-[4px]">
+                      Adicione mais conteúdo nos campos de texto desta página para análise completa.
+                    </p>
+                  )}
+                </div>
+              </details>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -1297,7 +1400,7 @@ function TechnicalChecklist({ data, getSeoVal, globalScore }: { data: Record<str
     advChecks.push({
       label: 'Sitemap XML',
       status: 'pass',
-      detail: 'Arquivo /sitemap.xml criado com todas as 20 URLs do site'
+      detail: 'Sitemap dinâmico via Edge Function — inclui artigos publicados automaticamente'
     });
     advChecks.push({
       label: 'Robots.txt',
@@ -1361,6 +1464,36 @@ function TechnicalChecklist({ data, getSeoVal, globalScore }: { data: Record<str
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Sitemap Dinâmico card */}
+      <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px]">
+        <div className="flex items-center gap-[6px] mb-[8px]">
+          <Globe size={13} className="text-[#a57255]" />
+          <h4 className="font-['Noto_Sans'] text-[12px] font-semibold text-white">Sitemap Dinâmico</h4>
+          <span className="font-['Noto_Sans'] text-[9px] bg-emerald-500/15 text-emerald-400 px-[5px] py-[1px] rounded ml-auto">Automático</span>
+        </div>
+        <p className="font-['Noto_Sans'] text-[10px] text-white/35 leading-[15px] mb-[10px]">
+          O sitemap é gerado automaticamente pela Edge Function do Supabase, incluindo todos os artigos de blog publicados pelo painel. Novos artigos entram no sitemap imediatamente após publicação.
+        </p>
+        <div className="flex gap-[6px]">
+          <a
+            href={`https://${projectId}.supabase.co/functions/v1/make-server-979eabbc/sitemap.xml`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-[4px] font-['Noto_Sans'] text-[10px] text-[#a57255] border border-[#a57255]/30 px-[8px] py-[3px] rounded-lg hover:bg-[#a57255]/10 transition-colors"
+          >
+            <ExternalLink size={10} /> Ver sitemap
+          </a>
+          <a
+            href="https://search.google.com/search-console/sitemaps"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-[4px] font-['Noto_Sans'] text-[10px] text-white/30 border border-white/[0.06] px-[8px] py-[3px] rounded-lg hover:text-white/50 transition-colors"
+          >
+            <ExternalLink size={10} /> Submeter ao GSC
+          </a>
+        </div>
       </div>
 
       {/* Google Search Console card */}
@@ -1430,7 +1563,7 @@ function JsonLdTab({ data, getSeoVal, onChange }: { data: Record<string, string>
       "@type": "LegalService",
       "name": name,
       "description": getSeoVal('home', 'description') || "Escritorio de advocacia em Brasilia com atuacao nacional e para brasileiros no exterior.",
-      "url": "https://souza-araujo-advogados.figma.site",
+      "url": "https://sousaaraujo.adv.br",
       "telephone": phone,
       "email": email,
       "address": {
@@ -1477,7 +1610,7 @@ function JsonLdTab({ data, getSeoVal, onChange }: { data: Record<string, string>
         "@type": "ListItem",
         "position": i + 1,
         "name": page.label,
-        "item": `https://souza-araujo-advogados.figma.site${page.route}`
+        "item": `https://sousaaraujo.adv.br${page.route}`
       }))
     }, null, 2);
   }, []);

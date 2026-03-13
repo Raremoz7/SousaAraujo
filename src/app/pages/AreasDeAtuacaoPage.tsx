@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Link } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { Contact } from '../components/Contact';
@@ -13,6 +13,8 @@ import svgPaths   from '../../imports/svg-practice-arrow';
 import svgArrow   from '../../imports/svg-od596xq1d5';
 import svgIcons   from '../../imports/svg-7ep6oounx2';
 import { readPanel } from '../hooks/usePanelContent';
+import { usePanel } from '../hooks/usePanelContent';
+import { trackCtaClick } from '../components/PainelDashboard';
 
 /* ─── Images from Figma ─── */
 import imgHero        from 'figma:asset/1c5915f13f1286c3ef9a443f770e76f54396c6b2.png';
@@ -200,6 +202,8 @@ function PageHero() {
   const heroTitle = readPanel('areas.hero.title', 'Conheça nossas áreas de atuação');
   const heroDesc = readPanel('areas.hero.desc', 'A Sousa Araújo Advocacia atua em quatro grandes áreas do Direito, com foco em estratégia, organização documental e atendimento humanizado. Cada área é conduzida com o Método SAA — garantindo transparência, previsibilidade e acompanhamento em todas as etapas.');
   const heroCtaText = readPanel('areas.hero.ctaText', 'Agendar Atendimento');
+  const heroBgImage = readPanel('areas.hero.bgImage', imgHero);
+  const resolvedBgImage = heroBgImage.startsWith('figma:asset/') ? imgHero : heroBgImage;
 
   return (
     <section className="relative w-full bg-[#161312] overflow-hidden"
@@ -210,7 +214,7 @@ function PageHero() {
         <div className="absolute inset-0 overflow-hidden">
           <img
             alt="Áreas de atuação — Sousa Araújo Advocacia em Brasília"
-            src={imgHero}
+            src={resolvedBgImage}
             className="absolute w-[152%] max-w-none"
             style={{ left: '-30%', top: '-45%', height: '265%', objectFit: 'cover' }}
           />
@@ -297,6 +301,7 @@ function PageHero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.22, ease: [0.4, 0, 0.2, 1] }}
             className="inline-flex items-center gap-[10px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white hover:text-[#a57255] transition-colors group"
+            onClick={() => trackCtaClick('areas')}
           >
             {heroCtaText}
             <svg className="w-[10px] h-[10px] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" fill="none" viewBox="0 0 10 10">
@@ -396,10 +401,9 @@ function DesktopCard({
             <motion.a
               href="#contato"
               className="inline-flex items-center justify-center bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[40px] px-[29px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white"
-              initial={false}
-              animate={{ opacity: isExpanded ? 1 : 0, y: isExpanded ? 0 : 20 }}
-              transition={{ opacity: { duration: isExpanded ? FADE_IN_DUR : FADE_OUT_DUR * 0.6, ease: EASE_CONTENT as unknown as number[], delay: isExpanded ? CONTENT_IN_DELAY + 0.2 : 0 }, y: { duration: isExpanded ? FADE_IN_DUR + 0.1 : FADE_OUT_DUR * 0.4, ease: EASE_CONTENT as unknown as number[], delay: isExpanded ? CONTENT_IN_DELAY + 0.2 : 0 } }}
-              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.45, delay: 0.5 }}
+              onClick={() => trackCtaClick('areas')}
             >
               Agendar Consulta
             </motion.a>
@@ -455,6 +459,7 @@ function MobileCard({ area, isExpanded, onClick }: { area: Area; isExpanded: boo
                 className="inline-flex items-center justify-center bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[40px] px-[29px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white"
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                 transition={{ duration: 0.45, delay: 0.5 }}
+                onClick={() => trackCtaClick('areas')}
               >
                 Agendar Consulta
               </motion.a>
@@ -579,6 +584,7 @@ function AccordionSection() {
                       {/* CTA */}
                       <Link
                         to={area.href}
+                        aria-label={`Saiba mais sobre ${area.title}${area.subtitle ? ` ${area.subtitle}` : ''}`}
                         className="inline-flex items-center gap-[8px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white hover:text-[#a57255] transition-colors group/link"
                       >
                         Saiba Mais
@@ -1002,14 +1008,48 @@ function ServicesPanel() {
 
 /* ─── Page ─── */
 export function AreasDeAtuacaoPage() {
+  const orderJson = usePanel('areas.sectionOrder', '');
+
+  const SECTION_REGISTRY: Record<string, { Component: React.FC }> = {
+    'areas-hero': { Component: PageHero },
+    'areas-accordion': { Component: AccordionSection },
+    'areas-services': { Component: ServicesPanel },
+    'areas-blog': { Component: BlogPreview },
+    'areas-contact': { Component: Contact },
+  };
+
+  const DEFAULT_ORDER = [
+    'areas-hero',
+    'areas-accordion',
+    'areas-services',
+    'areas-blog',
+    'areas-contact',
+  ];
+
+  const orderedIds = useMemo(() => {
+    if (!orderJson) return DEFAULT_ORDER;
+    try {
+      const parsed = JSON.parse(orderJson);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const set = new Set(parsed as string[]);
+        const result = [...parsed];
+        for (const id of DEFAULT_ORDER) {
+          if (!set.has(id)) result.push(id);
+        }
+        return result;
+      }
+    } catch { /* fall through */ }
+    return DEFAULT_ORDER;
+  }, [orderJson]);
+
   return (
     <>
-      <PageHero />
-      <AccordionSection />
-      <ServicesPanel />
-      <ServicesGridSection />
-      <BlogPreview />
-      <Contact />
+      {orderedIds.map(id => {
+        const entry = SECTION_REGISTRY[id];
+        if (!entry) return null;
+        const { Component } = entry;
+        return <Component key={id} />;
+      })}
     </>
   );
 }

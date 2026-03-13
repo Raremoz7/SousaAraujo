@@ -129,11 +129,22 @@ export function Blog() {
               <article key={article.id} className="group">
                 {/* Image with date badge */}
                 <div className="relative w-full h-[200px] md:h-[235px] overflow-hidden mb-[16px] md:mb-[20px]">
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
+                  <picture>
+                    <source
+                      type="image/webp"
+                      srcSet={`${article.image}?format=webp&w=400 400w, ${article.image}?format=webp&w=800 800w`}
+                      sizes="(max-width: 768px) 400px, 800px"
+                    />
+                    <img
+                      src={article.image}
+                      alt={article.title}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                      decoding="async"
+                      width={651}
+                      height={366}
+                    />
+                  </picture>
                   {/* Date badge */}
                   <div className="absolute top-0 left-0 backdrop-blur-[2px] bg-white/45 w-[63px] h-[77px] flex flex-col items-center justify-center">
                     <span className="font-['Lora'] text-[20px] leading-[23px] tracking-[-0.225px] text-white">

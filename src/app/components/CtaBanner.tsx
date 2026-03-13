@@ -32,6 +32,10 @@ export function CtaBanner(props?: {
           alt="Advocacia estratégica em Brasília — Sousa Araújo Advocacia"
           className="absolute max-w-none object-cover size-full"
           src={resolvedBgImage}
+          width={1200}
+          height={600}
+          loading="lazy"
+          decoding="async"
         />
         <div className="absolute inset-0 bg-[rgba(22,19,18,0.4)]" />
       </div>

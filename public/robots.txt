@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /painel
 
-Sitemap: https://souza-araujo-advogados.figma.site/sitemap.xml
+Sitemap: https://frdvxeqwkqwudpgvvjfb.supabase.co/functions/v1/make-server-979eabbc/sitemap.xml

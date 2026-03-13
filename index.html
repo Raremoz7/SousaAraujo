@@ -4,6 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Preload Critical Hero Image for LCP Optimization -->
+    <script>
+      // Preload hero image before React hydration to improve LCP
+      // The figma:asset scheme resolves to a hashed filename at build time
+      // This inline script runs immediately, before any module loading
+      (function() {
+        const heroImageSrc = 'figma:asset/1bde68b0434e033834687b9e219a2315c5e30659.png';
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.as = 'image';
+        link.href = heroImageSrc;
+        link.fetchpriority = 'high';
+        link.type = 'image/png';
+        document.head.appendChild(link);
+      })();
+    </script>
+
+    <!-- PWA & Security Headers -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#a57255">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+
     <!-- ═══ Fallback estatico para crawlers de redes sociais ═══ -->
     <!-- Crawlers (Facebook, WhatsApp, LinkedIn, Twitter/X) nao executam JS, -->
     <!-- entao nao leem as OG tags do react-helmet-async. Estas tags servem  -->
@@ -11,19 +34,30 @@
     <!-- client-side para usuarios reais.                                     -->
 
     <title>Sousa Araújo Advocacia | Brasília com Atuação Nacional</title>
+
+    <!-- Google Fonts: Carregamento não-bloqueante com preload -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Roboto:wght@300;400;500;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Noto+Sans:wght@400;500;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&family=Roboto:wght@300;400;500;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Noto+Sans:wght@400;500;700&display=swap"></noscript>
+
+    <!-- Supabase: Preconnect para acelerar requests (economiza ~310ms no LCP mobile) -->
+    <link rel="preconnect" href="https://frdvxeqwkqwudpgvvjfb.supabase.co" crossorigin="">
+    <link rel="dns-prefetch" href="https://frdvxeqwkqwudpgvvjfb.supabase.co">
+
     <meta name="description" content="Escritório de advocacia em Brasília especializado em direito de família, inventário, registro de marcas e imóveis." />
     <meta name="keywords" content="advocacia brasília, advogado brasília" />
-    <link rel="canonical" href="https://souza-araujo-advogados.figma.site/" />
+    <link rel="canonical" href="https://sousaaraujo.adv.br/" />
     <meta name="robots" content="index, follow" />
 
     <!-- Open Graph -->
     <meta property="og:type"         content="website" />
-    <meta property="og:url"          content="https://souza-araujo-advogados.figma.site/" />
+    <meta property="og:url"          content="https://sousaaraujo.adv.br/" />
     <meta property="og:site_name"    content="Sousa Araújo Advocacia" />
     <meta property="og:locale"       content="pt_BR" />
     <meta property="og:title"        content="Sousa Araújo Advocacia | Brasília com Atuação Nacional" />
     <meta property="og:description"  content="Escritório de advocacia em Brasília especializado em direito de família, inventário, registro de marcas e imóveis." />
-    <meta property="og:image"        content="https://souza-araujo-advogados.figma.site/og-cover.jpg" />
+    <meta property="og:image"        content="https://sousaaraujo.adv.br/og-cover.jpg" />
     <meta property="og:image:width"  content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt"    content="Sousa Araújo Advocacia — Brasília" />
@@ -32,7 +66,7 @@
     <meta name="twitter:card"        content="summary_large_image" />
     <meta name="twitter:title"       content="Sousa Araújo Advocacia | Brasília com Atuação Nacional" />
     <meta name="twitter:description" content="Escritório de advocacia em Brasília especializado em direito de família, inventário, registro de marcas e imóveis." />
-    <meta name="twitter:image"       content="https://souza-araujo-advogados.figma.site/og-cover.jpg" />
+    <meta name="twitter:image"       content="https://sousaaraujo.adv.br/og-cover.jpg" />
 
     <!-- ═══ Fim do bloco de fallback estatico ═══ -->
   </head>

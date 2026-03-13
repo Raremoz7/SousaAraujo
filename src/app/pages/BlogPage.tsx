@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router';
 import { Contact } from '../components/Contact';
 import { CtaBanner } from '../components/CtaBanner';
 import { PlayButton } from '../components/ui/PlayButton';
 import svgArrow from '../../imports/svg-od596xq1d5';
-import { readPanel } from '../hooks/usePanelContent';
+import { readPanel, usePanel } from '../hooks/usePanelContent';
 import LidianeSousaAraujo from '../../imports/LidianeSousaAraujo';
+import { trackCtaClick } from '../components/PainelDashboard';
 
 /* ─── Images from Figma ─── */
 import imgHeroBg        from 'figma:asset/2f55e882e260b49370c3772b2944c805711d10d5.png';
@@ -370,6 +371,7 @@ function Sidebar() {
             <Link
               to="/contato"
               className="inline-flex items-center gap-[8px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white hover:text-[#a57255] transition-colors group"
+              onClick={() => trackCtaClick('blog')}
             >
               {readPanel('blog.sidebar.ctaText', 'Agendar Consulta')}
               <ArrowIcon className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -418,8 +420,8 @@ function PageHero() {
   );
 }
 
-/* ─── Main Blog Page ─── */
-export function BlogPage() {
+/* ─── Blog Content (articles + sidebar) ─── */
+function BlogContent() {
   const [page, setPage] = useState(0);
 
   // Connect articles to panel
@@ -439,56 +441,90 @@ export function BlogPage() {
   const displayed = panelArticles.slice(page * ARTICLES_PER_PAGE, (page + 1) * ARTICLES_PER_PAGE);
 
   return (
-    <>
-      <PageHero />
+    <section className="bg-[#161312] py-[60px] md:py-[80px] lg:py-[100px]">
+      <div className="max-w-[1440px] mx-auto px-[20px] md:px-[40px] lg:px-[110px]">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-[40px] lg:gap-[60px]">
 
-      <section className="bg-[#161312] py-[60px] md:py-[80px] lg:py-[100px]">
-        <div className="max-w-[1440px] mx-auto px-[20px] md:px-[40px] lg:px-[110px]">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-[40px] lg:gap-[60px]">
-
-            {/* Main column */}
-            <div>
-              <div className="space-y-[80px]">
-                {displayed.map((article, i) => (
-                  <ArticleCard key={article.id} article={article} index={i} />
-                ))}
-              </div>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <FadeIn>
-                  <div className="flex items-center justify-center gap-[12px] mt-[60px]">
-                    {Array.from({ length: totalPages }).map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => { setPage(i); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                        className={`w-[40px] h-[40px] flex items-center justify-center font-['Noto_Sans'] font-medium text-[14px] transition-colors ${
-                          i === page
-                            ? 'bg-[#a57255] text-white'
-                            : 'border border-white/10 text-white/50 hover:border-[#a57255] hover:text-white'
-                        }`}
-                      >
-                        {i + 1}
-                      </button>
-                    ))}
-                  </div>
-                </FadeIn>
-              )}
+          {/* Main column */}
+          <div>
+            <div className="space-y-[80px]">
+              {displayed.map((article, i) => (
+                <ArticleCard key={article.id} article={article} index={i} />
+              ))}
             </div>
 
-            {/* Sidebar */}
-            <div className="hidden lg:block">
-              <div className="sticky top-[100px]">
-                <Sidebar />
-              </div>
-            </div>
-
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <FadeIn>
+                <div className="flex items-center justify-center gap-[12px] mt-[60px]">
+                  {Array.from({ length: totalPages }).map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => { setPage(i); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                      className={`w-[40px] h-[40px] flex items-center justify-center font-['Noto_Sans'] font-medium text-[14px] transition-colors ${
+                        i === page
+                          ? 'bg-[#a57255] text-white'
+                          : 'border border-white/10 text-white/50 hover:border-[#a57255] hover:text-white'
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                </div>
+              </FadeIn>
+            )}
           </div>
-        </div>
-      </section>
 
-      <CtaBanner />
-      <Contact />
+          {/* Sidebar */}
+          <div className="hidden lg:block">
+            <div className="sticky top-[100px]">
+              <Sidebar />
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── Main Blog Page ─── */
+export function BlogPage() {
+  const orderJson = usePanel('blog.sectionOrder', '');
+
+  const SECTION_REGISTRY: Record<string, { Component: React.FC }> = {
+    'blog-hero': { Component: PageHero },
+    'blog-content': { Component: BlogContent },
+    'blog-cta': { Component: CtaBanner },
+    'blog-contact': { Component: Contact },
+  };
+
+  const DEFAULT_ORDER = ['blog-hero', 'blog-content', 'blog-cta', 'blog-contact'];
+
+  const orderedIds = useMemo(() => {
+    if (!orderJson) return DEFAULT_ORDER;
+    try {
+      const parsed = JSON.parse(orderJson);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const set = new Set(parsed as string[]);
+        const result = [...parsed];
+        for (const id of DEFAULT_ORDER) {
+          if (!set.has(id)) result.push(id);
+        }
+        return result;
+      }
+    } catch { /* fall through */ }
+    return DEFAULT_ORDER;
+  }, [orderJson]);
+
+  return (
+    <>
+      {orderedIds.map(id => {
+        const entry = SECTION_REGISTRY[id];
+        if (!entry) return null;
+        const { Component } = entry;
+        return <Component key={id} />;
+      })}
     </>
   );
 }

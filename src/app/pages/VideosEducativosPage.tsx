@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import { Contact } from '../components/Contact';
 import { PlayButton } from '../components/ui/PlayButton';
-import { readPanel } from '../hooks/usePanelContent';
+import { readPanel, usePanel } from '../hooks/usePanelContent';
 
 /* ─── Images from Figma ─── */
 import imgHeroBg  from 'figma:asset/f4055524b5d70eaefd66c7ff6f97bd21ce5739d1.png';
@@ -15,6 +15,12 @@ import imgVideo6  from 'figma:asset/bba9b98207af961142aa7b6fdc3f47e7b6d4a280.png
 import imgVideo7  from 'figma:asset/a378ec088b55bf9acb776964f361fc10b84fde64.png';
 import imgVideo8  from 'figma:asset/c384f55beb405894d8404b0e48841ea92161b830.png';
 import imgVideo9  from 'figma:asset/4e0368effa05e19184d3051ff856b436790a646f.png';
+
+/* ─── Helper for panel images ─── */
+function panelImage(key: string, fallback: string): string {
+  const val = readPanel(key, fallback);
+  return val.startsWith('figma:asset/') ? fallback : val;
+}
 
 /* ─── Fade-in wrapper ─── */
 function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
@@ -37,80 +43,90 @@ interface Video {
   category: string;
   title: string;
   description: string;
+  youtubeUrl?: string;
 }
 
 const allVideos: Video[] = [
   {
     id: 1,
-    image: imgVideo1,
+    image: panelImage('vidpage.video1.image', imgVideo1),
     category: 'Homologação de Sentença Estrangeira',
     title: 'Homologação de Sentença Estrangeira',
     description:
       'Vendeu no Brasil uma decisão obtida no exterior. Saiba como o Brasil reconhece sentenças estrangeiras e o que você precisa fazer para que valham aqui.',
+    youtubeUrl: readPanel('vidpage.video1.youtubeUrl', ''),
   },
   {
     id: 2,
-    image: imgVideo2,
+    image: panelImage('vidpage.video2.image', imgVideo2),
     category: 'Regularização de Imóveis',
     title: 'Regularização de Imóvel sem Escritura — Usucapião',
     description:
       'Muitos imóveis no Brasil não têm escritura, bloqueando financiamento, venda e herança. Entenda os caminhos para regularizar extrajudicialmente no cartório ou via ação judicial.',
+    youtubeUrl: readPanel('vidpage.video2.youtubeUrl', ''),
   },
   {
     id: 3,
-    image: imgVideo3,
+    image: panelImage('vidpage.video3.image', imgVideo3),
     category: 'Divórcio',
     title: 'Divórcio Consensual e Litigioso',
     description:
       'Conheça as diferenças entre divórcio consensual e litigioso, os documentos necessários, prazos estimados e como proteger seus filhos e seu patrimônio durante o processo.',
+    youtubeUrl: readPanel('vidpage.video3.youtubeUrl', ''),
   },
   {
     id: 4,
-    image: imgVideo4,
+    image: panelImage('vidpage.video4.image', imgVideo4),
     category: 'Homologação de Sentença Consular',
     title: 'Homologação de Sentença Consular',
     description:
       'Existe uma rota alternativa para homologar decisões em países com convênio com o Brasil. Saiba quando ela se aplica e quais são as vantagens em prazo e custo.',
+    youtubeUrl: readPanel('vidpage.video4.youtubeUrl', ''),
   },
   {
     id: 5,
-    image: imgVideo5,
+    image: panelImage('vidpage.video5.image', imgVideo5),
     category: 'Regularização de Imóvel sem Escritura — Usucapião',
     title: 'Regularização de Imóvel sem Escritura — Usucapião',
     description:
       'Imóvel herdado sem registro, comprado "de boca" ou por contrato de gaveta? Neste vídeo mostramos como identificar o melhor caminho e os documentos que você precisa reunir.',
+    youtubeUrl: readPanel('vidpage.video5.youtubeUrl', ''),
   },
   {
     id: 6,
-    image: imgVideo6,
+    image: panelImage('vidpage.video6.image', imgVideo6),
     category: 'Divórcio Consensual e Litigioso',
     title: 'Divórcio Consensual e Litigioso',
     description:
       'Quando o casal não chega a um acordo, o divórcio litigioso pode se tornar longo e custoso. Conheça as estratégias para reduzir conflito e proteger o que importa — principalmente os filhos.',
+    youtubeUrl: readPanel('vidpage.video6.youtubeUrl', ''),
   },
   {
     id: 7,
-    image: imgVideo7,
+    image: panelImage('vidpage.video7.image', imgVideo7),
     category: 'Direito de Família',
     title: 'Planejamento Patrimonial antes do Casamento',
     description:
       'O regime de bens escolhido no casamento define o que acontece com seu patrimônio em caso de separação ou falecimento. Entenda as diferenças e como proteger o que você construiu.',
+    youtubeUrl: readPanel('vidpage.video7.youtubeUrl', ''),
   },
   {
     id: 8,
-    image: imgVideo8,
+    image: panelImage('vidpage.video8.image', imgVideo8),
     category: 'Direito Imobiliário',
     title: 'Inventário Imobiliário: como destravar a herança',
     description:
       'Imóvel sem inventário não pode ser vendido ou transferido. Veja o passo a passo do inventário extrajudicial — mais rápido e barato — e quando o judicial é necessário.',
+    youtubeUrl: readPanel('vidpage.video8.youtubeUrl', ''),
   },
   {
     id: 9,
-    image: imgVideo9,
+    image: panelImage('vidpage.video9.image', imgVideo9),
     category: 'Empresarial',
     title: 'Proteção Patrimonial para Empresários',
     description:
       'Como estruturar seu patrimônio pessoal de forma a protegê-lo de riscos empresariais? Estratégias jurídicas para quem tem empresa e quer manter a segurança do que é pessoal.',
+    youtubeUrl: readPanel('vidpage.video9.youtubeUrl', ''),
   },
 ];
 
@@ -170,11 +186,12 @@ function VideoCard({ video, index }: { video: Video; index: number }) {
 function PageHero() {
   const heroTitle = readPanel('vidpage.hero.title', 'Vídeos Educativos: Entenda Antes de Decidir');
   const heroDesc = readPanel('vidpage.hero.desc', 'Conteúdo jurídico gratuito para ajudar você a tomar decisões mais seguras — antes mesmo de contratar um advogado.');
+  const heroBgImage = panelImage('vidpage.hero.bgImage', imgHeroBg);
 
   return (
     <section className="relative w-full min-h-[440px] lg:h-[580px] overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
-        <img alt="Vídeos educativos sobre direito — Sousa Araújo Advocacia" className="absolute inset-0 w-full h-full object-cover object-center" src={imgHeroBg} />
+        <img alt="Vídeos educativos sobre direito — Sousa Araújo Advocacia" className="absolute inset-0 w-full h-full object-cover object-center" src={heroBgImage} />
         {/* Leve escurecimento geral */}
         <div className="absolute inset-0 bg-[#161312]/40" />
         {/* Gradiente do topo (semi-transparente para navbar) */}
@@ -262,11 +279,40 @@ function VideosGrid() {
 
 /* ─── Page ─── */
 export function VideosEducativosPage() {
+  const orderJson = usePanel('vidpage.sectionOrder', '');
+
+  const SECTION_REGISTRY: Record<string, { Component: React.FC }> = {
+    'vidpage-hero': { Component: PageHero },
+    'vidpage-grid': { Component: VideosGrid },
+    'vidpage-contact': { Component: Contact },
+  };
+
+  const DEFAULT_ORDER = ['vidpage-hero', 'vidpage-grid', 'vidpage-contact'];
+
+  const orderedIds = useMemo(() => {
+    if (!orderJson) return DEFAULT_ORDER;
+    try {
+      const parsed = JSON.parse(orderJson);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const set = new Set(parsed as string[]);
+        const result = [...parsed];
+        for (const id of DEFAULT_ORDER) {
+          if (!set.has(id)) result.push(id);
+        }
+        return result;
+      }
+    } catch { /* fall through */ }
+    return DEFAULT_ORDER;
+  }, [orderJson]);
+
   return (
     <>
-      <PageHero />
-      <VideosGrid />
-      <Contact />
+      {orderedIds.map(id => {
+        const entry = SECTION_REGISTRY[id];
+        if (!entry) return null;
+        const { Component } = entry;
+        return <Component key={id} />;
+      })}
     </>
   );
 }

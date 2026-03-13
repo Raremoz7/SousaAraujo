@@ -26,6 +26,10 @@ export function Testimonials() {
                 src={logo.src}
                 alt={logo.alt}
                 className="max-w-full h-auto max-h-[60px]"
+                width={180}
+                height={60}
+                loading="lazy"
+                decoding="async"
               />
             </div>
           ))}

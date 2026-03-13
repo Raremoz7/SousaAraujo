@@ -297,7 +297,14 @@ function PageHero({ data }: { data: ServiceData }) {
   return (
     <section className="relative w-full min-h-[600px] md:min-h-[720px] lg:min-h-[800px] overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
-        <img src={hero.image} alt={`${hero.title} — Sousa Araújo Advocacia`} className="absolute inset-0 w-full h-full object-cover object-center" />
+        <img 
+          src={hero.image} 
+          alt={`${hero.title} — Sousa Araújo Advocacia`} 
+          className="absolute inset-0 w-full h-full object-cover object-center"
+          width={1920}
+          height={1080}
+          fetchpriority="high"
+        />
         <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(180.958deg, rgba(22,19,18,0) 38%, rgb(22,19,18) 96%)' }} />
         <div className="absolute inset-x-0 top-0 h-[120px]" style={{ background: 'linear-gradient(to bottom, rgba(22,19,18,0.55) 0%, transparent 100%)' }} />
       </div>
@@ -379,7 +386,15 @@ function ParallaxSection({ data }: { data: ServiceData }) {
   return (
     <div ref={ref} className="relative w-full overflow-hidden" style={{ height: 'clamp(320px, 45vw, 580px)' }}>
       <motion.div className="absolute inset-x-0 w-full" style={{ y, top: '-18%', bottom: '-18%' }}>
-        <img src={data.parallaxImage} alt="Atendimento jurídico especializado — Sousa Araújo Advocacia em Brasília" className="w-full h-full object-cover object-center" />
+        <img 
+          src={data.parallaxImage} 
+          alt="Atendimento jurídico especializado — Sousa Araújo Advocacia em Brasília" 
+          className="w-full h-full object-cover object-center"
+          width={1200}
+          height={600}
+          loading="lazy"
+          decoding="async"
+        />
       </motion.div>
     </div>
   );
@@ -417,7 +432,15 @@ function MetodoSaaSection({ data }: { data: ServiceData }) {
         </div>
         <div className="relative overflow-hidden min-h-[420px] lg:min-h-0">
           <motion.div className="absolute inset-x-0 w-full" style={{ y, top: '-16%', bottom: '-16%' }}>
-            <img src={metodo.image} alt={`Método SAA — ${metodo.title}`} className="w-full h-full object-cover object-center" />
+            <img 
+              src={metodo.image} 
+              alt={`Método SAA — ${metodo.title}`} 
+              className="w-full h-full object-cover object-center"
+              width={1200}
+              height={800}
+              loading="lazy"
+              decoding="async"
+            />
           </motion.div>
         </div>
       </div>

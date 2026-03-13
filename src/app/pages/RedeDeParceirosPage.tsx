@@ -3,12 +3,13 @@
  * Hero com stats + FAQ + CTA parceiro + Blog + Contact
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router';
 import { Contact } from '../components/Contact';
 import { PlayButton } from '../components/ui/PlayButton';
-import { readPanel } from '../hooks/usePanelContent';
+import { readPanel, usePanel } from '../hooks/usePanelContent';
+import { trackCtaClick } from '../components/PainelDashboard';
 
 /* ─── SVG paths ─── */
 import svgArrow from '../../imports/svg-ooetqark54';
@@ -115,13 +116,15 @@ const articles = [
 function PageHero() {
   const title = readPanel('parceiros.hero.title', 'Rede de Parceiros da Sousa Araújo Advocacia');
   const subtitle = readPanel('parceiros.hero.subtitle', 'A Sousa Araújo Advocacia trabalha com uma rede qualificada de parceiros para oferecer atendimento completo e integrado. Tradutores juramentados, correspondentes jurídicos, contadores e consultores empresariais fazem parte do nosso ecossistema de confiança — sempre com identificação profissional e alinhamento ao nosso padrão de qualidade.');
+  const heroBgImage = readPanel('parceiros.hero.bgImage', imgHero);
+  const resolvedBgImage = heroBgImage.startsWith('figma:asset/') ? imgHero : heroBgImage;
 
   return (
     <section className="relative w-full h-[560px] md:h-[680px] lg:h-[760px] overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 pointer-events-none">
         <img
-          src={imgHero}
+          src={resolvedBgImage}
           alt="Rede de parceiros internacionais — Sousa Araújo Advocacia"
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
@@ -179,11 +182,14 @@ function StatsSection() {
 
 /* ─── Bio Section ─── */
 function BioSection() {
+  const bioHeading = readPanel('parceiros.bio.heading', 'Lidiane Sousa Araújo — OAB/DF 34.876\nFundadora da SA | Sousa Araújo Advocacia');
   const allianceTitle = readPanel('parceiros.bio.allianceTitle', 'Alliance of Legal Experts');
   const metodoTitle = readPanel('parceiros.bio.metodoTitle', 'O Método SAA como Base da Parceria');
   const perfilTitle = readPanel('parceiros.bio.perfilTitle', 'Perfil do Parceiro Ideal');
   const comoTitle = readPanel('parceiros.bio.comoTitle', 'Como Funciona a Parceria');
   const bioCta = readPanel('parceiros.bio.ctaText', 'Iniciar contato como parceiro');
+  const stickyImage = readPanel('parceiros.stickyImage', imgSticky);
+  const resolvedSticky = stickyImage.startsWith('figma:asset/') ? imgSticky : stickyImage;
 
   return (
     <section className="bg-[#161312]">
@@ -192,7 +198,7 @@ function BioSection() {
         {/* Left — sticky photo */}
         <div className="sticky top-0 w-full hidden lg:block">
           <img
-            src={imgSticky}
+            src={resolvedSticky}
             alt="Dra. Lidiane Sousa Araújo — Rede de Parceiros SA Advocacia"
             className="w-full h-screen object-cover object-center"
           />
@@ -202,7 +208,7 @@ function BioSection() {
         <div className="lg:hidden w-full">
           <div className="relative w-full overflow-hidden" style={{ paddingBottom: '70%' }}>
             <img
-              src={imgSticky}
+              src={resolvedSticky}
               alt="Dra. Lidiane Sousa Araújo — Rede de Parceiros SA Advocacia"
               className="absolute inset-0 w-full h-full object-cover object-center"
             />
@@ -213,9 +219,8 @@ function BioSection() {
         <div className="bg-[#262626] px-[32px] md:px-[50px] lg:px-[70px] py-[60px] md:py-[80px] lg:py-[100px] space-y-[48px]">
 
           <FadeIn>
-            <h2 className="font-['Marcellus'] text-[22px] md:text-[26px] lg:text-[30px] leading-[1.35] tracking-[-0.516px] text-[#a57255]">
-              Lidiane Sousa Araújo — OAB/DF 34.876<br />
-              Fundadora da SA | Sousa Araújo Advocacia
+            <h2 className="font-['Marcellus'] text-[22px] md:text-[26px] lg:text-[30px] leading-[1.35] tracking-[-0.516px] text-[#a57255] whitespace-pre-line">
+              {bioHeading}
             </h2>
           </FadeIn>
 
@@ -338,6 +343,7 @@ function BioSection() {
                 <div className="pt-[8px]">
                   <a
                     href="#contato"
+                    onClick={() => trackCtaClick('parceiros')}
                     className="inline-flex items-center gap-3 font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white hover:text-[#a57255] transition-colors"
                   >
                     {bioCta}
@@ -455,6 +461,7 @@ function PartnerCTASection() {
         <FadeIn delay={0.2}>
           <a
             href="#contato"
+            onClick={() => trackCtaClick('parceiros')}
             className="inline-flex items-center gap-[12px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white hover:opacity-75 transition-opacity"
           >
             {ctaBtn}
@@ -548,14 +555,52 @@ function BlogSection() {
 }
 
 export function RedeDeParceirosPage() {
+  const orderJson = usePanel('parceiros.sectionOrder', '');
+
+  const SECTION_REGISTRY: Record<string, { Component: React.FC }> = {
+    'parceiros-hero': { Component: PageHero },
+    'parceiros-stats': { Component: StatsSection },
+    'parceiros-bio': { Component: BioSection },
+    'parceiros-faq': { Component: FaqSection },
+    'parceiros-cta': { Component: PartnerCTASection },
+    'parceiros-blog': { Component: BlogSection },
+    'parceiros-contact': { Component: Contact },
+  };
+
+  const DEFAULT_ORDER = [
+    'parceiros-hero',
+    'parceiros-stats',
+    'parceiros-bio',
+    'parceiros-faq',
+    'parceiros-cta',
+    'parceiros-blog',
+    'parceiros-contact',
+  ];
+
+  const orderedIds = useMemo(() => {
+    if (!orderJson) return DEFAULT_ORDER;
+    try {
+      const parsed = JSON.parse(orderJson);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const set = new Set(parsed as string[]);
+        const result = [...parsed];
+        for (const id of DEFAULT_ORDER) {
+          if (!set.has(id)) result.push(id);
+        }
+        return result;
+      }
+    } catch { /* fall through */ }
+    return DEFAULT_ORDER;
+  }, [orderJson]);
+
   return (
     <>
-      <PageHero />
-      <StatsSection />
-      <BioSection />
-      <FaqSection />
-      <PartnerCTASection />
-      <Contact />
+      {orderedIds.map(id => {
+        const entry = SECTION_REGISTRY[id];
+        if (!entry) return null;
+        const { Component } = entry;
+        return <Component key={id} />;
+      })}
     </>
   );
 }

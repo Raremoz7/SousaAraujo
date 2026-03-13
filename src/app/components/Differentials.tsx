@@ -68,7 +68,7 @@ export function Differentials(props?: {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
+            viewport={{ once: true, margin: '-80px', amount: 0.1 }}
             transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
           >
             <h2 className="font-['Marcellus'] text-[28px] md:text-[36px] lg:text-[48px] leading-[1.2] tracking-[-0.832px] text-white mb-4 md:mb-6">
@@ -84,6 +84,10 @@ export function Differentials(props?: {
                 src={resolvedDiffImage}
                 alt="Planejamento jurídico estratégico — Sousa Araújo Advocacia"
                 className="w-full h-auto object-cover"
+                width={416}
+                height={520}
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </motion.div>

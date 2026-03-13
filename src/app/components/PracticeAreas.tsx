@@ -309,6 +309,7 @@ function DesktopCard({
             >
               <Link
                 to={area.href}
+                aria-label={`Saiba mais sobre ${area.title}`}
                 className="inline-flex items-center justify-center bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[40px] px-[29px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white"
                 onClick={(e: React.MouseEvent) => e.stopPropagation()}
               >
@@ -424,6 +425,7 @@ function MobileCard({
               >
                 <Link
                   to={area.href}
+                  aria-label={`Saiba mais sobre ${area.title}`}
                   className="inline-flex items-center justify-center bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[40px] px-[29px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white"
                 >
                   Saiba Mais

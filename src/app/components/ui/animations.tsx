@@ -71,7 +71,13 @@ export function ScrollReveal({
       className={className}
       initial={getInitial()}
       whileInView={getAnimate()}
-      viewport={{ once, margin: viewportMargin }}
+      viewport={{ 
+        once, 
+        margin: viewportMargin,
+        // Otimização: threshold 0.1 é mais eficiente que 0 para Intersection Observer
+        // Evita triggers prematuros e reduz reflows desnecessários
+        amount: 0.1
+      }}
       transition={{ duration, delay, ease: EASE }}
     >
       {children}

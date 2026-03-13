@@ -17,7 +17,8 @@ import {
   Image as ImageIcon, Type, Link2, AlignLeft, Trash2,
   ExternalLink, LogOut, LogIn, Monitor, Smartphone, Pencil, RefreshCw,
   GripVertical, Tablet, ArrowUp, RotateCw,
-  Sun, Moon, Grid3X3, Minus, Plus, Cpu, Hash, ImageDown, AlertTriangle, BarChart3
+  Sun, Moon, Grid3X3, Minus, Plus, Cpu, Hash, ImageDown, AlertTriangle, BarChart3,
+  ArrowLeftRight, Info
 } from 'lucide-react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -25,7 +26,7 @@ import { SeoPanel, saveSeoHistoryEntry } from '../components/SeoPanel';
 import { GeoPanel } from '../components/GeoPanel';
 import { PanelPreview } from '../components/PanelPreview';
 import { AuditPanel, countAuditIssues } from '../components/AuditPanel';
-import { PainelDashboard, mergePendingCtaClicks } from '../components/PainelDashboard';
+import { PainelDashboard, mergePendingCtaClicks, fetchServerCtaClicks } from '../components/PainelDashboard';
 
 const API_URL = `https://${projectId}.supabase.co/functions/v1/make-server-979eabbc/panel`;
 const UPLOAD_URL = `https://${projectId}.supabase.co/functions/v1/make-server-979eabbc/upload-image`;
@@ -110,6 +111,7 @@ function serviceSections(lpId: string): SectionConfig[] {
       title: 'Hero',
       fields: [
         { key: `${lpId}.hero.title`, label: 'Titulo H1', type: 'text' },
+        { key: `${lpId}.hero.highlightedTitle`, label: 'Titulo destacado (se aplicável)', type: 'text' },
         { key: `${lpId}.hero.subtitle`, label: 'Subtitulo', type: 'textarea', rows: 3 },
         { key: `${lpId}.hero.image`, label: 'Imagem de fundo (URL)', type: 'image' },
         { key: `${lpId}.hero.ctaText`, label: 'Texto do CTA', type: 'text' },
@@ -257,6 +259,13 @@ function serviceSections(lpId: string): SectionConfig[] {
         { key: `${lpId}.faq${i+1}.q`, label: `Pergunta ${i+1}`, type: 'text' as const },
         { key: `${lpId}.faq${i+1}.a`, label: `Resposta ${i+1}`, type: 'textarea' as const, rows: 3 },
       ])).flat(),
+    },
+    {
+      id: `${lpId}-ctatext`,
+      title: 'CTA Final',
+      fields: [
+        { key: `${lpId}.ctaText`, label: 'Texto do CTA final (se diferente do padrao)', type: 'text' },
+      ],
     },
   ];
 }
@@ -560,12 +569,33 @@ const PAGES: PageConfig[] = [
         id: 'sobre-bio-titulos',
         title: 'Bio — Titulos das Secoes',
         fields: [
+          { key: 'sobre.bio.title', label: 'Titulo principal da Bio', type: 'text' },
           { key: 'sobre.bio.trajetoria.title', label: 'Titulo: Trajetoria', type: 'text' },
           { key: 'sobre.bio.areas.title', label: 'Titulo: Areas que se Conectam', type: 'text' },
           { key: 'sobre.bio.metodo.title', label: 'Titulo: Metodo de Trabalho', type: 'text' },
           { key: 'sobre.bio.presencial.title', label: 'Titulo: Presencial/Online', type: 'text' },
           { key: 'sobre.bio.rede.title', label: 'Titulo: Atuacao em Rede', type: 'text' },
           { key: 'sobre.bio.valores.title', label: 'Titulo: Valores', type: 'text' },
+          { key: 'sobre.bio.areasAtuacao.title', label: 'Titulo: Areas de Atuacao', type: 'text' },
+          { key: 'sobre.bio.contato.title', label: 'Titulo: Contato', type: 'text' },
+        ],
+      },
+      {
+        id: 'sobre-bio-conteudo',
+        title: 'Bio — Conteudo das Secoes',
+        fields: [
+          { key: 'sobre.bio.trajetoria.p1', label: 'Trajetoria — Paragrafo 1', type: 'textarea', rows: 3 },
+          { key: 'sobre.bio.trajetoria.p2', label: 'Trajetoria — Paragrafo 2', type: 'textarea', rows: 3 },
+          { key: 'sobre.bio.trajetoria.p3', label: 'Trajetoria — Paragrafo 3', type: 'textarea', rows: 3 },
+          { key: 'sobre.bio.trajetoria.p4', label: 'Trajetoria — Paragrafo 4', type: 'textarea', rows: 3 },
+          { key: 'sobre.bio.areas.p1', label: 'Areas — Paragrafo 1', type: 'textarea', rows: 3 },
+          { key: 'sobre.bio.areas.p2', label: 'Areas — Paragrafo 2', type: 'textarea', rows: 3 },
+          { key: 'sobre.bio.areas.p3', label: 'Areas — Paragrafo 3', type: 'textarea', rows: 3 },
+          { key: 'sobre.bio.areas.p4', label: 'Areas — Paragrafo 4', type: 'textarea', rows: 3 },
+          { key: 'sobre.bio.metodo.content', label: 'Metodo — Conteudo', type: 'textarea', rows: 3 },
+          { key: 'sobre.bio.presencial.content', label: 'Presencial — Conteudo', type: 'textarea', rows: 3 },
+          { key: 'sobre.bio.rede.content', label: 'Rede — Conteudo', type: 'textarea', rows: 3 },
+          { key: 'sobre.bio.valores.content', label: 'Valores — Conteudo', type: 'textarea', rows: 3 },
         ],
       },
       {
@@ -613,9 +643,13 @@ const PAGES: PageConfig[] = [
         title: 'Blog Preview',
         fields: [
           { key: 'sobre.blog.title', label: 'Titulo da secao', type: 'text' },
-          { key: 'sobre.article1.href', label: 'Artigo 1 — Link', type: 'url' },
-          { key: 'sobre.article2.href', label: 'Artigo 2 — Link', type: 'url' },
-          { key: 'sobre.article3.href', label: 'Artigo 3 — Link', type: 'url' },
+          ...Array.from({ length: 3 }, (_, i) => ([
+            { key: `sobre.article${i+1}.title`, label: `Artigo ${i+1} — Titulo`, type: 'text' as const },
+            { key: `sobre.article${i+1}.category`, label: `Artigo ${i+1} — Categoria`, type: 'text' as const },
+            { key: `sobre.article${i+1}.day`, label: `Artigo ${i+1} — Dia`, type: 'text' as const },
+            { key: `sobre.article${i+1}.month`, label: `Artigo ${i+1} — Mes`, type: 'text' as const },
+            { key: `sobre.article${i+1}.href`, label: `Artigo ${i+1} — Link`, type: 'url' as const },
+          ])).flat(),
         ],
       },
     ],
@@ -965,9 +999,18 @@ const PAGES: PageConfig[] = [
     icon: <SearchCheck size={18} />,
     sections: [
       {
-        id: 'seo-placeholder',
-        title: 'Modulo SEO',
-        fields: [],
+        id: 'seo-global',
+        title: 'SEO Global',
+        fields: [
+          { 
+            key: 'seo.global.jsonld.custom', 
+            label: 'JSON-LD customizado (global)', 
+            type: 'textarea', 
+            rows: 8,
+            help: 'JSON-LD schema.org customizado que sera incluido em todas as paginas. Deve ser JSON valido.',
+            placeholder: '{\n  "@context": "https://schema.org",\n  "@type": "Organization",\n  ...\n}'
+          },
+        ],
       },
     ],
   },
@@ -998,6 +1041,21 @@ const PAGES: PageConfig[] = [
         fields: [],
       },
     ],
+  },
+
+  /* Redirecionamentos */
+  {
+    id: 'redirects',
+    label: 'Redirecionamentos',
+    icon: <ArrowLeftRight size={18} />,
+    sections: [{
+      id: 'redirects-list',
+      title: 'Redirects 301',
+      fields: Array.from({ length: 20 }, (_, i) => ([
+        { key: `redirect.${i+1}.from`, label: `Redirect ${i+1} — De (caminho origem)`, type: 'text' as const, placeholder: '/antiga-url' },
+        { key: `redirect.${i+1}.to`, label: `Redirect ${i+1} — Para (caminho destino)`, type: 'text' as const, placeholder: '/nova-url' },
+      ])).flat(),
+    }],
   },
 
   /* Service Pages */
@@ -1609,6 +1667,120 @@ function Toast({ message, visible, type = 'success' }: { message: string; visibl
 
 
 /* ═══════════════════════════════════════════════════════════════════
+   REDIRECTS PANEL
+   ═══════════════════════════════════════════════════════════════════ */
+
+function RedirectsPanel({ data, onChange }: {
+  data: Record<string, string>;
+  onChange: (key: string, value: string) => void;
+}) {
+  const redirects: { index: number; from: string; to: string }[] = [];
+  for (let i = 1; i <= 20; i++) {
+    const from = data[`redirect.${i}.from`] || '';
+    const to   = data[`redirect.${i}.to`]   || '';
+    if (from || to) redirects.push({ index: i, from, to });
+  }
+  const nextIndex = Math.max(...redirects.map(r => r.index), 0) + 1;
+
+  const addRedirect = () => {
+    onChange(`redirect.${nextIndex}.from`, '/url-antiga');
+    onChange(`redirect.${nextIndex}.to`,   '/url-nova');
+  };
+
+  const removeRedirect = (index: number) => {
+    if (!confirm('Remover este redirecionamento?')) return;
+    onChange(`redirect.${index}.from`, '');
+    onChange(`redirect.${index}.to`,   '');
+  };
+
+  return (
+    <div className="space-y-[12px]">
+      <div>
+        <h2 className="font-['Noto_Sans'] text-[16px] font-semibold text-white tracking-[-0.3px]">Redirecionamentos</h2>
+        <p className="font-['Noto_Sans'] text-[11px] text-white/30 mt-[2px]">Redireciona URLs antigas para novas sem perder o SEO acumulado</p>
+      </div>
+
+      <div className="bg-[#1a1816] border border-[#a57255]/15 rounded-xl px-[14px] py-[10px] flex gap-[10px]">
+        <Info size={13} className="text-[#a57255]/60 mt-[1px] shrink-0" />
+        <div className="space-y-[3px]">
+          <p className="font-['Noto_Sans'] text-[11px] text-white/60 font-medium">Como funciona</p>
+          <p className="font-['Noto_Sans'] text-[10px] text-white/30 leading-[15px]">
+            Os redirecionamentos são aplicados em tempo real no navegador do visitante.
+            Use para preservar o ranqueamento de páginas que tiveram a URL alterada.
+            Máximo de 20 redirecionamentos simultâneos.
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
+        <div className="px-[14px] py-[10px] border-b border-white/[0.04] flex items-center justify-between">
+          <div className="flex items-center gap-[6px]">
+            <ArrowLeftRight size={12} className="text-[#a57255]" />
+            <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-white">
+              {redirects.length} redirecionamento{redirects.length !== 1 ? 's' : ''} ativo{redirects.length !== 1 ? 's' : ''}
+            </h3>
+          </div>
+          {redirects.length < 20 && (
+            <button onClick={addRedirect} className="flex items-center gap-[5px] font-['Noto_Sans'] text-[10px] text-[#a57255] border border-[#a57255]/30 px-[8px] py-[3px] rounded-lg hover:bg-[#a57255]/10 transition-colors">
+              <Plus size={10} /> Adicionar
+            </button>
+          )}
+        </div>
+
+        {redirects.length === 0 ? (
+          <div className="px-[14px] py-[32px] flex flex-col items-center text-center">
+            <ArrowLeftRight size={28} className="text-white/10 mb-[10px]" />
+            <p className="font-['Noto_Sans'] text-[12px] text-white/30 font-medium mb-[4px]">Nenhum redirecionamento cadastrado</p>
+            <p className="font-['Noto_Sans'] text-[10px] text-white/20 max-w-[260px] leading-[15px] mb-[12px]">Útil quando você muda o slug de uma página e não quer perder o SEO acumulado.</p>
+            <button onClick={addRedirect} className="font-['Noto_Sans'] text-[11px] text-[#a57255] border border-[#a57255]/30 px-[12px] py-[5px] rounded-lg hover:bg-[#a57255]/10 transition-colors">Criar primeiro redirecionamento</button>
+          </div>
+        ) : (
+          <div className="divide-y divide-white/[0.03]">
+            <div className="grid grid-cols-[1fr_auto_1fr_auto] gap-[8px] px-[14px] py-[6px]">
+              <span className="font-['Noto_Sans'] text-[9px] text-white/20 uppercase tracking-[0.6px]">De (URL antiga)</span>
+              <span className="w-[20px]" />
+              <span className="font-['Noto_Sans'] text-[9px] text-white/20 uppercase tracking-[0.6px]">Para (URL nova)</span>
+              <span className="w-[20px]" />
+            </div>
+            {redirects.map(r => (
+              <div key={r.index} className="grid grid-cols-[1fr_auto_1fr_auto] gap-[8px] items-center px-[14px] py-[8px]">
+                <input
+                  type="text"
+                  defaultValue={r.from}
+                  onBlur={e => onChange(`redirect.${r.index}.from`, e.target.value.trim())}
+                  placeholder="/url-antiga"
+                  className="w-full h-[30px] bg-[#111] border border-white/[0.06] rounded-lg px-[8px] font-mono text-[11px] text-white/70 placeholder:text-white/15 focus:border-[#a57255]/40 focus:outline-none transition-colors"
+                />
+                <ArrowLeftRight size={12} className="text-white/20 shrink-0" />
+                <input
+                  type="text"
+                  defaultValue={r.to}
+                  onBlur={e => onChange(`redirect.${r.index}.to`, e.target.value.trim())}
+                  placeholder="/url-nova"
+                  className="w-full h-[30px] bg-[#111] border border-white/[0.06] rounded-lg px-[8px] font-mono text-[11px] text-emerald-400/70 placeholder:text-white/15 focus:border-[#a57255]/40 focus:outline-none transition-colors"
+                />
+                <button onClick={() => removeRedirect(r.index)} className="p-[4px] text-white/15 hover:text-red-400/60 transition-colors shrink-0 rounded" title="Remover">
+                  <Trash2 size={12} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="bg-amber-500/5 border border-amber-500/15 rounded-xl px-[14px] py-[10px] flex gap-[8px]">
+        <AlertTriangle size={12} className="text-amber-400/60 mt-[1px] shrink-0" />
+        <p className="font-['Noto_Sans'] text-[10px] text-white/30 leading-[15px]">
+          Lembre de clicar em <strong className="text-white/50">Salvar</strong> após editar os redirecionamentos.
+          Eles entram em vigor imediatamente após o save, sem precisar republicar o site.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
    MAIN PANEL
    ═══════════════════════════════════════════════════════════════════ */
 
@@ -1693,7 +1865,15 @@ export function PainelPage() {
             try { serverData = JSON.parse(serverData); } catch { serverData = {}; }
           }
           const merged = { ...panelDefaults, ...serverData };
-          // Merge pending CTA clicks from localStorage
+          // Merge CTA clicks: server-side persistent store + localStorage pending
+          try {
+            const serverClicks = await fetchServerCtaClicks();
+            for (const [k, v] of Object.entries(serverClicks)) {
+              if (typeof v === 'number' && v > 0) {
+                merged[k] = String(v);
+              }
+            }
+          } catch { /* fallback: use panel data only */ }
           const ctaUpdates = mergePendingCtaClicks(merged);
           if (ctaUpdates) Object.assign(merged, ctaUpdates);
           baselineDataRef.current = { ...merged };
@@ -2780,6 +2960,8 @@ export function PainelPage() {
                             <span>5 abas — Dashboard, Meta Tags, Analise, Checklist, Schema.org</span>
                           ) : activePage === 'geo' ? (
                             <span>4 abas — Configuração, Monitorar, Otimizar, Checklist</span>
+                          ) : activePage === 'redirects' ? (
+                            <span>Gerenciador de redirecionamentos 301 — até 20 regras</span>
                           ) : activePage === 'audit' ? (
                             <span>Painel ↔ Componentes — Orfaos, Sem Editor, Dados Mortos, Assets Pendentes</span>
                           ) : (
@@ -2833,6 +3015,8 @@ export function PainelPage() {
                 <SeoPanel data={data} onChange={handleFieldChange} />
               ) : currentPage && activePage === 'geo' ? (
                 <GeoPanel data={data} onChange={handleFieldChange} getToken={getToken} />
+              ) : currentPage && activePage === 'redirects' ? (
+                <RedirectsPanel data={data} onChange={handleFieldChange} />
               ) : currentPage && activePage === 'audit' ? (
                 <AuditPanel
                   panelKeys={PAGES.flatMap(page => page.sections.flatMap(sec => sec.fields.map(f => f.key)))}

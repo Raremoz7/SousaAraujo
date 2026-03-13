@@ -12,7 +12,7 @@ import svgArrow from '../../imports/svg-od596xq1d5';
 import { getArticleBySlug, blogArticles } from '../../data/blogArticles';
 import type { ContentBlock, FaqItem, BlogArticle } from '../../data/blogArticles';
 
-const SITE_URL = 'https://souza-araujo-advogados.figma.site';
+const SITE_URL = 'https://sousaaraujo.adv.br';
 
 /* ─── Images from Figma (same as BlogPage) ─── */
 import imgArticle1 from 'figma:asset/a2616d7c2ac778c6f8d75f07e421726c6e9f2b6a.png';

@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Contact } from '../components/Contact';
 import { PlayButton } from '../components/ui/PlayButton';
-import { readPanel } from '../hooks/usePanelContent';
+import { readPanel, usePanel } from '../hooks/usePanelContent';
 
 /* ─── Images from Figma ─── */
 import imgHero from 'figma:asset/165c2fa2b945b6d767d5ca0d5ceae23b97f95901.png';
@@ -26,6 +26,7 @@ interface FaqItem {
   id: number;
   question: string;
   answer: string;
+  category?: string;
 }
 
 const faqs: FaqItem[] = [
@@ -34,48 +35,84 @@ const faqs: FaqItem[] = [
     question: 'Onde fica o escritório?',
     answer:
       'O escritório da Sousa Araújo Advocacia está localizado em Brasília/DF, com atendimento presencial e online para todo o Brasil e brasileiros no exterior. Endereço: Edifício Varig — Setor Comercial Norte, quadra 04, bloco B, sala 702, 7º andar — Asa Norte, Brasília/DF.',
+    category: 'Atendimento',
   },
   {
     id: 2,
     question: 'Vocês atendem online?',
     answer:
       'Sim. Realizamos atendimento 100% online para clientes em qualquer cidade do Brasil e para brasileiros no exterior. Utilizamos videoconferência, e-mail e WhatsApp para garantir um atendimento próximo e eficiente, independentemente da localização do cliente.',
+    category: 'Atendimento',
   },
   {
     id: 3,
     question: 'O que é a Consulta de Viabilidade?',
     answer:
       'A Consulta de Viabilidade é o ponto de entrada do nosso Método SAA. Em até 72 horas após o envio da documentação inicial, o cliente recebe um relatório escrito com o diagnóstico do caso, os caminhos jurídicos disponíveis, prazo estimado e custo previsto para cada opção. Não há compromisso de contratação — apenas clareza para a tomada de decisão.',
+    category: 'Método',
   },
   {
     id: 4,
     question: 'Alliance Of Legal Experts — o que é?',
     answer:
       'A Alliance of Legal Experts é uma rede internacional de escritórios e advogados parceiros presente em mais de 30 países. A Sousa Araújo Advocacia integra essa rede, o que nos permite atender casos que envolvam questões jurídicas transfronteiriças — como homologação de sentença estrangeira, herança internacional, divórcio com bens no exterior e assessoria a brasileiros expatriados.',
+    category: 'Rede',
   },
   {
     id: 5,
     question: 'O que é o Método SAA?',
     answer:
       'O Método SAA é a metodologia proprietária do escritório para condução de casos complexos. Baseia-se em três pilares: (1) Diagnóstico preciso — identificação exata do problema jurídico e documentação necessária; (2) Rota clara — sequência de etapas, prazos estimados e custos baseados em dados históricos; (3) Execução monitorada — atualizações periódicas e acesso transparente ao andamento do caso. O método reduz em média 40% o tempo de resolução.',
+    category: 'Método',
   },
   {
     id: 6,
     question: 'Quanto custa uma consulta?',
     answer:
       'Os honorários variam de acordo com a complexidade do caso e o tipo de serviço. A Consulta de Viabilidade tem um valor fixo acessível e não implica contratação. Para cases de Homologação de Sentença Estrangeira, Regularização de Imóveis e Divórcio, trabalhamos com honorários fixos ou por êxito, dependendo da modalidade. Entre em contato para receber uma proposta personalizada.',
+    category: 'Honorários',
   },
   {
     id: 7,
     question: 'Vocês garantem resultado?',
     answer:
       'Nenhum advogado sério pode garantir resultado — e o Código de Ética da OAB proíbe expressamente essa prática. O que garantimos é rigor no diagnóstico, clareza na estratégia, transparência na comunicação e comprometimento total com a resolução do seu caso. Nossa taxa de sucesso em casos de homologação e regularização imobiliária é superior a 95%.',
+    category: 'Resultados',
   },
   {
     id: 8,
     question: 'Meu imóvel não tem escritura. O que fazer?',
     answer:
       'Imóveis sem escritura não podem ser vendidos, financiados ou transmitidos com segurança. O caminho mais indicado depende da situação específica: (1) Usucapião extrajudicial — mais rápido, feito direto no cartório, para quem possui todos os documentos; (2) Usucapião judicial — quando há litígio ou documentação incompleta; (3) Inventário imobiliário — quando o imóvel está no nome de pessoa falecida. Agende uma Consulta de Viabilidade para identificar o melhor caminho para o seu caso.',
+    category: 'Imóveis',
+  },
+  {
+    id: 9,
+    question: 'Quanto tempo demora uma homologação de sentença estrangeira?',
+    answer:
+      'O prazo médio de homologação no STJ varia entre 4 e 8 meses, contados do protocolo até a decisão final. O prazo pode ser menor se toda a documentação estiver correta desde o início (apostilamento de Haia, tradução juramentada completa e petição bem fundamentada). Casos com documentação incompleta ou que exijam diligências adicionais podem levar mais tempo.',
+    category: 'Homologação',
+  },
+  {
+    id: 10,
+    question: 'Preciso de advogado para fazer divórcio?',
+    answer:
+      'Se o divórcio for consensual (ambos concordam com partilha e guarda) e não houver filhos menores, é possível fazer direto no cartório, sem advogado. Mas se houver discordância, patrimônio complexo ou filhos, é necessário contratar advogado e realizar o divórcio judicial. Mesmo no consensual, contar com assessoria jurídica evita erros na partilha e garante proteção aos seus direitos.',
+    category: 'Divórcio',
+  },
+  {
+    id: 11,
+    question: 'Posso regularizar meu imóvel sem ir ao cartório presencialmente?',
+    answer:
+      'Em muitos casos, sim. Para usucapião extrajudicial, alguns cartórios já aceitam procuração pública com poderes específicos, permitindo que um representante conduza todo o processo. A Sousa Araújo Advocacia oferece atendimento 100% remoto para regularização imobiliária, inclusive com suporte na obtenção de procurações e envio de documentos digitalizados.',
+    category: 'Imóveis',
+  },
+  {
+    id: 12,
+    question: 'O que acontece se eu não homologar meu divórcio estrangeiro no Brasil?',
+    answer:
+      'Se você obteve divórcio no exterior e não homologar no Brasil, a sentença não tem validade aqui. Isso significa que você continua legalmente casado(a) perante a lei brasileira, o que impede novo casamento, venda ou partilha de bens, atualização de documentos e pode gerar problemas em inventário, pensão alimentícia e guarda de filhos. A homologação é obrigatória para que a decisão estrangeira tenha efeito jurídico no Brasil.',
+    category: 'Homologação',
   },
 ];
 
@@ -131,11 +168,13 @@ function FaqAccordionItem({ item, isOpen, onToggle }: { item: FaqItem; isOpen: b
 /* ─── Page Hero ─── */
 function PageHero() {
   const heroTitle = readPanel('faq.hero.title', 'FAQ');
+  const heroBgImage = readPanel('faq.hero.bgImage', imgHero);
+  const resolvedBgImage = heroBgImage.startsWith('figma:asset/') ? imgHero : heroBgImage;
 
   return (
     <section className="relative w-full h-[300px] md:h-[380px] lg:h-[440px] overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
-        <img alt="Perguntas frequentes — FAQ Sousa Araújo Advocacia" className="absolute inset-0 w-full h-full object-cover object-center" src={imgHero} />
+        <img alt="Perguntas frequentes — FAQ Sousa Araújo Advocacia" className="absolute inset-0 w-full h-full object-cover object-center" src={resolvedBgImage} />
         {/* Leve escurecimento geral */}
         <div className="absolute inset-0 bg-[#161312]/40" />
         {/* Gradiente do topo (semi-transparente para navbar) */}
@@ -176,6 +215,7 @@ function FaqSection() {
     id: f.id,
     question: readPanel(`faq.item${i + 1}.q`, f.question),
     answer: readPanel(`faq.item${i + 1}.a`, f.answer),
+    category: readPanel(`faq.item${i + 1}.category`, f.category),
   }));
 
   const sectionTitle = readPanel('faq.section.title', 'Perguntas\nfrequentes');
@@ -222,11 +262,40 @@ function FaqSection() {
 
 /* ─── Page ─── */
 export function FaqPage() {
+  const orderJson = usePanel('faq.sectionOrder', '');
+
+  const SECTION_REGISTRY: Record<string, { Component: React.FC }> = {
+    'faq-hero': { Component: PageHero },
+    'faq-section': { Component: FaqSection },
+    'faq-contact': { Component: Contact },
+  };
+
+  const DEFAULT_ORDER = ['faq-hero', 'faq-section', 'faq-contact'];
+
+  const orderedIds = useMemo(() => {
+    if (!orderJson) return DEFAULT_ORDER;
+    try {
+      const parsed = JSON.parse(orderJson);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        const set = new Set(parsed as string[]);
+        const result = [...parsed];
+        for (const id of DEFAULT_ORDER) {
+          if (!set.has(id)) result.push(id);
+        }
+        return result;
+      }
+    } catch { /* fall through */ }
+    return DEFAULT_ORDER;
+  }, [orderJson]);
+
   return (
     <>
-      <PageHero />
-      <FaqSection />
-      <Contact />
+      {orderedIds.map(id => {
+        const entry = SECTION_REGISTRY[id];
+        if (!entry) return null;
+        const { Component } = entry;
+        return <Component key={id} />;
+      })}
     </>
   );
 }

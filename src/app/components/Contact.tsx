@@ -65,6 +65,10 @@ export function Contact() {
           alt="Fachada do escritório Sousa Araújo Advocacia em Brasília — contato e localização"
           className="absolute inset-0 w-full h-full object-cover"
           src={panelBgImage.startsWith('figma:asset/') ? imgBackground : panelBgImage}
+          width={1200}
+          height={600}
+          loading="lazy"
+          decoding="async"
         />
         {/* Dark overlay for mobile readability */}
         <div className="absolute inset-0 bg-[#161312]/40 md:bg-transparent" />

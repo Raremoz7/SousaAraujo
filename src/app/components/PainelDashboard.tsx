@@ -3,7 +3,7 @@
  *
  * Mostra o estado de completude de cada página (SEO preenchido, imagens,
  * textos editados vs. default) e um contador de cliques nos CTAs
- * armazenado no Supabase KV via localStorage bridge.
+ * persistido no Supabase via endpoint /cta-clicks + localStorage fallback.
  */
 
 import React, { useMemo } from 'react';
@@ -13,6 +13,9 @@ import {
   BarChart3, TrendingUp, Search as SearchIcon
 } from 'lucide-react';
 import { isValidPanelValue } from '../hooks/usePanelContent';
+import { projectId, publicAnonKey } from '/utils/supabase/info';
+
+const CTA_API = `https://${projectId}.supabase.co/functions/v1/make-server-979eabbc/cta-clicks`;
 
 /* ═══════════════════════════════════════════════════════════════
    TYPES
@@ -154,6 +157,10 @@ const CTA_KEYS = [
   { key: 'cta.clicks.pmes',        label: 'CTA LP PMEs' },
   { key: 'cta.clicks.inpi',        label: 'CTA LP Registro Marca' },
   { key: 'cta.clicks.contato',     label: 'Formulario de Contato' },
+  { key: 'cta.clicks.sobre',       label: 'CTA Sobre — Trabalhe Conosco' },
+  { key: 'cta.clicks.areas',       label: 'CTA Areas de Atuacao' },
+  { key: 'cta.clicks.parceiros',   label: 'CTA Rede de Parceiros' },
+  { key: 'cta.clicks.blog',        label: 'CTA Blog — Sidebar' },
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -161,23 +168,52 @@ const CTA_KEYS = [
    ═══════════════════════════════════════════════════════════════ */
 
 /**
- * Registra um clique em CTA no localStorage.
- * O PainelPage mescla esses valores pendentes com o KV store ao carregar.
- *
- * Uso: `import { trackCtaClick } from './components/PainelDashboard';`
- *      `<button onClick={() => { trackCtaClick('home'); ... }}>Agendar</button>`
+ * Registra um clique em CTA.
+ * 1. Salva em localStorage para garantia (offline-first)
+ * 2. Envia ao servidor em fire-and-forget (POST /cta-clicks)
  */
 export function trackCtaClick(pageKey: string): void {
+  const kvKey = `cta.clicks.${pageKey}`;
   try {
+    // localStorage buffer
     const storageKey = `cta_pending_${pageKey}`;
     const current = parseInt(localStorage.getItem(storageKey) || '0', 10);
     localStorage.setItem(storageKey, String(current + 1));
   } catch { /* silencia em SSR ou sem storage */ }
+
+  // Fire-and-forget POST ao servidor
+  try {
+    fetch(CTA_API, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${publicAnonKey}`,
+      },
+      body: JSON.stringify({ clicks: { [kvKey]: 1 } }),
+    }).catch(() => { /* ignora falha — localStorage é fallback */ });
+  } catch { /* SSR guard */ }
+}
+
+/**
+ * Busca cliques persistidos no servidor (GET /cta-clicks).
+ * Retorna Record<string, number> ou {} em caso de erro.
+ */
+export async function fetchServerCtaClicks(): Promise<Record<string, number>> {
+  try {
+    const res = await fetch(CTA_API, {
+      headers: { 'Authorization': `Bearer ${publicAnonKey}` },
+    });
+    if (!res.ok) return {};
+    const json = await res.json();
+    return (json.data && typeof json.data === 'object') ? json.data : {};
+  } catch {
+    return {};
+  }
 }
 
 /**
  * Mescla cliques pendentes do localStorage com os dados do KV.
- * Chamado pelo PainelPage após carregar os dados do Supabase.
+ * Também envia pendentes ao servidor via POST /cta-clicks.
  * Retorna um objeto de updates se houver pendentes, ou null.
  */
 export function mergePendingCtaClicks(loadedData: Record<string, string>): Record<string, string> | null {
@@ -186,6 +222,8 @@ export function mergePendingCtaClicks(loadedData: Record<string, string>): Recor
     if (pendingKeys.length === 0) return null;
 
     const updates: Record<string, string> = {};
+    const serverClicks: Record<string, number> = {};
+
     pendingKeys.forEach(pk => {
       const pageKey = pk.replace('cta_pending_', '');
       const kvKey = `cta.clicks.${pageKey}`;
@@ -193,9 +231,24 @@ export function mergePendingCtaClicks(loadedData: Record<string, string>): Recor
       const pending = parseInt(localStorage.getItem(pk) || '0', 10);
       if (pending > 0) {
         updates[kvKey] = String(existing + pending);
+        serverClicks[kvKey] = pending;
         localStorage.removeItem(pk);
       }
     });
+
+    // Flush pendentes ao servidor
+    if (Object.keys(serverClicks).length > 0) {
+      try {
+        fetch(CTA_API, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${publicAnonKey}`,
+          },
+          body: JSON.stringify({ clicks: serverClicks }),
+        }).catch(() => {});
+      } catch { /* guard */ }
+    }
 
     return Object.keys(updates).length > 0 ? updates : null;
   } catch {

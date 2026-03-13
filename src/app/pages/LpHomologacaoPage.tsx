@@ -221,25 +221,57 @@ const metodoSteps = [
 ];
 
 const objecoes = [
-  { q: 'Meu divórcio foi feito no exterior, não preciso fazer nada no Brasil?', a: 'Mito. Sem a homologação, seu estado civil permanece inalterado no registro brasileiro. Isso impede novo casamento, gera problemas em partilha de bens e pode afetar questões tributárias e previdenciárias.' },
-  { q: 'O processo é muito demorado?', a: 'Com a documentação correta e organizada previamente, o prazo médio no STJ é de 6 a 18 meses. O maior fator de atraso são erros documentais — evitamos isso com nossa Arquitetura Documental.' },
-  { q: 'Documentos Necessários', a: 'Sentença estrangeira original com apostilamento, tradução juramentada, certidão de trânsito em julgado, documentos de identificação das partes e procuração para o advogado. Outros documentos podem ser necessários conforme o caso.' },
-  { q: 'Qualquer advogado pode fazer?', a: 'Tecnicamente sim, mas na prática exige conhecimento específico das exigências do STJ, fluência em documentação internacional e experiência com apostilamento e traduções. Erro documental significa indeferimento e reinício do processo.' },
-  { q: 'Posso fazer sozinho no STJ?', a: 'A representação por advogado é obrigatória no STJ. Não é possível fazer o pedido de homologação sem patrono habilitado.' },
-  { q: 'Moro no exterior e não consigo ir ao Brasil', a: 'Todo o processo pode ser conduzido 100% online. A procuração pode ser outorgada no Consulado Brasileiro ou com apostilamento no país de residência.' },
-  { q: 'Já tentei e foi indeferido', a: 'É possível renovar o pedido com a documentação correta. Analisamos o processo anterior, identificamos as falhas e estruturamos um novo protocolo com maior taxa de sucesso.' },
-  { q: 'Minha sentença é administrativa, não judicial', a: 'Sentenças administrativas (como divórcios em países onde o processo é feito em cartório) podem ter tratamento diferenciado. Analisamos caso a caso na Consulta de Viabilidade.' },
+  { 
+    q: readPanel('lp-homologacao.objecao1.q', 'Meu divórcio foi feito no exterior, não preciso fazer nada no Brasil?'), 
+    a: readPanel('lp-homologacao.objecao1.a', 'Mito. Sem a homologação, seu estado civil permanece inalterado no registro brasileiro. Isso impede novo casamento, gera problemas em partilha de bens e pode afetar questões tributárias e previdenciárias.') 
+  },
+  { 
+    q: readPanel('lp-homologacao.objecao2.q', 'O processo é muito demorado?'), 
+    a: readPanel('lp-homologacao.objecao2.a', 'Com a documentação correta e organizada previamente, o prazo médio no STJ é de 6 a 18 meses. O maior fator de atraso são erros documentais — evitamos isso com nossa Arquitetura Documental.') 
+  },
+  { 
+    q: readPanel('lp-homologacao.objecao3.q', 'Documentos Necessários'), 
+    a: readPanel('lp-homologacao.objecao3.a', 'Sentença estrangeira original com apostilamento, tradução juramentada, certidão de trânsito em julgado, documentos de identificação das partes e procuração para o advogado. Outros documentos podem ser necessários conforme o caso.') 
+  },
+  { 
+    q: readPanel('lp-homologacao.objecao4.q', 'Qualquer advogado pode fazer?'), 
+    a: readPanel('lp-homologacao.objecao4.a', 'Tecnicamente sim, mas na prática exige conhecimento específico das exigências do STJ, fluência em documentação internacional e experiência com apostilamento e traduções. Erro documental significa indeferimento e reinício do processo.') 
+  },
+  { 
+    q: readPanel('lp-homologacao.objecao5.q', 'Posso fazer sozinho no STJ?'), 
+    a: readPanel('lp-homologacao.objecao5.a', 'A representação por advogado é obrigatória no STJ. Não é possível fazer o pedido de homologação sem patrono habilitado.') 
+  },
+  { 
+    q: readPanel('lp-homologacao.objecao6.q', 'Moro no exterior e não consigo ir ao Brasil'), 
+    a: readPanel('lp-homologacao.objecao6.a', 'Todo o processo pode ser conduzido 100% online. A procuração pode ser outorgada no Consulado Brasileiro ou com apostilamento no país de residência.') 
+  },
 ];
 
 const faqItems = [
-  { q: 'O que é homologação de sentença estrangeira?', a: 'É o procedimento pelo qual o Superior Tribunal de Justiça (STJ) reconhece e valida uma decisão judicial estrangeira para que ela produza efeitos legais no Brasil. Sem a homologação, a sentença estrangeira não tem força executória em território nacional.' },
-  { q: 'Quanto tempo demora a homologação de sentença estrangeira no STJ?', a: 'O prazo médio é de 6 a 18 meses, dependendo da complexidade documental e da demanda do STJ. Com a documentação completa e correta desde o início, evitamos diligências que prolongam o processo.' },
-  { q: 'Quanto custa o processo de homologação?', a: 'O custo envolve honorários advocatícios, custas do STJ, tradução juramentada e apostilamento. O valor exato é informado na Consulta de Viabilidade, após análise dos documentos.' },
-  { q: 'Preciso de advogado para homologar sentença estrangeira?', a: 'Sim. A representação por advogado habilitado é obrigatória nos processos no STJ.' },
-  { q: 'Divórcio consensual feito no exterior precisa de homologação?', a: 'Sim, independentemente de como o divórcio foi realizado no exterior (consensual ou litigioso, judicial ou administrativa), é necessária a homologação pelo STJ para que produza efeitos no Brasil.' },
-  { q: 'Posso homologar sentença estrangeira morando fora do Brasil?', a: 'Sim. Todo o processo pode ser conduzido remotamente. Você outorga procuração no Consulado Brasileiro ou com apostilamento, e o advogado conduz tudo no Brasil.' },
-  { q: 'O que acontece se eu não homologar minha sentença estrangeira?', a: 'Seu estado civil permanece como casado nos registros brasileiros, o que pode impedir novo casamento, gerar complicações em inventários, partilha de bens, questões previdenciárias e tributárias.' },
-  { q: 'A homologação analisa o mérito da sentença estrangeira?', a: 'Não. O STJ não analisa se a decisão foi justa ou correta — apenas verifica se foram cumpridos os requisitos formais (autenticidade, apostilamento, tradução, ausência de violação à soberania e à ordem pública brasileira).' },
+  { 
+    q: readPanel('lp-homologacao.faq1.q', 'O que é homologação de sentença estrangeira?'), 
+    a: readPanel('lp-homologacao.faq1.a', 'É o procedimento pelo qual o Superior Tribunal de Justiça (STJ) reconhece e valida uma decisão judicial estrangeira para que ela produza efeitos legais no Brasil. Sem a homologação, a sentença estrangeira não tem força executória em território nacional.') 
+  },
+  { 
+    q: readPanel('lp-homologacao.faq2.q', 'Quanto tempo demora a homologação de sentença estrangeira no STJ?'), 
+    a: readPanel('lp-homologacao.faq2.a', 'O prazo médio é de 6 a 18 meses, dependendo da complexidade documental e da demanda do STJ. Com a documentação completa e correta desde o início, evitamos diligências que prolongam o processo.') 
+  },
+  { 
+    q: readPanel('lp-homologacao.faq3.q', 'Quanto custa o processo de homologação?'), 
+    a: readPanel('lp-homologacao.faq3.a', 'O custo envolve honorários advocatícios, custas do STJ, tradução juramentada e apostilamento. O valor exato é informado na Consulta de Viabilidade, após análise dos documentos.') 
+  },
+  { 
+    q: readPanel('lp-homologacao.faq4.q', 'Preciso de advogado para homologar sentença estrangeira?'), 
+    a: readPanel('lp-homologacao.faq4.a', 'Sim. A representação por advogado habilitado é obrigatória nos processos no STJ.') 
+  },
+  { 
+    q: readPanel('lp-homologacao.faq5.q', 'Divórcio consensual feito no exterior precisa de homologação?'), 
+    a: readPanel('lp-homologacao.faq5.a', 'Sim, independentemente de como o divórcio foi realizado no exterior (consensual ou litigioso, judicial ou administrativa), é necessária a homologação pelo STJ para que produza efeitos no Brasil.') 
+  },
+  { 
+    q: readPanel('lp-homologacao.faq6.q', 'Posso homologar sentença estrangeira morando fora do Brasil?'), 
+    a: readPanel('lp-homologacao.faq6.a', 'Sim. Todo o processo pode ser conduzido remotamente. Você outorga procuração no Consulado Brasileiro ou com apostilamento, e o advogado conduz tudo no Brasil.') 
+  },
 ];
 
 const articles = [
@@ -357,6 +389,7 @@ function ParallaxSection() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
   const y = useTransform(scrollYProgress, [0, 1], ['-18%', '18%']);
+  const parallaxImage = readPanel('lp-homologacao.parallax.image', imgParallax);
 
   return (
     <>
@@ -370,7 +403,7 @@ function ParallaxSection() {
           style={{ y, top: '-18%', bottom: '-18%' }}
         >
           <img
-            src={imgParallax}
+            src={parallaxImage}
             alt="Atendimento online — escritório de advocacia em Brasília"
             className="w-full h-full object-cover object-center"
           />
@@ -388,6 +421,7 @@ function ScenariosSection() {
   const scenariosTitle = readPanel('lp-homologacao.scenarios.title', 'Você Se Reconhece em Algum Desses Cenários?');
   const ctaSubtitle = readPanel('lp-homologacao.scenarios.ctaSubtitle', 'Se você se identificou, a Consulta de Viabilidade é o primeiro passo.');
   const risksTitle = readPanel('lp-homologacao.scenarios.risksTitle', 'Os Principais Pontos de Atenção Nesse Processo');
+  const stickyImage = readPanel('lp-homologacao.scenarios.stickyImage', imgSticky);
   const panelScenarios = scenarios.map((s, i) => readPanel(`lp-homologacao.scenarios.item${i + 1}`, s));
   const risks = [
     readPanel('lp-homologacao.scenarios.risk1', 'Estado civil desatualizado no Brasil: você continua legalmente casado(a), o que impede novo casamento'),
@@ -505,7 +539,7 @@ function ScenariosSection() {
         <div className="hidden lg:block relative">
           <div className="sticky top-0 h-screen overflow-hidden">
             <img
-              src={imgSticky}
+              src={stickyImage}
               alt="Brasileira no exterior com passaporte — homologação de sentença estrangeira"
               className="w-full h-full object-cover object-center"
             />
@@ -540,6 +574,7 @@ function MetodoSaaSection() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
   const y = useTransform(scrollYProgress, [0, 1], ['-16%', '16%']);
   const metodoTitle = readPanel('lp-homologacao.metodo.title', 'Método SAA (Sousa Araújo Advocacia) Aplicado a Homologação de Sentença Estrangeira (STJ)');
+  const metodoImage = readPanel('lp-homologacao.metodo.image', imgMetodo);
 
   const steps = [
     {
@@ -551,8 +586,8 @@ function MetodoSaaSection() {
       desc: 'Montamos o dossiê completo: tradução juramentada, apostila de Haia, procuração, petição ao STJ. Você não precisa ter tudo pronto. Nós guiamos documento por documento, com checklist personalizado enviado por etapas. Se falta algo, orientamos como obter — inclusive à distância.\n(Você não precisa ter tudo pronto — nós guiamos cada etapa.)',
     },
     {
-      label: 'A: Acompanhamento e Ação Técnica',
-      desc: 'Protocolo no STJ, acompanhamento processual com relatórios periódicos, resposta a eventuais exigências do Ministério Público e do relator, até a decisão final e expedição da carta de sentença. Você recebe atualizações em cada movimentação relevante.',
+      label: readPanel('lp-homologacao.metodo.step3.label', 'A: Acompanhamento e Ação Técnica'),
+      desc: readPanel('lp-homologacao.metodo.step3.desc', 'Protocolo no STJ, acompanhamento processual com relatórios periódicos, resposta a eventuais exigências do Ministério Público e do relator, até a decisão final e expedição da carta de sentença. Você recebe atualizações em cada movimentação relevante.'),
     },
   ];
 
@@ -606,7 +641,7 @@ function MetodoSaaSection() {
             style={{ y, top: '-16%', bottom: '-16%' }}
           >
             <img
-              src={imgMetodo}
+              src={metodoImage}
               alt="Advogadas da Sousa Araújo Advocacia em reunião de trabalho"
               className="w-full h-full object-cover object-center"
             />
@@ -637,29 +672,34 @@ const EASE_EXPAND = [0.22, 0.61, 0.36, 1] as const;
 
 const passoAPasso = [
   {
-    id: 1, number: '01', title: 'Consulta de Viabilidade',
-    subtitle: 'Consulta de Viabilidade',
-    description: 'Analisamos sua sentença estrangeira, verificamos os requisitos do STJ e definimos a rota processual mais adequada ao seu caso. Se houver dispensa de homologação (divórcio consensual simples), identificamos isso antes de qualquer custo.',
+    id: 1, number: '01', 
+    title: readPanel('lp-homologacao.passo1.title', 'Consulta de Viabilidade'),
+    subtitle: readPanel('lp-homologacao.passo1.subtitle', 'Consulta de Viabilidade'),
+    description: readPanel('lp-homologacao.passo1.desc', 'Analisamos sua sentença estrangeira, verificamos os requisitos do STJ e definimos a rota processual mais adequada ao seu caso. Se houver dispensa de homologação (divórcio consensual simples), identificamos isso antes de qualquer custo.'),
   },
   {
-    id: 2, number: '02', title: 'Organização Documental',
-    subtitle: 'Organização Documental',
-    description: 'Montamos o dossiê completo: tradução juramentada, apostila de Haia, procuração e demais documentos exigidos pelo STJ. Você recebe um checklist personalizado e orientação passo a passo — sem precisar ter tudo pronto de imediato.',
+    id: 2, number: '02', 
+    title: readPanel('lp-homologacao.passo2.title', 'Organização Documental'),
+    subtitle: readPanel('lp-homologacao.passo2.subtitle', 'Organização Documental'),
+    description: readPanel('lp-homologacao.passo2.desc', 'Montamos o dossiê completo: tradução juramentada, apostila de Haia, procuração e demais documentos exigidos pelo STJ. Você recebe um checklist personalizado e orientação passo a passo — sem precisar ter tudo pronto de imediato.'),
   },
   {
-    id: 3, number: '03', title: 'Protocolo no STJ',
-    subtitle: 'Protocolo no STJ',
-    description: 'Com a documentação completa e revisada, protocolamos a petição de homologação no Superior Tribunal de Justiça. A organização prévia reduz o risco de exigências e indeferimentos por vício documental.',
+    id: 3, number: '03', 
+    title: readPanel('lp-homologacao.passo3.title', 'Protocolo no STJ'),
+    subtitle: readPanel('lp-homologacao.passo3.subtitle', 'Protocolo no STJ'),
+    description: readPanel('lp-homologacao.passo3.desc', 'Com a documentação completa e revisada, protocolamos a petição de homologação no Superior Tribunal de Justiça. A organização prévia reduz o risco de exigências e indeferimentos por vício documental.'),
   },
   {
-    id: 4, number: '04', title: 'Acompanhamento até a Decisão',
-    subtitle: 'Acompanhamento até a Decisão',
-    description: 'Monitoramos o andamento processual, respondemos às diligências do Ministério Público e do relator, e mantemos você informado em cada movimentação relevante — com relatórios periódicos e comunicação transparente.',
+    id: 4, number: '04', 
+    title: readPanel('lp-homologacao.passo4.title', 'Acompanhamento até a Decisão'),
+    subtitle: readPanel('lp-homologacao.passo4.subtitle', 'Acompanhamento até a Decisão'),
+    description: readPanel('lp-homologacao.passo4.desc', 'Monitoramos o andamento processual, respondemos às diligências do Ministério Público e do relator, e mantemos você informado em cada movimentação relevante — com relatórios periódicos e comunicação transparente.'),
   },
   {
-    id: 5, number: '05', title: 'Carta de Sentença e Execução no STJ',
-    subtitle: 'Carta de Sentença e Execução',
-    description: 'Após a decisão favorável, providenciamos a expedição da carta de sentença e orientamos os próximos passos: atualização do estado civil no registro brasileiro, partilha de bens, regularização de guarda e demais desdobramentos.',
+    id: 5, number: '05', 
+    title: readPanel('lp-homologacao.passo5.title', 'Carta de Sentença e Execução no STJ'),
+    subtitle: readPanel('lp-homologacao.passo5.subtitle', 'Carta de Sentença e Execução'),
+    description: readPanel('lp-homologacao.passo5.desc', 'Após a decisão favorável, providenciamos a expedição da carta de sentença e orientamos os próximos passos: atualização do estado civil no registro brasileiro, partilha de bens, regularização de guarda e demais desdobramentos.'),
   },
 ];
 
@@ -765,6 +805,8 @@ function ComoFuncionaSection() {
    bg-[#452b1e] | 197px | texto esquerda + botão direita
 ───────────────────────────────────────────────────────────── */
 function RiscoCtaBanner() {
+  const riscoBannerText = readPanel('lp-homologacao.riscoBanner', 'O maior risco não é o custo do processo. É o custo de não resolver.');
+  
   return (
     <section className="bg-[#452b1e]">
       <div
@@ -773,7 +815,7 @@ function RiscoCtaBanner() {
       >
         <FadeIn>
           <h2 className="font-['Marcellus'] text-[24px] md:text-[32px] lg:text-[43px] leading-[1.25] lg:leading-[52px] tracking-[-0.516px] text-white max-w-[733px]">
-            O maior risco não é o custo do processo. É o custo de não resolver.
+            {riscoBannerText}
           </h2>
         </FadeIn>
         <FadeIn delay={0.12}>
@@ -828,12 +870,15 @@ function ObjecoesSection() {
 }
 
 function CostCtaBanner() {
+  const costCtaTitle = readPanel('lp-homologacao.costCta.title', 'Quem entende o processo, controla o resultado');
+  const costCtaBgImage = readPanel('lp-homologacao.costCta.bgImage', imgCtaBg);
+  
   return (
     <section className="relative w-full overflow-hidden" style={{ minHeight: 'clamp(320px, 38vw, 543px)' }}>
       {/* Background image + overlay */}
       <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
         <img
-          src={imgCtaBg}
+          src={costCtaBgImage}
           alt="Custo real da homologação de sentença estrangeira — agende sua consulta"
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
@@ -844,7 +889,7 @@ function CostCtaBanner() {
       <div className="relative flex flex-col items-center justify-center gap-[32px] md:gap-[40px] px-[20px] text-center h-full py-[80px] md:py-[100px] lg:py-[120px]">
         <FadeIn>
           <h2 className="font-['Lora'] text-[28px] md:text-[36px] lg:text-[43px] leading-[1.25] lg:leading-[52px] tracking-[-0.516px] text-white max-w-[567px]">
-            Quem entende o processo, controla o resultado
+            {costCtaTitle}
           </h2>
         </FadeIn>
 
@@ -885,6 +930,16 @@ function CostCtaBanner() {
    Layout: foto sticky esquerda | conteúdo bg-[#262626] direita
 ───────────────────────────────────────────────────────────── */
 function WhyTrustSection() {
+  const lidianeImage = readPanel('lp-homologacao.whyTrust.lidianeImage', imgLidiane);
+  const trust1 = readPanel('lp-homologacao.whyTrust.trust1', '14+ anos de experiência em Direito de Família e processos internacionais');
+  const trust2 = readPanel('lp-homologacao.whyTrust.trust2', 'Atuação em Brasília/DF com alcance nacional e atendimento a brasileiros no exterior');
+  const trust3 = readPanel('lp-homologacao.whyTrust.trust3', 'Método SAA: Seleção, Arquitetura Documental e Acompanhamento por etapas');
+  const trust4 = readPanel('lp-homologacao.whyTrust.trust4', 'Checklist personalizado entregue na consulta de viabilidade');
+  const trust5 = readPanel('lp-homologacao.whyTrust.trust5', 'Relatórios periódicos de acompanhamento do caso');
+  const consulta1 = readPanel('lp-homologacao.whyTrust.consulta1', 'Análise preliminar do seu caso');
+  const consulta2 = readPanel('lp-homologacao.whyTrust.consulta2', 'Definição da rota processual (cartório ou judicial)');
+  const consulta3 = readPanel('lp-homologacao.whyTrust.consulta3', 'Checklist documental personalizado');
+  
   function CtaButton() {
     return (
       <a
@@ -920,7 +975,7 @@ function WhyTrustSection() {
         <div className="hidden lg:block relative">
           <div className="sticky top-0 h-screen overflow-hidden">
             <img
-              src={imgLidiane}
+              src={lidianeImage}
               alt="Dra. Lidiane Sousa Araújo"
               className="absolute h-full max-w-none top-0"
               style={{ left: '-70.19%', width: '222.22%' }}
@@ -938,11 +993,11 @@ function WhyTrustSection() {
                 Por Que Clientes Confiam na Sousa Araújo Advocacia
               </h2>
               <ul className="flex flex-col gap-[14px] font-['Noto_Sans'] text-[17px] md:text-[18px] leading-[25px] tracking-[-0.27px] text-white list-disc pl-[27px]">
-                <li>14+ anos de experiência em Direito de Família e processos internacionais</li>
-                <li>Atuação em Brasília/DF com alcance nacional e atendimento a brasileiros no exterior</li>
-                <li>Método SAA: Seleção, Arquitetura Documental e Acompanhamento por etapas</li>
-                <li>Checklist personalizado entregue na consulta de viabilidade</li>
-                <li>Relatórios periódicos de acompanhamento do caso</li>
+                <li>{trust1}</li>
+                <li>{trust2}</li>
+                <li>{trust3}</li>
+                <li>{trust4}</li>
+                <li>{trust5}</li>
                 <li>Parceria com tradutores juramentados e empresas de apostilamento</li>
                 <li>Sigilo absoluto e comunicação transparente como valores inegociáveis</li>
               </ul>
@@ -957,9 +1012,9 @@ function WhyTrustSection() {
                 O que você recebe na Consulta de Viabilidade:
               </h2>
               <ul className="flex flex-col gap-[10px] font-['Noto_Sans'] text-[17px] md:text-[18px] leading-[25px] tracking-[-0.27px] text-white list-disc pl-[27px]">
-                <li>Análise preliminar do seu caso</li>
-                <li>Definição da rota processual (cartório ou judicial)</li>
-                <li>Checklist documental personalizado</li>
+                <li>{consulta1}</li>
+                <li>{consulta2}</li>
+                <li>{consulta3}</li>
                 <li>Estimativa de prazos e custos</li>
                 <li>Plano de ação claro com próximos passos</li>
               </ul>
@@ -977,7 +1032,7 @@ function WhyTrustSection() {
    HistoriasSection — "Histórias Reais de Quem Já Passou por Isso"
    bg-[#452b1e] | 3 colunas: imagem + subtítulo #a57255 + texto
 ───────────────────────────────────────────────────────────── */
-const historias = [
+const historiasDefault = [
   {
     id: 1,
     img: imgArticle1,
@@ -1002,12 +1057,28 @@ const historias = [
 ];
 
 function HistoriasSection() {
+  const title = readPanel('lp-homologacao.historias.title', 'Histórias Reais de Quem Já Passou por Isso');
+  
+  const historias = historiasDefault.map((h, i) => {
+    const itemNum = i + 1;
+    const imgKey = `lp-homologacao.historias.item${itemNum}.img`;
+    const imgPanel = readPanel(imgKey, '');
+    const resolvedImg = imgPanel && !imgPanel.startsWith('figma:asset/') ? imgPanel : h.img;
+    
+    return {
+      ...h,
+      img: resolvedImg,
+      subtitle: readPanel(`lp-homologacao.historias.item${itemNum}.subtitle`, h.subtitle),
+      body: readPanel(`lp-homologacao.historias.item${itemNum}.body`, h.body),
+    };
+  });
+
   return (
     <section className="bg-[#452b1e] py-[60px] md:py-[80px] lg:py-[100px]">
       <div className="max-w-[1440px] mx-auto px-[20px] md:px-[40px] lg:px-[110px]">
         <FadeIn>
           <h2 className="font-['Marcellus'] text-[28px] md:text-[36px] lg:text-[43px] leading-[1.2] lg:leading-[52px] tracking-[-0.516px] text-white mb-[48px] md:mb-[64px] max-w-[456px]">
-            Histórias Reais de Quem Já Passou por Isso
+            {title}
           </h2>
         </FadeIn>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-[36px] md:gap-[38px]">

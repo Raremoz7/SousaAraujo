@@ -153,14 +153,23 @@ function buildComponentKeys(): Set<string> {
       'sobre.hero.title', 'sobre.hero.subtitle',
       ...numbered('sobre.stat', 4, ['number', 'label']),
       'sobre.quem.title', 'sobre.quem.paragraph1', 'sobre.quem.paragraph2',
-      ...expand('sobre.bio', ['trajetoria.title', 'areas.title', 'metodo.title', 'presencial.title', 'rede.title', 'valores.title']),
+      'sobre.bio.title',
+      ...expand('sobre.bio', [
+        'trajetoria.title', 'trajetoria.p1', 'trajetoria.p2', 'trajetoria.p3', 'trajetoria.p4',
+        'areas.title', 'areas.p1', 'areas.p2', 'areas.p3', 'areas.p4',
+        'metodo.title', 'metodo.content',
+        'presencial.title', 'presencial.content',
+        'rede.title', 'rede.content',
+        'valores.title', 'valores.content',
+        'areasAtuacao.title', 'contato.title',
+      ]),
       ...numbered('sobre.testimonial', 4, ['quote', 'author', 'role']),
       'sobre.banner.caption',
       'sobre.parceiros.title', 'sobre.parceiros.desc',
       'sobre.servicos.heading',
       ...numbered('sobre.service', 14, ['title', 'desc']),
       'sobre.blog.title',
-      ...numbered('sobre.article', 3, ['href']),
+      ...numbered('sobre.article', 3, ['title', 'category', 'day', 'month', 'href']),
     ]),
 
     /* ─── AreasDeAtuacaoPage.tsx ─── */
@@ -184,7 +193,7 @@ function buildComponentKeys(): Set<string> {
     ...register('FaqPage.tsx', [
       'faq.hero.title',
       'faq.section.title', 'faq.section.desc',
-      ...numbered('faq.item', 12, ['q', 'a']),
+      ...numbered('faq.item', 12, ['q', 'a', 'category']),
     ]),
 
     /* ─── VideosEducativosPage.tsx ─── */
@@ -266,6 +275,20 @@ function buildComponentKeys(): Set<string> {
         ...numbered(`${id}.metodo.step`, 2, ['label', 'desc']),
       ]);
     })(),
+
+    /* ─── routes.tsx — Redirect Handler (redirect.{N}.from/to, N=1..20) ─── */
+    ...register('routes.tsx', [
+      ...numbered('redirect.', 20, ['from', 'to']),
+    ]),
+
+    /* ─── Section Order keys (dynamic section reordering per page) ─── */
+    ...register('HomePage.tsx', ['home.sectionOrder']),
+    ...register('SobrePage.tsx', ['sobre.sectionOrder']),
+    ...register('AreasDeAtuacaoPage.tsx', ['areas.sectionOrder']),
+    ...register('RedeDeParceirosPage.tsx', ['parceiros.sectionOrder']),
+    ...register('FaqPage.tsx', ['faq.sectionOrder']),
+    ...register('VideosEducativosPage.tsx', ['vidpage.sectionOrder']),
+    ...register('BlogPage.tsx', ['blog.sectionOrder']),
   ];
 
   return new Set(keys);
@@ -295,6 +318,7 @@ const PAGE_GROUP_MAP: [string, string, string][] = [
   ['lp-uniao.', 'Uniao Estavel', 'lp-uniao'],
   ['lp-pmes.', 'Consultoria PMEs', 'lp-pmes'],
   ['lp-inpi.', 'Registro INPI', 'lp-inpi'],
+  ['redirect.', 'Redirects 301', 'redirects'],
 ];
 
 function getPageInfo(key: string): { page: string; panelPageId: string } {
@@ -394,6 +418,7 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
       if (!panelKeySet.has(key)) {
         if (key.startsWith('seo.') && !key.startsWith('seo.global')) continue;
         if (key === 'home.sectionOrder') continue;
+        if (key.endsWith('.sectionOrder')) continue;
         const info = getPageInfo(key);
         const src = KEY_SOURCE[key];
         items.push({
@@ -947,6 +972,7 @@ export function countAuditIssues(panelKeys: string[], data: Record<string, strin
     if (!panelKeySet.has(key)) {
       if (key.startsWith('seo.') && !key.startsWith('seo.global')) continue;
       if (key === 'home.sectionOrder') continue;
+      if (key.endsWith('.sectionOrder')) continue;
       count++;
     }
   }

@@ -836,9 +836,9 @@ export interface SeoPageDefaults {
 
 export const SEO_DEFAULTS: Record<string, SeoPageDefaults> = {
   home: {
-    title: 'Sousa Araújo Advocacia | Escritório em Brasília com Atuação Nacional',
-    description: 'Escritório de advocacia em Brasília especializado em direito de família, imobiliário, empresarial e homologação de sentença estrangeira. Atendimento presencial e online para brasileiros no Brasil e exterior.',
-    keyword: 'advocacia brasília',
+    title: 'Sousa Araújo Advocacia | Brasília | Direito de Família e Empresarial',
+    description: 'Escritório de advocacia em Brasília especializado em Direito de Família, Empresarial e Internacional. Atendimento nacional e para brasileiros no exterior. Agende sua consulta.',
+    keyword: 'advogado Brasília, advocacia família Brasília, advogado para brasileiro no exterior, inventário Brasília, divórcio Brasília, homologação sentença estrangeira',
   },
   sobre: {
     title: 'Sobre a Dra. Lidiane Sousa Araújo | Sousa Araújo Advocacia',

@@ -329,4 +329,118 @@ app.delete('/upload-image', async (c) => {
   }
 });
 
+// ─── Dynamic Sitemap XML ───
+const SITE_URL = 'https://sousaaraujo.adv.br';
+const STATIC_ROUTES = [
+  { path: '/',                                    priority: '1.0', changefreq: 'weekly'  },
+  { path: '/sobre',                               priority: '0.8', changefreq: 'monthly' },
+  { path: '/areas-de-atuacao',                    priority: '0.9', changefreq: 'monthly' },
+  { path: '/divorcio',                            priority: '0.9', changefreq: 'monthly' },
+  { path: '/guarda-e-plano-de-convivencia',       priority: '0.9', changefreq: 'monthly' },
+  { path: '/pensao-alimenticia',                  priority: '0.9', changefreq: 'monthly' },
+  { path: '/inventario-e-sucessoes',              priority: '0.9', changefreq: 'monthly' },
+  { path: '/uniao-estavel',                       priority: '0.9', changefreq: 'monthly' },
+  { path: '/homologacao-de-sentenca-estrangeira', priority: '0.9', changefreq: 'monthly' },
+  { path: '/imoveis',                             priority: '0.9', changefreq: 'monthly' },
+  { path: '/consultoria-empresarial-pmes',        priority: '0.9', changefreq: 'monthly' },
+  { path: '/registro-de-marca-inpi',              priority: '0.9', changefreq: 'monthly' },
+  { path: '/faq',                                 priority: '0.8', changefreq: 'monthly' },
+  { path: '/blog',                                priority: '0.8', changefreq: 'weekly'  },
+  { path: '/contato',                             priority: '0.8', changefreq: 'yearly'  },
+  { path: '/rede-de-parceiros',                   priority: '0.5', changefreq: 'monthly' },
+  { path: '/videos-educativos',                   priority: '0.6', changefreq: 'weekly'  },
+];
+
+app.get('/sitemap.xml', async (c) => {
+  try {
+    let panelData: Record<string, string> = {};
+    try {
+      const raw = await kv.get(KV_KEY);
+      if (raw && typeof raw === 'object') panelData = raw as Record<string, string>;
+    } catch { /* use static routes only */ }
+
+    const blogRoutes: { path: string; priority: string; changefreq: string }[] = [];
+    for (let i = 1; i <= 20; i++) {
+      const slug      = (panelData[`blog.article${i}.slug`] || '').trim();
+      const published = (panelData[`blog.article${i}.published`] || '').trim();
+      if (slug && published === '1') {
+        blogRoutes.push({ path: `/blog/${slug}`, priority: '0.7', changefreq: 'monthly' });
+      }
+    }
+
+    const hardcodedSlugs = [
+      'imovel-sem-escritura-caminhos-regularizar-brasilia',
+      'divorcio-extrajudicial-cartorio-brasil-como-fazer',
+      'homologacao-sentenca-divorcio-exterior-stj-brasil',
+    ];
+    for (const slug of hardcodedSlugs) {
+      if (!blogRoutes.find(r => r.path === `/blog/${slug}`)) {
+        blogRoutes.push({ path: `/blog/${slug}`, priority: '0.7', changefreq: 'monthly' });
+      }
+    }
+
+    const today = new Date().toISOString().split('T')[0];
+    const allRoutes = [...STATIC_ROUTES, ...blogRoutes];
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${allRoutes.map(r => `  <url>
+    <loc>${SITE_URL}${r.path}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>${r.changefreq}</changefreq>
+    <priority>${r.priority}</priority>
+  </url>`).join('\n')}
+</urlset>`;
+
+    return new Response(xml, {
+      headers: {
+        'Content-Type': 'application/xml; charset=utf-8',
+        'Cache-Control': 'public, max-age=3600',
+        'Access-Control-Allow-Origin': '*',
+      },
+    });
+  } catch (error: any) {
+    console.log('Sitemap generation error:', error?.message || error);
+    return c.text('Error generating sitemap', 500);
+  }
+});
+
+// ─── CTA Click Tracking (server-side persistence) ───
+const CTA_CLICKS_KEY = 'sa-cta-clicks';
+
+app.get('/cta-clicks', async (c) => {
+  try {
+    const raw = await kv.get(CTA_CLICKS_KEY);
+    const data = raw && typeof raw === 'object' ? raw : {};
+    return c.json({ data });
+  } catch (error: any) {
+    console.log('CTA clicks get error:', error);
+    return c.json({ error: error.message }, 500);
+  }
+});
+
+app.post('/cta-clicks', async (c) => {
+  try {
+    const body = await c.req.json();
+    const clicks = body.clicks || {};
+
+    let existing: Record<string, number> = {};
+    try {
+      const raw = await kv.get(CTA_CLICKS_KEY);
+      if (raw && typeof raw === 'object') existing = raw as Record<string, number>;
+    } catch { existing = {}; }
+
+    for (const [key, count] of Object.entries(clicks)) {
+      existing[key] = (existing[key] || 0) + (typeof count === 'number' ? count : 0);
+    }
+
+    await kv.set(CTA_CLICKS_KEY, existing);
+    console.log(`CTA clicks merged: ${Object.keys(clicks).length} keys`);
+    return c.json({ success: true });
+  } catch (error: any) {
+    console.log('CTA clicks save error:', error?.message || error);
+    return c.json({ error: error?.message || 'unknown' }, 500);
+  }
+});
+
 Deno.serve(app.fetch);

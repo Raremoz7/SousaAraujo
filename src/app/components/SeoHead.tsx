@@ -35,7 +35,7 @@ const ROUTE_TO_SEO_ID: Record<string, string> = {
   '/registro-de-marca-inpi': 'inpi',
 };
 
-const SITE_URL = 'https://souza-araujo-advogados.figma.site';
+const SITE_URL = 'https://sousaaraujo.adv.br';
 
 export function SeoHead() {
   const { pathname } = useLocation();
@@ -62,7 +62,7 @@ function SeoHelmet({ seoId, pathname }: { seoId: string; pathname: string }) {
   const description = usePanel(`seo.${seoId}.description`, pageDefaults.description ?? '');
   const keyword = usePanel(`seo.${seoId}.keyword`, pageDefaults.keyword ?? '');
   const canonical = usePanel(`seo.${seoId}.canonical`, `${SITE_URL}${pathname}`);
-  const robots = usePanel(`seo.${seoId}.robots`, 'index, follow');
+  const robots = usePanel(`seo.${seoId}.robots`, 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
   const ogTitle = usePanel(`seo.${seoId}.ogTitle`, '');
   const ogDescription = usePanel(`seo.${seoId}.ogDescription`, '');
   const ogImage = usePanel(`seo.${seoId}.ogImage`, '');

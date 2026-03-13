@@ -112,11 +112,22 @@ export function ServicesGrid() {
               <div className="relative w-[496px] h-[316.33px]">
                 {/* Background Image */}
                 <div className="absolute inset-0 overflow-hidden">
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    className="w-full h-full object-cover"
-                  />
+                  <picture>
+                    <source
+                      type="image/webp"
+                      srcSet={`${service.image}?format=webp&w=400 400w, ${service.image}?format=webp&w=800 800w`}
+                      sizes="(max-width: 768px) 400px, 800px"
+                    />
+                    <img
+                      src={service.image}
+                      alt={service.title}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                      width={416}
+                      height={520}
+                    />
+                  </picture>
                 </div>
 
                 {/* Gradient Overlays */}
@@ -152,11 +163,22 @@ export function ServicesGrid() {
             >
               {/* Background Image */}
               <div className="absolute inset-0 overflow-hidden">
-                <img
-                  src={service.image}
-                  alt={service.title}
-                  className="w-full h-full object-cover"
-                />
+                <picture>
+                  <source
+                    type="image/webp"
+                    srcSet={`${service.image}?format=webp&w=400 400w, ${service.image}?format=webp&w=800 800w`}
+                    sizes="(max-width: 768px) 400px, 800px"
+                  />
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                    width={416}
+                    height={520}
+                  />
+                </picture>
               </div>
 
               {/* Gradient Overlays */}

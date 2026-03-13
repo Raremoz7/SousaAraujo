@@ -1,16 +1,18 @@
-import { useMemo } from 'react';
+import { useMemo, lazy, Suspense } from 'react';
 import { Hero } from '../components/Hero';
 import { About } from '../components/About';
 import { Stats } from '../components/Stats';
-import { ServicesGrid } from '../components/ServicesGrid';
-import { Differentials } from '../components/Differentials';
 import { PracticeAreas } from '../components/PracticeAreas';
-import { CtaBanner } from '../components/CtaBanner';
-import { Videos } from '../components/Videos';
-import { Blog } from '../components/Blog';
 import { Contact } from '../components/Contact';
 import { ScrollReveal } from '../components/ui/animations';
 import { usePanel } from '../hooks/usePanelContent';
+
+// Lazy load components below the fold
+const ServicesGrid = lazy(() => import('../components/ServicesGrid').then(m => ({ default: m.ServicesGrid })));
+const Differentials = lazy(() => import('../components/Differentials').then(m => ({ default: m.Differentials })));
+const CtaBanner = lazy(() => import('../components/CtaBanner').then(m => ({ default: m.CtaBanner })));
+const Videos = lazy(() => import('../components/Videos').then(m => ({ default: m.Videos })));
+const Blog = lazy(() => import('../components/Blog').then(m => ({ default: m.Blog })));
 
 /**
  * Section registry — maps panel section IDs to their React components and ScrollReveal props.
@@ -67,6 +69,9 @@ export function HomePage() {
     return DEFAULT_ORDER;
   }, [orderJson]);
 
+  // Define which sections should use lazy loading
+  const lazyIds = new Set(['home-services', 'home-differentials', 'home-cta', 'home-videos', 'home-blog']);
+
   return (
     <>
       {orderedIds.map(id => {
@@ -79,11 +84,23 @@ export function HomePage() {
           return <Component key={id} />;
         }
 
-        return (
+        // Wrap lazy components with Suspense
+        const isLazy = lazyIds.has(id);
+        const content = (
           <ScrollReveal key={id} {...(revealProps || {})}>
             <Component />
           </ScrollReveal>
         );
+
+        if (isLazy) {
+          return (
+            <Suspense key={id} fallback={<div className="h-96 bg-[#161312]" />}>
+              {content}
+            </Suspense>
+          );
+        }
+
+        return content;
       })}
     </>
   );

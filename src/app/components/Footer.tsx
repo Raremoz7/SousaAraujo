@@ -67,15 +67,6 @@ function YouTubeIcon() {
   );
 }
 
-const footerNav = [
-  { label: 'Home',             href: '/' },
-  { label: 'Sobre',            href: '/sobre' },
-  { label: 'Áreas de Atuação', href: '/areas-de-atuacao' },
-  { label: 'Blog',             href: '/blog' },
-  { label: 'FAQ',              href: '/faq' },
-  { label: 'Vídeos',           href: '/videos-educativos' },
-] as const;
-
 export function Footer() {
   const footerDesc = usePanel('footer.description', 'Escritório de advocacia especializada em Brasília, fundado pela Dra. Lidiane Sousa Araújo, OAB/DF 34.876. Estrutura presencial no Distrito Federal e atendimento online para todo o Brasil e brasileiros no exterior, com apoio de uma rede de parceiros qualificados. Atuação estratégica em Direito de Família, Regularização de Imóveis, Homologação de Sentença Estrangeira e Consultoria Empresarial.');
   const footerEmail = usePanel('footer.contact.email', 'contato@sousaaraujo.adv.br');
@@ -95,6 +86,16 @@ export function Footer() {
   const locationTitle = usePanel('footer.location.title', 'Nossa Localização');
   const ctaText = usePanel('footer.ctaText', 'Agendar Atendimento');
   const ctaHref = usePanel('footer.ctaHref', '/contato');
+
+  // Footer navigation links - connected to panel
+  const footerNav = [
+    { label: usePanel('footer.link1.label', 'Home'),             href: usePanel('footer.link1.href', '/') },
+    { label: usePanel('footer.link2.label', 'Sobre'),            href: usePanel('footer.link2.href', '/sobre') },
+    { label: usePanel('footer.link3.label', 'Áreas de Atuação'), href: usePanel('footer.link3.href', '/areas-de-atuacao') },
+    { label: usePanel('footer.link4.label', 'Blog'),             href: usePanel('footer.link4.href', '/blog') },
+    { label: usePanel('footer.link5.label', 'FAQ'),              href: usePanel('footer.link5.href', '/faq') },
+    { label: usePanel('footer.link6.label', 'Vídeos'),           href: usePanel('footer.link6.href', '/videos-educativos') },
+  ];
 
   return (
     <footer className="bg-[#452b1e]">
@@ -117,7 +118,7 @@ export function Footer() {
           {/* Newsletter */}
           <div className="flex flex-col justify-end h-full lg:pr-[80px]">
             <div className="flex items-center border-b border-[#c1bbbb]/60 pb-[6px]">
-              <span className="font-['Noto_Sans'] text-[13px] text-[#a57255]/70 whitespace-nowrap mr-[12px]">
+              <span className="font-['Noto_Sans'] text-[13px] text-white/80 whitespace-nowrap mr-[12px]">
                 {newsletterLabel}
               </span>
               <a
@@ -132,7 +133,7 @@ export function Footer() {
 
           {/* Iniciar uma Conversa */}
           <div className="lg:pl-[0px]">
-            <h3 className="font-['Noto_Sans'] font-medium text-[21px] leading-[30px] tracking-[-0.42px] text-[#a57255] mb-[18px]">
+            <h3 className="font-['Noto_Sans'] font-medium text-[21px] leading-[30px] tracking-[-0.42px] text-[#c8956e] mb-[18px]">
               {contactTitle}
             </h3>
             <div className="space-y-[12px]">
@@ -153,7 +154,7 @@ export function Footer() {
 
           {/* Nossa Localização */}
           <div>
-            <h3 className="font-['Noto_Sans'] font-medium text-[21px] leading-[30px] tracking-[-0.42px] text-[#a57255] mb-[18px]">
+            <h3 className="font-['Noto_Sans'] font-medium text-[21px] leading-[30px] tracking-[-0.42px] text-[#c8956e] mb-[18px]">
               {locationTitle}
             </h3>
             <div className="flex items-start gap-[10px]">
@@ -168,7 +169,7 @@ export function Footer() {
 
           {/* Redes Sociais */}
           <div>
-            <h3 className="font-['Noto_Sans'] font-medium text-[21px] leading-[30px] tracking-[-0.42px] text-[#a57255] mb-[18px]">
+            <h3 className="font-['Noto_Sans'] font-medium text-[21px] leading-[30px] tracking-[-0.42px] text-[#c8956e] mb-[18px]">
               Redes Sociais
             </h3>
             <div className="flex items-center gap-[14px] text-white">

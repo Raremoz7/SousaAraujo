@@ -89,6 +89,10 @@ export function Videos(props?: {
                   src={video.image}
                   alt={video.title}
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  width={651}
+                  height={366}
+                  loading="lazy"
+                  decoding="async"
                 />
                 <PlayButton />
               </div>
