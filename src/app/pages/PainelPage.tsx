@@ -3,10 +3,10 @@
  * Editor visual com preview ao vivo, cards agrupados e previews de imagem
  */
 
-import React, { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Link } from 'react-router';
-import { createClient } from '@supabase/supabase-js';
 import { projectId, publicAnonKey } from '/utils/supabase/info';
+import { supabase } from '../../lib/supabaseClient';
 import { updatePanelDataCache } from '../hooks/usePanelContent';
 import { panelDefaults } from '../../data/panelDefaults';
 import {
@@ -16,89 +16,44 @@ import {
   Globe, Phone, Clock, Instagram, SearchCheck,
   Image as ImageIcon, Type, Link2, AlignLeft, Trash2,
   ExternalLink, LogOut, LogIn, Monitor, Smartphone, Pencil, RefreshCw,
-  GripVertical
+  GripVertical, Tablet, ArrowUp, RotateCw,
+  Sun, Moon, Grid3X3, Minus, Plus, Cpu, Hash, ImageDown, AlertTriangle, BarChart3
 } from 'lucide-react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { SeoPanel } from '../components/SeoPanel';
+import { SeoPanel, saveSeoHistoryEntry } from '../components/SeoPanel';
+import { GeoPanel } from '../components/GeoPanel';
+import { PanelPreview } from '../components/PanelPreview';
+import { AuditPanel, countAuditIssues } from '../components/AuditPanel';
+import { PainelDashboard, mergePendingCtaClicks } from '../components/PainelDashboard';
 
-const supabaseUrl = `https://${projectId}.supabase.co`;
-const supabase = createClient(supabaseUrl, publicAnonKey);
 const API_URL = `https://${projectId}.supabase.co/functions/v1/make-server-979eabbc/panel`;
+const UPLOAD_URL = `https://${projectId}.supabase.co/functions/v1/make-server-979eabbc/upload-image`;
 
-/* ─── Lazy page components for live preview ─── */
-/* Keys must match the `id` in PAGES array */
+/* ─── Image Upload Helper ─── */
+async function uploadImageToStorage(file: File): Promise<{ url: string; path: string }> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+  if (!token) throw new Error('Sessao expirada. Faca login novamente.');
 
-/* Preview layout wrapper — adds Navbar + Footer around page content.
-   Router context is already provided by the app's RouterProvider. */
-const PreviewLayout = lazy(() =>
-  Promise.all([
-    import('../components/Navbar'),
-    import('../components/Footer'),
-  ]).then(([navMod, footMod]) => ({
-    default: ({ children }: { children: React.ReactNode }) => (
-      <div className="min-h-screen bg-[#161312]">
-        <navMod.Navbar />
-        <main>{children}</main>
-        <footMod.Footer />
-      </div>
-    ),
-  }))
-);
+  const formData = new FormData();
+  formData.append('file', file);
 
-const PreviewPages: Record<string, React.LazyExoticComponent<React.ComponentType>> = {
-  home: lazy(() => import('./HomePage').then(m => ({ default: m.HomePage }))),
-  sobre: lazy(() => import('./SobrePage').then(m => ({ default: m.SobrePage }))),
-  areas: lazy(() => import('./AreasDeAtuacaoPage').then(m => ({ default: m.AreasDeAtuacaoPage }))),
-  blog: lazy(() => import('./BlogPage').then(m => ({ default: m.BlogPage }))),
-  faq: lazy(() => import('./FaqPage').then(m => ({ default: m.FaqPage }))),
-  videos: lazy(() => import('./VideosEducativosPage').then(m => ({ default: m.VideosEducativosPage }))),
-  contato: lazy(() => import('./ContatoPage').then(m => ({ default: m.ContatoPage }))),
-  parceiros: lazy(() => import('./RedeDeParceirosPage').then(m => ({ default: m.RedeDeParceirosPage }))),
-  imoveis: lazy(() => import('./ImoveisPage').then(m => ({ default: m.ImoveisPage }))),
-  homologacao: lazy(() => import('./LpHomologacaoPage').then(m => ({ default: m.HomologacaoPage }))),
-  divorcio: lazy(() => import('./LpDivorcioPage').then(m => ({ default: m.DivorcioPage }))),
-  guarda: lazy(() => import('./LpGuardaPage').then(m => ({ default: m.GuardaPage }))),
-  pensao: lazy(() => import('./LpPensaoPage').then(m => ({ default: m.PensaoPage }))),
-  inventario: lazy(() => import('./LpInventarioPage').then(m => ({ default: m.InventarioPage }))),
-  uniao: lazy(() => import('./LpUniaoEstavelPage').then(m => ({ default: m.UniaoEstavelPage }))),
-  pmes: lazy(() => import('./LpPmesPage').then(m => ({ default: m.PmesPage }))),
-  inpi: lazy(() => import('./LpInpiPage').then(m => ({ default: m.InpiPage }))),
-};
+  const res = await fetch(UPLOAD_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${publicAnonKey}`,
+      'X-User-Token': token,
+    },
+    body: formData,
+  });
 
-/* ─── Preview Error Boundary ─── */
-class PreviewErrorBoundary extends React.Component<{ children: React.ReactNode; pageId: string }, { hasError: boolean }> {
-  state = { hasError: false };
-  static getDerivedStateFromError() { return { hasError: true }; }
-  componentDidUpdate(prevProps: { pageId: string }) {
-    if (prevProps.pageId !== this.props.pageId) this.setState({ hasError: false });
-  }
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="flex items-center justify-center h-full bg-[#161312] text-white/30 font-['Noto_Sans'] text-[13px] p-[32px] text-center">
-          <div>
-            <p className="mb-[8px] text-white/50 font-medium">Erro ao renderizar preview</p>
-            <p className="text-[11px]">A pagina pode ter dependencias que nao carregaram. Tente abri-la em nova aba.</p>
-          </div>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.error || 'Erro no upload');
+  return { url: json.url, path: json.path };
 }
 
-/* ─── Preview Loader ─── */
-function PreviewLoader() {
-  return (
-    <div className="flex items-center justify-center h-[200px]">
-      <div className="flex flex-col items-center gap-[12px]">
-        <div className="w-[24px] h-[24px] border-2 border-[#a57255]/30 border-t-[#a57255] rounded-full animate-spin" />
-        <span className="font-['Noto_Sans'] text-[12px] text-[#a57255]/50">Carregando preview...</span>
-      </div>
-    </div>
-  );
-}
+
 
 /* ─── Types ─── */
 interface FieldConfig {
@@ -308,6 +263,16 @@ function serviceSections(lpId: string): SectionConfig[] {
 
 /* ─── Page configurations ─── */
 const PAGES: PageConfig[] = [
+  /* Dashboard */
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    icon: <BarChart3 size={18} />,
+    sections: [
+      { id: 'dashboard-placeholder', title: 'Dashboard', fields: [] },
+    ],
+  },
+
   /* Geral */
   {
     id: 'geral',
@@ -775,6 +740,14 @@ const PAGES: PageConfig[] = [
         ],
       },
       {
+        id: 'faq-section',
+        title: 'Secao Principal',
+        fields: [
+          { key: 'faq.section.title', label: 'Titulo da secao (use \\n para quebra)', type: 'text' },
+          { key: 'faq.section.desc', label: 'Descricao da secao', type: 'textarea', rows: 3 },
+        ],
+      },
+      {
         id: 'faq-items',
         title: 'Perguntas e Respostas',
         fields: Array.from({ length: 12 }, (_, i) => ([
@@ -798,6 +771,7 @@ const PAGES: PageConfig[] = [
         title: 'Hero',
         fields: [
           { key: 'vidpage.hero.title', label: 'Titulo H1', type: 'text' },
+          { key: 'vidpage.hero.desc', label: 'Descricao abaixo do titulo', type: 'textarea', rows: 2 },
           { key: 'vidpage.hero.bgImage', label: 'Imagem de fundo', type: 'image' },
         ],
       },
@@ -958,6 +932,17 @@ const PAGES: PageConfig[] = [
         ],
       },
       {
+        id: 'footer-social',
+        title: 'Redes Sociais',
+        fields: [
+          { key: 'footer.social.instagram', label: 'Instagram URL', type: 'url' },
+          { key: 'footer.social.facebook', label: 'Facebook URL', type: 'url' },
+          { key: 'footer.social.tiktok', label: 'TikTok URL', type: 'url' },
+          { key: 'footer.social.linkedin', label: 'LinkedIn URL', type: 'url' },
+          { key: 'footer.social.youtube', label: 'YouTube URL', type: 'url' },
+        ],
+      },
+      {
         id: 'footer-links',
         title: 'Links e Legal',
         fields: [
@@ -982,6 +967,34 @@ const PAGES: PageConfig[] = [
       {
         id: 'seo-placeholder',
         title: 'Modulo SEO',
+        fields: [],
+      },
+    ],
+  },
+
+  /* GEO — custom rendered via GeoPanel component */
+  {
+    id: 'geo',
+    label: 'GEO',
+    icon: <Cpu size={18} />,
+    sections: [
+      {
+        id: 'geo-placeholder',
+        title: 'Módulo GEO',
+        fields: [],
+      },
+    ],
+  },
+
+  /* Audit — custom rendered via AuditPanel component */
+  {
+    id: 'audit',
+    label: 'Auditoria de Campos',
+    icon: <AlertTriangle size={18} />,
+    sections: [
+      {
+        id: 'audit-placeholder',
+        title: 'Auditoria',
         fields: [],
       },
     ],
@@ -1082,7 +1095,53 @@ function ImagePreview({ value, onChange, field }: {
   field: FieldConfig;
 }) {
   const [editing, setEditing] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const hasImage = value && !value.startsWith('figma:asset/');
+
+  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setUploadProgress(`Enviando ${file.name} (${(file.size / 1024).toFixed(0)}KB)...`);
+    try {
+      const { url } = await uploadImageToStorage(file);
+      onChange(field.key, url);
+      setUploadProgress('Upload concluido!');
+      setEditing(false);
+      setTimeout(() => setUploadProgress(''), 2000);
+    } catch (err: any) {
+      console.error('[Upload] Error:', err);
+      setUploadProgress(`Erro: ${err.message}`);
+      setTimeout(() => setUploadProgress(''), 4000);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  }, [field.key, onChange]);
+
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer.files?.[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    setUploading(true);
+    setUploadProgress(`Enviando ${file.name} (${(file.size / 1024).toFixed(0)}KB)...`);
+    try {
+      const { url } = await uploadImageToStorage(file);
+      onChange(field.key, url);
+      setUploadProgress('Upload concluido!');
+      setEditing(false);
+      setTimeout(() => setUploadProgress(''), 2000);
+    } catch (err: any) {
+      console.error('[Upload] Error:', err);
+      setUploadProgress(`Erro: ${err.message}`);
+      setTimeout(() => setUploadProgress(''), 4000);
+    } finally {
+      setUploading(false);
+    }
+  }, [field.key, onChange]);
 
   return (
     <div className="mb-[16px]">
@@ -1090,7 +1149,11 @@ function ImagePreview({ value, onChange, field }: {
         <FieldBadge type="image" />
         <span className="font-['Noto_Sans'] text-[12px] text-white/60">{field.label}</span>
       </div>
-      <div className="relative group rounded-lg overflow-hidden bg-[#1a1715] border border-white/[0.08] hover:border-[#a57255]/30 transition-colors">
+      <div
+        className="relative group rounded-lg overflow-hidden bg-[#1a1715] border border-white/[0.08] hover:border-[#a57255]/30 transition-colors"
+        onDragOver={e => { e.preventDefault(); e.stopPropagation(); }}
+        onDrop={handleDrop}
+      >
         {hasImage ? (
           <div className="relative">
             <img
@@ -1099,23 +1162,56 @@ function ImagePreview({ value, onChange, field }: {
               className="w-full h-[160px] object-cover"
               onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
             />
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-[8px] opacity-0 group-hover:opacity-100">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="flex items-center gap-[6px] bg-[#a57255] text-white px-[12px] py-[6px] rounded-md text-[12px] font-medium hover:bg-[#8f6146] transition-colors disabled:opacity-50"
+              >
+                <Upload size={12} /> Upload
+              </button>
               <button
                 onClick={() => setEditing(true)}
                 className="flex items-center gap-[6px] bg-white/90 text-[#161312] px-[12px] py-[6px] rounded-md text-[12px] font-medium hover:bg-white transition-colors"
               >
-                <Pencil size={12} /> Alterar imagem
+                <Pencil size={12} /> URL
               </button>
             </div>
           </div>
         ) : (
-          <button
-            onClick={() => setEditing(true)}
-            className="w-full h-[120px] flex flex-col items-center justify-center gap-[8px] text-white/20 hover:text-white/40 hover:bg-white/[0.02] transition-colors cursor-pointer"
-          >
+          <div className="w-full h-[120px] flex flex-col items-center justify-center gap-[8px] text-white/20 hover:text-white/40 hover:bg-white/[0.02] transition-colors cursor-pointer">
             <ImageIcon size={28} strokeWidth={1.5} />
-            <span className="text-[12px] font-['Noto_Sans']">Clique para adicionar imagem</span>
-          </button>
+            <div className="flex items-center gap-[8px]">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="flex items-center gap-[4px] bg-[#a57255]/20 text-[#a57255] px-[10px] py-[4px] rounded text-[11px] font-medium hover:bg-[#a57255]/30 transition-colors disabled:opacity-50"
+              >
+                <Upload size={10} /> Upload
+              </button>
+              <button
+                onClick={() => setEditing(true)}
+                className="flex items-center gap-[4px] bg-white/5 text-white/40 px-[10px] py-[4px] rounded text-[11px] font-medium hover:bg-white/10 transition-colors"
+              >
+                <Link2 size={10} /> URL
+              </button>
+            </div>
+            <span className="text-[10px] font-['Noto_Sans'] text-white/15">ou arraste uma imagem aqui</span>
+          </div>
+        )}
+
+        {/* Upload progress / status */}
+        {uploadProgress && (
+          <div className={`px-[12px] py-[8px] text-[11px] font-['Noto_Sans'] border-t border-white/[0.06] ${
+            uploadProgress.startsWith('Erro') ? 'text-red-400 bg-red-500/5' :
+            uploadProgress.includes('concluido') ? 'text-emerald-400 bg-emerald-500/5' :
+            'text-[#a57255] bg-[#a57255]/5'
+          }`}>
+            {uploading && (
+              <span className="inline-block w-[12px] h-[12px] border-2 border-[#a57255]/30 border-t-[#a57255] rounded-full animate-spin mr-[6px] align-middle" />
+            )}
+            {uploadProgress}
+          </div>
         )}
 
         {editing && (
@@ -1146,6 +1242,15 @@ function ImagePreview({ value, onChange, field }: {
             </div>
           </div>
         )}
+
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml,image/avif"
+          className="hidden"
+          onChange={handleFileSelect}
+        />
       </div>
     </div>
   );
@@ -1232,10 +1337,6 @@ function GroupCard({ group, data, onChange }: {
   const [collapsed, setCollapsed] = useState(false);
   const imageVal = group.imageField ? (data[group.imageField.key] || '') : '';
   const hasImage = imageVal && !imageVal.startsWith('figma:asset/');
-  const filledCount = [...group.fields, ...(group.imageField ? [group.imageField] : [])]
-    .filter(f => data[f.key]?.trim()).length;
-  const totalCount = group.fields.length + (group.imageField ? 1 : 0);
-
   return (
     <div className="bg-[#1a1715] border border-white/[0.06] rounded-lg overflow-hidden hover:border-white/[0.1] transition-colors">
       {/* Card header */}
@@ -1270,7 +1371,6 @@ function GroupCard({ group, data, onChange }: {
         </div>
 
         <div className="flex items-center gap-[8px] shrink-0">
-          <span className="font-['Noto_Sans'] text-[10px] text-white/20">{filledCount}/{totalCount}</span>
           <ChevronRight size={12} className={`text-white/20 transition-transform ${collapsed ? '' : 'rotate-90'}`} />
         </div>
       </button>
@@ -1313,10 +1413,6 @@ function VisualSectionBlock({ section, data, onChange }: {
   onChange: (key: string, val: string) => void;
 }) {
   const [open, setOpen] = useState(false);
-  const filledCount = section.fields.filter(f => data[f.key]?.trim()).length;
-  const totalCount = section.fields.length;
-  const progress = totalCount > 0 ? (filledCount / totalCount * 100) : 0;
-
   // Check if this section has images for a visual preview
   const imageFields = section.fields.filter(f => f.type === 'image');
   const firstImageVal = imageFields.map(f => data[f.key]).find(v => v && !v.startsWith('figma:asset/'));
@@ -1353,18 +1449,7 @@ function VisualSectionBlock({ section, data, onChange }: {
               </span>
             )}
           </div>
-          {/* Mini progress bar */}
-          <div className="flex items-center gap-[8px] mt-[6px]">
-            <div className="flex-1 h-[3px] bg-white/[0.04] rounded-full overflow-hidden max-w-[120px]">
-              <div
-                className={`h-full rounded-full transition-all duration-500 ${progress === 100 ? 'bg-emerald-500/60' : 'bg-[#a57255]/50'}`}
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <span className="font-['Noto_Sans'] text-[10px] text-white/25">
-              {filledCount}/{totalCount}
-            </span>
-          </div>
+
         </div>
 
         <ChevronRight size={16} className={`text-white/20 transition-transform duration-200 shrink-0 ${open ? 'rotate-90' : ''}`} />
@@ -1487,6 +1572,7 @@ function DraggableSectionBlock({ section, index, data, onChange, moveSection }: 
   return (
     <div
       ref={ref}
+      data-section-id={section.id}
       className={`transition-all duration-150 ${isDragging ? 'opacity-30 scale-[0.98]' : ''} ${isOver ? 'ring-1 ring-[#a57255]/40 rounded-lg' : ''}`}
     >
       <div className="flex items-start gap-0 group/dnd">
@@ -1536,26 +1622,33 @@ export function PainelPage() {
   const [data, setData] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const previousDataRef = useRef<Record<string, string>>({});
 
-  const [activePage, setActivePage] = useState('home');
+  const [activePage, setActivePage] = useState('dashboard');
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFocused, setSearchFocused] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' as 'success' | 'info' });
-  const [expandedGroup, setExpandedGroup] = useState<string | null>('pages');
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(['global', 'pages', 'tools']));
   const [showPreview, setShowPreview] = useState(false);
-  const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
+  const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+  const [previewZoom, setPreviewZoom] = useState<number>(0); // 0 = auto-fit
+  const [previewRotated, setPreviewRotated] = useState(false);
+  const [previewBg, setPreviewBg] = useState<'dark' | 'light' | 'grid'>('dark');
+  const baselineDataRef = useRef<Record<string, string>>({});
 
-  // Section ordering per page (persisted in localStorage)
-  const [sectionOrders, setSectionOrders] = useState<Record<string, string[]>>(() => {
-    try {
-      const stored = localStorage.getItem('panel-section-orders');
-      return stored ? JSON.parse(stored) : {};
-    } catch { return {}; }
-  });
+  // Section ordering per page — stored as panel data keys (e.g. "home.sectionOrder")
+  // so the order is persisted to Supabase and read by public pages via usePanel.
+  const getSectionOrderKey = useCallback((pageId: string) => `${pageId}.sectionOrder`, []);
 
   const getOrderedSections = useCallback((page: PageConfig): SectionConfig[] => {
-    const order = sectionOrders[page.id];
-    if (!order) return page.sections;
+    const orderJson = data[getSectionOrderKey(page.id)];
+    let order: string[] | null = null;
+    if (orderJson) {
+      try { order = JSON.parse(orderJson); } catch { order = null; }
+    }
+    if (!order || !Array.isArray(order)) return page.sections;
     const sectionMap = new Map(page.sections.map(s => [s.id, s]));
     const ordered: SectionConfig[] = [];
     for (const id of order) {
@@ -1565,23 +1658,10 @@ export function PainelPage() {
     // Append any new sections not in saved order
     sectionMap.forEach(s => ordered.push(s));
     return ordered;
-  }, [sectionOrders]);
-
-  const moveSectionForPage = useCallback((pageId: string, sections: SectionConfig[], dragIndex: number, hoverIndex: number) => {
-    const ids = sections.map(s => s.id);
-    const [moved] = ids.splice(dragIndex, 1);
-    ids.splice(hoverIndex, 0, moved);
-    setSectionOrders(prev => {
-      const next = { ...prev, [pageId]: ids };
-      try { localStorage.setItem('panel-section-orders', JSON.stringify(next)); } catch {}
-      return next;
-    });
-  }, []);
+  }, [data, getSectionOrderKey]);
 
   const contentRef = useRef<HTMLDivElement>(null);
-  const previewScrollRef = useRef<HTMLDivElement>(null);
   const previewContainerRef = useRef<HTMLDivElement>(null);
-  const liveUpdateTimer = useRef<ReturnType<typeof setTimeout>>();
   const [previewContainerSize, setPreviewContainerSize] = useState({ w: 0, h: 0 });
 
   useEffect(() => {
@@ -1599,28 +1679,50 @@ export function PainelPage() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchBackendData = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const res = await fetch(API_URL, {
-        headers: { 'Authorization': `Bearer ${publicAnonKey}` }
-      });
-      if (res.ok) {
-        const json = await res.json();
-        let serverData = json.data || {};
-        if (typeof serverData === 'string') {
-          try { serverData = JSON.parse(serverData); } catch { serverData = {}; }
+  const fetchBackendData = useCallback(async (retries = 3) => {
+    setIsLoading(true);
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        const res = await fetch(API_URL, {
+          headers: { 'Authorization': `Bearer ${publicAnonKey}` }
+        });
+        if (res.ok) {
+          const json = await res.json();
+          let serverData = json.data || {};
+          if (typeof serverData === 'string') {
+            try { serverData = JSON.parse(serverData); } catch { serverData = {}; }
+          }
+          const merged = { ...panelDefaults, ...serverData };
+          // Merge pending CTA clicks from localStorage
+          const ctaUpdates = mergePendingCtaClicks(merged);
+          if (ctaUpdates) Object.assign(merged, ctaUpdates);
+          baselineDataRef.current = { ...merged };
+          previousDataRef.current = { ...merged };
+          setData(merged);
+          updatePanelDataCache(merged);
+          setIsLoading(false);
+          return;
         }
-        const merged = { ...panelDefaults, ...serverData };
-        setData(merged);
-        updatePanelDataCache(merged);
+        console.warn(`[Painel] Fetch attempt ${attempt}/${retries} — status ${res.status}`);
+      } catch (e) {
+        console.warn(`[Painel] Fetch attempt ${attempt}/${retries} failed:`, e);
       }
-    } catch (e) {
-      console.error('Erro ao carregar dados do painel:', e);
-    } finally {
-      setIsLoading(false);
+      if (attempt < retries) {
+        await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt - 1)));
+      }
     }
+    console.error('[Painel] Todas as tentativas falharam. Usando defaults locais.');
+    const fallback = { ...panelDefaults };
+    baselineDataRef.current = { ...fallback };
+    setData(fallback);
+    updatePanelDataCache(fallback);
+    setIsLoading(false);
   }, []);
+
+  // Load data on mount (GET /panel is public) and again when session arrives
+  useEffect(() => {
+    fetchBackendData();
+  }, [fetchBackendData]);
 
   useEffect(() => {
     if (session) {
@@ -1631,27 +1733,35 @@ export function PainelPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError('');
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    // Validate allowed email on the frontend
+    const ALLOWED_EMAILS = ['sa@somo.com'];
+    if (!ALLOWED_EMAILS.includes(email.toLowerCase().trim())) {
+      setAuthError('Acesso não autorizado. Este email não tem permissão.');
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     if (error) {
       if (error.message.includes('Invalid login credentials')) {
         try {
           const res = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-979eabbc/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${publicAnonKey}` },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ email: email.trim(), password })
           });
           if (res.ok) {
-            const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
-            if (signInErr) setAuthError(signInErr.message);
+            const { error: signInErr } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+            if (signInErr) setAuthError('Email ou senha incorretos.');
           } else {
-            const errBody = await res.json();
-            setAuthError(errBody.error || 'Erro no login');
+            const errBody = await res.json().catch(() => ({}));
+            setAuthError(errBody.error || 'Acesso não autorizado.');
           }
         } catch {
-          setAuthError('Erro no servidor');
+          setAuthError('Erro no servidor. Tente novamente.');
         }
       } else {
-        setAuthError(error.message);
+        setAuthError('Email ou senha incorretos.');
       }
     }
   };
@@ -1661,76 +1771,96 @@ export function PainelPage() {
     setTimeout(() => setToast(t => ({ ...t, visible: false })), 2600);
   }, []);
 
-  // Live preview: update panel cache directly (components re-render instantly)
-  const pushLivePreview = useCallback((newData: Record<string, string>) => {
-    if (liveUpdateTimer.current) clearTimeout(liveUpdateTimer.current);
-    liveUpdateTimer.current = setTimeout(() => {
-      updatePanelDataCache(newData);
-    }, 100); // debounce 100ms
-  }, []);
-
   const handleFieldChange = useCallback((key: string, value: string) => {
     setData(prev => {
       const next = { ...prev, [key]: value };
-      pushLivePreview(next);
+      // Atualiza cache global — componentes renderizados inline re-renderizam automaticamente
+      updatePanelDataCache(next);
       return next;
     });
-  }, [pushLivePreview]);
+  }, []);
 
-  // Helper: get a fresh access token — always forces a refresh to avoid stale tokens
-  const getFreshToken = useCallback(async (): Promise<string | null> => {
+  const moveSectionForPage = useCallback((pageId: string, sections: SectionConfig[], dragIndex: number, hoverIndex: number) => {
+    const ids = sections.map(s => s.id);
+    const [moved] = ids.splice(dragIndex, 1);
+    ids.splice(hoverIndex, 0, moved);
+    const key = getSectionOrderKey(pageId);
+    handleFieldChange(key, JSON.stringify(ids));
+  }, [getSectionOrderKey, handleFieldChange]);
+
+  // Helper: get access token — uses current session, only refreshes if close to expiry
+  const getToken = useCallback(async (): Promise<string | null> => {
     try {
-      // Always try to refresh first to guarantee a valid token
-      console.log('[Auth] Refreshing session...');
-      const { data: { session: refreshed }, error: refreshError } = await supabase.auth.refreshSession();
-      
-      if (refreshed && !refreshError) {
-        setSession(refreshed);
-        console.log('[Auth] Session refreshed, expires_at:', refreshed.expires_at);
-        return refreshed.access_token;
-      }
-
-      // If refresh fails, try getSession as fallback
-      console.log('[Auth] Refresh failed, trying getSession fallback...', refreshError?.message);
-      const { data: { session: cached }, error: sessionError } = await supabase.auth.getSession();
-      
-      if (cached && !sessionError) {
-        const expiresAt = cached.expires_at ?? 0;
+      const { data: { session: current } } = await supabase.auth.getSession();
+      if (current?.access_token) {
+        const expiresAt = current.expires_at ?? 0;
         const now = Math.floor(Date.now() / 1000);
-        if (expiresAt - now > 30) {
-          console.log('[Auth] Using cached session, expires in', expiresAt - now, 'seconds');
-          setSession(cached);
-          return cached.access_token;
+        // Token still valid for > 60s — use it directly
+        if (expiresAt - now > 60) {
+          return current.access_token;
+        }
+        // Token expiring soon — try to refresh
+        console.log('[Auth] Token expiring soon, refreshing...');
+        const { data: { session: refreshed } } = await supabase.auth.refreshSession();
+        if (refreshed?.access_token) {
+          return refreshed.access_token;
+        }
+        // Refresh failed but token might still work — use it anyway
+        if (expiresAt - now > 0) {
+          console.log('[Auth] Refresh failed but token not yet expired, using current token');
+          return current.access_token;
         }
       }
-
-      // Nothing works — clear session so user sees login form
-      console.error('[Auth] No valid session available. Clearing state.');
-      setSession(null);
+      console.error('[Auth] No valid session available.');
       return null;
     } catch (e: any) {
-      console.error('[Auth] getFreshToken error:', e.message);
-      setSession(null);
+      console.error('[Auth] getToken error:', e.message);
       return null;
     }
   }, []);
+
+  // Helper: perform an authenticated fetch — sends anonKey in Authorization + user token in X-User-Token
+  const authFetch = useCallback(async (url: string, options: RequestInit): Promise<Response> => {
+    const token = await getToken();
+    if (!token) throw new Error('NO_SESSION');
+    const headers: Record<string, string> = {
+      ...(options.headers as Record<string, string>),
+      'Authorization': `Bearer ${publicAnonKey}`,
+      'X-User-Token': token,
+    };
+    const res = await fetch(url, { ...options, headers });
+    if (res.status === 401) {
+      console.log('[Auth] 401 received, refreshing and retrying...');
+      const { data: { session: refreshed } } = await supabase.auth.refreshSession();
+      if (refreshed?.access_token) {
+        return fetch(url, {
+          ...options,
+          headers: { ...headers, 'X-User-Token': refreshed.access_token },
+        });
+      }
+    }
+    return res;
+  }, [getToken]);
 
   const handleSave = useCallback(async () => {
     if (!session) return;
     setIsSaving(true);
     try {
-      const token = await getFreshToken();
-      if (!token) { showToast('Sessao expirada. Faca login novamente.', 'info'); return; }
-      const res = await fetch(API_URL, {
+      // Record SEO history before saving
+      saveSeoHistoryEntry(
+        previousDataRef.current,
+        data,
+        `Salvo em ${new Date().toLocaleDateString('pt-BR')}`
+      );
+      previousDataRef.current = { ...data };
+      const res = await authFetch(API_URL, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ data })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data }),
       });
       if (res.ok) {
         showToast('Alteracoes salvas com sucesso!');
+        baselineDataRef.current = { ...data };
         updatePanelDataCache(data);
       } else {
         let errMsg = `HTTP ${res.status}`;
@@ -1745,39 +1875,44 @@ export function PainelPage() {
         } catch { /* ignore */ }
         console.error('[Painel] Save error:', errMsg);
         if (res.status === 401) {
-          setSession(null);
           showToast('Sessao expirada. Faca login novamente.', 'info');
         } else {
           showToast(`Erro ao salvar: ${errMsg}`, 'info');
         }
       }
     } catch (e: any) {
-      console.error('[Painel] Save network error:', e);
-      showToast(e.message || 'Erro ao salvar', 'info');
+      if (e.message === 'NO_SESSION') {
+        showToast('Sessao expirada. Faca login novamente.', 'info');
+      } else {
+        console.error('[Painel] Save network error:', e);
+        showToast(e.message || 'Erro ao salvar', 'info');
+      }
     } finally {
       setIsSaving(false);
     }
-  }, [data, showToast, session, getFreshToken]);
+  }, [data, showToast, session, authFetch]);
 
   const handleReset = useCallback(async () => {
-    if (confirm('Resetar todas as alteracoes? Isso nao pode ser desfeito.')) {
+    if (confirm('Descartar alteracoes nao salvas e voltar ao ultimo estado salvo?')) {
       if (!session) return;
       setIsSaving(true);
       try {
-        const token = await getFreshToken();
-        if (!token) { showToast('Sessao expirada. Faca login novamente.', 'info'); return; }
+        // Reload from server to get last saved state
         const res = await fetch(API_URL, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ data: {} })
+          headers: { 'Authorization': `Bearer ${publicAnonKey}` }
         });
         if (res.ok) {
-          setData({});
-          updatePanelDataCache({});
-          showToast('Dados resetados ao original', 'info');
+          const json = await res.json();
+          let serverData = json.data || {};
+          if (typeof serverData === 'string') {
+            try { serverData = JSON.parse(serverData); } catch { serverData = {}; }
+          }
+          const merged = { ...panelDefaults, ...serverData };
+          baselineDataRef.current = { ...merged };
+          previousDataRef.current = { ...merged };
+          setData(merged);
+          updatePanelDataCache(merged);
+          showToast('Restaurado ao ultimo estado salvo', 'info');
         }
       } catch(e) {
         console.error(e);
@@ -1785,7 +1920,7 @@ export function PainelPage() {
         setIsSaving(false);
       }
     }
-  }, [showToast, session, getFreshToken]);
+  }, [showToast, session]);
 
   const handleExport = useCallback(() => {
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -1816,9 +1951,6 @@ export function PainelPage() {
 
     setIsSaving(true);
     try {
-      const token = await getFreshToken();
-      if (!token) { showToast('Sessão expirada. Faça login novamente.', 'info'); setIsSaving(false); return; }
-
       // Filter out figma:asset values that aren't valid runtime URLs
       const cleanDefaults: Record<string, string> = {};
       let skipped = 0;
@@ -1836,13 +1968,11 @@ export function PainelPage() {
       const payload = JSON.stringify({ defaults: cleanDefaults });
       console.log(`[Painel] Sending seed request with ${Object.keys(cleanDefaults).length} defaults (${(payload.length / 1024).toFixed(1)}KB)`);
 
-      const res = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-979eabbc/panel/seed`, {
+      const SEED_URL = `https://${projectId}.supabase.co/functions/v1/make-server-979eabbc/panel/seed`;
+      const res = await authFetch(SEED_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: payload
+        headers: { 'Content-Type': 'application/json' },
+        body: payload,
       });
 
       if (res.ok) {
@@ -1869,19 +1999,22 @@ export function PainelPage() {
         } catch { /* ignore parse error */ }
         console.error('[Painel] Seed error response:', errMsg);
         if (res.status === 401) {
-          setSession(null);
           showToast('Sessão expirada. Faça login novamente.', 'info');
         } else {
           showToast(`Erro ao sincronizar: ${errMsg}`, 'info');
         }
       }
     } catch (e: any) {
-      console.error('[Painel] Seed network error:', e);
-      showToast(`Erro de rede: ${e.message || 'falha na conexão'}`, 'info');
+      if (e.message === 'NO_SESSION') {
+        showToast('Sessão expirada. Faça login novamente.', 'info');
+      } else {
+        console.error('[Painel] Seed network error:', e);
+        showToast(`Erro de rede: ${e.message || 'falha na conexão'}`, 'info');
+      }
     } finally {
       setIsSaving(false);
     }
-  }, [session, showToast, getFreshToken]);
+  }, [session, showToast, authFetch]);
 
   const handleImport = useCallback(() => {
     const input = document.createElement('input');
@@ -1897,16 +2030,14 @@ export function PainelPage() {
           setData(imported);
           updatePanelDataCache(imported);
           if (session) {
-            const tk = await getFreshToken();
-            if (tk) {
-              await fetch(API_URL, {
+            try {
+              await authFetch(API_URL, {
                 method: 'PUT',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${tk}`
-                },
-                body: JSON.stringify({ data: imported })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ data: imported }),
               });
+            } catch (saveErr) {
+              console.error('[Painel] Import save error:', saveErr);
             }
           }
           showToast('Backup importado com sucesso!');
@@ -1915,7 +2046,110 @@ export function PainelPage() {
       reader.readAsText(file);
     };
     input.click();
-  }, [showToast, session, getFreshToken]);
+  }, [showToast, session, authFetch]);
+
+  // ─── Migrate all images to Supabase Storage in batch ───
+  const [isMigrating, setIsMigrating] = useState(false);
+  const [migrateProgress, setMigrateProgress] = useState('');
+
+  const handleMigrateImages = useCallback(async () => {
+    if (!session) { showToast('Faca login primeiro', 'info'); return; }
+    if (!confirm('Isso vai baixar todas as imagens do Figma e fazer upload para o Supabase Storage.\nAs URLs permanentes serao salvas automaticamente no painel.\n\nDeseja continuar?')) return;
+
+    setIsMigrating(true);
+    setMigrateProgress('Coletando campos de imagem...');
+
+    try {
+      // 1. Collect all image-type field keys from ALL pages
+      const imageKeys: string[] = [];
+      for (const page of PAGES) {
+        for (const section of page.sections) {
+          for (const field of section.fields) {
+            if (field.type === 'image') imageKeys.push(field.key);
+          }
+        }
+      }
+
+      // 2. For each key, check if it needs migration
+      const toMigrate: { key: string; url: string }[] = [];
+      for (const key of imageKeys) {
+        const currentVal = data[key] || '';
+        const defaultVal = panelDefaults[key] || '';
+
+        // Already has a permanent URL → skip
+        if (currentVal && !currentVal.startsWith('figma:asset/') && currentVal.startsWith('http')) continue;
+
+        // Default has resolved URL (figma:asset imports resolve to https:// at build time)
+        if (defaultVal && !defaultVal.startsWith('figma:asset/') && defaultVal.startsWith('http')) {
+          toMigrate.push({ key, url: defaultVal });
+        }
+      }
+
+      if (toMigrate.length === 0) {
+        setMigrateProgress('');
+        showToast('Nenhuma imagem para migrar — todas ja estao no Supabase ou definidas manualmente!');
+        setIsMigrating(false);
+        return;
+      }
+
+      setMigrateProgress(`0 / ${toMigrate.length} imagens migradas...`);
+      let migrated = 0;
+      let errors = 0;
+      const updatedData = { ...data };
+
+      // 3. Process in batches of 3
+      const BATCH = 3;
+      for (let i = 0; i < toMigrate.length; i += BATCH) {
+        const batch = toMigrate.slice(i, i + BATCH);
+        const results = await Promise.allSettled(
+          batch.map(async ({ key, url }) => {
+            const imgRes = await fetch(url);
+            if (!imgRes.ok) throw new Error(`HTTP ${imgRes.status}`);
+            const blob = await imgRes.blob();
+            const ext = url.split('.').pop()?.split('?')[0] || 'png';
+            const sanitizedKey = key.replace(/\./g, '-');
+            const file = new File([blob], `${sanitizedKey}.${ext}`, { type: blob.type || 'image/png' });
+            const { url: signedUrl } = await uploadImageToStorage(file);
+            return { key, signedUrl };
+          })
+        );
+
+        for (const r of results) {
+          if (r.status === 'fulfilled') {
+            updatedData[r.value.key] = r.value.signedUrl;
+            migrated++;
+          } else {
+            errors++;
+            console.error('[Migrate] batch error:', r.reason);
+          }
+        }
+        setMigrateProgress(`${migrated} / ${toMigrate.length} imagens migradas...${errors > 0 ? ` (${errors} erros)` : ''}`);
+      }
+
+      // 4. Save to panel + Supabase
+      setData(updatedData);
+      updatePanelDataCache(updatedData);
+      try {
+        await authFetch(API_URL, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: updatedData }),
+        });
+        baselineDataRef.current = { ...updatedData };
+      } catch (saveErr) {
+        console.error('[Migrate] Save error:', saveErr);
+      }
+
+      setMigrateProgress('');
+      showToast(`Migracao concluida! ${migrated} imagens salvas no Supabase.${errors > 0 ? ` ${errors} erros.` : ''}`);
+    } catch (err: any) {
+      console.error('[Migrate] Error:', err);
+      setMigrateProgress('');
+      showToast(`Erro na migracao: ${err.message}`, 'info');
+    } finally {
+      setIsMigrating(false);
+    }
+  }, [session, data, showToast, authFetch]);
 
   // Keyboard shortcut
   useEffect(() => {
@@ -1932,41 +2166,200 @@ export function PainelPage() {
   const currentPage = PAGES.find(p => p.id === activePage);
 
   // Filter pages by search
-  const filteredPages = searchTerm.trim()
+  const searchLower = searchTerm.trim().toLowerCase();
+  const filteredPages = searchLower
     ? PAGES.filter(p =>
-        p.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.label.toLowerCase().includes(searchLower) ||
         p.sections.some(s =>
-          s.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          s.fields.some(f => f.label.toLowerCase().includes(searchTerm.toLowerCase()))
+          s.title.toLowerCase().includes(searchLower) ||
+          s.fields.some(f =>
+            f.label.toLowerCase().includes(searchLower) ||
+            f.key.toLowerCase().includes(searchLower) ||
+            (data[f.key] && data[f.key].toLowerCase().includes(searchLower) && !data[f.key].startsWith('figma:asset/')) ||
+            (panelDefaults[f.key] && panelDefaults[f.key].toLowerCase().includes(searchLower) && !panelDefaults[f.key].startsWith('figma:asset/'))
+          )
         )
       )
     : PAGES;
 
+  // Advanced search: pages, sections, fields, data values, defaults, placeholders, keys
+  const [searchActiveIdx, setSearchActiveIdx] = useState(-1);
+  const searchListRef = useRef<HTMLDivElement>(null);
+
+  type SearchMatchType = 'page' | 'section' | 'field' | 'value' | 'default' | 'placeholder' | 'key';
+  interface SearchResult {
+    pageId: string; pageLabel: string; sectionId: string; sectionTitle: string;
+    fieldLabel?: string; fieldKey?: string; matchType: SearchMatchType; matchSnippet?: string; uid: string;
+  }
+
+  const searchResults: SearchResult[] = useMemo(() => {
+    if (!searchLower || searchLower.length < 2) return [];
+    const results: SearchResult[] = [];
+    const seen = new Set<string>();
+    const MAX = 30;
+
+    const add = (r: Omit<SearchResult, 'uid'>) => {
+      if (results.length >= MAX) return;
+      const uid = `${r.pageId}::${r.sectionId}::${r.fieldKey || ''}::${r.matchType}`;
+      if (seen.has(uid)) return;
+      seen.add(uid);
+      results.push({ ...r, uid });
+    };
+
+    const snippet = (val: string, term: string): string => {
+      const idx = val.toLowerCase().indexOf(term);
+      if (idx < 0) return val.slice(0, 60);
+      const s = Math.max(0, idx - 25), e = Math.min(val.length, idx + term.length + 25);
+      return (s > 0 ? '…' : '') + val.slice(s, e) + (e < val.length ? '…' : '');
+    };
+
+    for (const page of PAGES) {
+      if (results.length >= MAX) break;
+      if (page.label.toLowerCase().includes(searchLower)) {
+        add({ pageId: page.id, pageLabel: page.label, sectionId: page.sections[0]?.id || '', sectionTitle: '', matchType: 'page' });
+      }
+      for (const section of page.sections) {
+        if (results.length >= MAX) break;
+        if (section.title.toLowerCase().includes(searchLower)) {
+          add({ pageId: page.id, pageLabel: page.label, sectionId: section.id, sectionTitle: section.title, matchType: 'section' });
+        }
+        for (const field of section.fields) {
+          if (results.length >= MAX) break;
+          if (field.label.toLowerCase().includes(searchLower)) {
+            add({ pageId: page.id, pageLabel: page.label, sectionId: section.id, sectionTitle: section.title, fieldLabel: field.label, fieldKey: field.key, matchType: 'field' });
+          }
+          if (field.key.toLowerCase().includes(searchLower)) {
+            add({ pageId: page.id, pageLabel: page.label, sectionId: section.id, sectionTitle: section.title, fieldLabel: field.label, fieldKey: field.key, matchType: 'key', matchSnippet: field.key });
+          }
+          const val = data[field.key];
+          if (val && val.toLowerCase().includes(searchLower) && !val.startsWith('figma:asset/')) {
+            add({ pageId: page.id, pageLabel: page.label, sectionId: section.id, sectionTitle: section.title, fieldLabel: field.label, fieldKey: field.key, matchType: 'value', matchSnippet: snippet(val, searchLower) });
+          }
+          const defVal = panelDefaults[field.key];
+          if (defVal && defVal !== val && defVal.toLowerCase().includes(searchLower) && !defVal.startsWith('figma:asset/')) {
+            add({ pageId: page.id, pageLabel: page.label, sectionId: section.id, sectionTitle: section.title, fieldLabel: field.label, fieldKey: field.key, matchType: 'default', matchSnippet: snippet(defVal, searchLower) });
+          }
+          if (field.placeholder && field.placeholder.toLowerCase().includes(searchLower)) {
+            add({ pageId: page.id, pageLabel: page.label, sectionId: section.id, sectionTitle: section.title, fieldLabel: field.label, fieldKey: field.key, matchType: 'placeholder', matchSnippet: field.placeholder });
+          }
+        }
+      }
+    }
+
+    const order: Record<string, number> = { page: 0, section: 1, field: 2, key: 3, value: 4, default: 5, placeholder: 6 };
+    results.sort((a, b) => (order[a.matchType] ?? 9) - (order[b.matchType] ?? 9));
+    return results;
+  }, [searchLower, data]);
+
+  // Reset keyboard index when results change
+  useEffect(() => { setSearchActiveIdx(-1); }, [searchLower]);
+
+  // Navigate to search result: go to page, expand section, scroll & highlight
+  const navigateToResult = useCallback((result: SearchResult) => {
+    setActivePage(result.pageId);
+    setSearchTerm('');
+    setSearchFocused(false);
+    setSearchActiveIdx(-1);
+
+    const attemptScroll = (retries: number) => {
+      const sectionEl = document.querySelector(`[data-section-id="${result.sectionId}"]`);
+      if (!sectionEl) {
+        if (retries > 0) setTimeout(() => attemptScroll(retries - 1), 80);
+        return;
+      }
+      // Expand section if collapsed
+      const chevron = sectionEl.querySelector('svg.shrink-0');
+      const isOpen = chevron?.classList.contains('rotate-90');
+      if (!isOpen) {
+        const headerBtn = sectionEl.querySelector('button');
+        if (headerBtn) headerBtn.click();
+      }
+      setTimeout(() => {
+        sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const el = sectionEl as HTMLElement;
+        el.style.transition = 'box-shadow 0.3s ease, outline 0.3s ease';
+        el.style.outline = '2px solid rgba(165, 114, 85, 0.5)';
+        el.style.boxShadow = '0 0 20px rgba(165, 114, 85, 0.15)';
+        el.style.borderRadius = '8px';
+        setTimeout(() => { el.style.outline = 'none'; el.style.boxShadow = 'none'; }, 2500);
+      }, 60);
+    };
+
+    setTimeout(() => attemptScroll(5), 120);
+  }, []);
+
+  // Keyboard handler for search
+  const handleSearchKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (!searchResults.length) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSearchActiveIdx(i => Math.min(i + 1, searchResults.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSearchActiveIdx(i => Math.max(i - 1, 0));
+    } else if (e.key === 'Enter' && searchActiveIdx >= 0) {
+      e.preventDefault();
+      navigateToResult(searchResults[searchActiveIdx]);
+    } else if (e.key === 'Escape') {
+      setSearchTerm('');
+      setSearchFocused(false);
+    }
+  }, [searchResults, searchActiveIdx, navigateToResult]);
+
+  // Keep active item in view inside dropdown
+  useEffect(() => {
+    if (searchActiveIdx < 0 || !searchListRef.current) return;
+    const activeResult = searchResults[searchActiveIdx];
+    if (!activeResult) return;
+    const btn = searchListRef.current.querySelector(`[data-search-uid="${activeResult.uid}"]`) as HTMLElement;
+    if (btn) btn.scrollIntoView({ block: 'nearest' });
+  }, [searchActiveIdx, searchResults]);
+
   // Group pages
-  const globalIds = new Set(['geral', 'footer', 'navbar', 'seo']);
-  const mainPages = filteredPages.filter(p => !p.id.startsWith('lp-') && !globalIds.has(p.id));
+  const globalIds = new Set(['geral', 'footer', 'navbar']);
+  const toolIds = new Set(['seo', 'geo', 'audit', 'dashboard']);
+  const mainPages = filteredPages.filter(p => !p.id.startsWith('lp-') && !globalIds.has(p.id) && !toolIds.has(p.id));
   const lpPages = filteredPages.filter(p => p.id.startsWith('lp-'));
   const globalPages = filteredPages.filter(p => globalIds.has(p.id));
+  const toolPages = filteredPages.filter(p => toolIds.has(p.id));
 
-  const totalFields = PAGES.reduce((acc, p) => acc + p.sections.reduce((a, s) => a + s.fields.length, 0), 0);
-  const filledFields = Object.values(data).filter(v => v?.trim()).length;
+  // Audit issue count for badge
+  const auditBadgeCount = useMemo(() => {
+    const allPanelKeys = PAGES.flatMap(page => page.sections.flatMap(sec => sec.fields.map(f => f.key)));
+    return countAuditIssues(allPanelKeys, data);
+  }, [data]);
+
+  const toolBadges = useMemo(() => ({
+    audit: auditBadgeCount,
+  }), [auditBadgeCount]);
+
+  // Determine if current page has a live preview (any page with a route)
+  const pageHasPreview = useMemo(() => {
+    if (!activePage) return false;
+    return !!currentPage?.route;
+  }, [activePage, currentPage]);
+
+  // Auto-close preview when navigating to a page without preview
+  useEffect(() => {
+    if (showPreview && !pageHasPreview) {
+      setShowPreview(false);
+    }
+  }, [activePage, pageHasPreview]);
 
   // Scroll to top on page change
   useEffect(() => {
     contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activePage]);
 
-  // When preview page changes, scroll preview to top
-  useEffect(() => {
-    if (showPreview && previewScrollRef.current) {
-      previewScrollRef.current.scrollTop = 0;
-    }
-  }, [activePage, showPreview]);
-
   // Track preview container size for desktop 16:9 viewport scaling
   useEffect(() => {
     const el = previewContainerRef.current;
     if (!el) return;
+    // Immediate measurement fallback
+    const rect = el.getBoundingClientRect();
+    if (rect.width > 0 && rect.height > 0) {
+      setPreviewContainerSize({ w: Math.round(rect.width), h: Math.round(rect.height) });
+    }
     const ro = new ResizeObserver(([entry]) => {
       const { width, height } = entry.contentRect;
       setPreviewContainerSize({ w: Math.round(width), h: Math.round(height) });
@@ -1975,7 +2368,7 @@ export function PainelPage() {
     return () => ro.disconnect();
   }, [showPreview]);
 
-  // Sync panel data to usePanelContent cache when data changes (for live preview)
+  // Sync panel data to usePanelContent cache when data is first loaded
   useEffect(() => {
     if (Object.keys(data).length > 0) {
       updatePanelDataCache(data);
@@ -2065,28 +2458,166 @@ export function PainelPage() {
             <span className="font-['Marcellus'] text-[16px] text-white tracking-[-0.32px]">Painel SA</span>
           </div>
           {/* Search */}
-          <div className="relative">
-            <Search size={13} className="absolute left-[10px] top-1/2 -translate-y-1/2 text-white/25" />
+          <div className="relative" ref={searchRef}>
+            <Search size={13} className="absolute left-[10px] top-1/2 -translate-y-1/2 text-white/25 z-[1]" />
             <input
               type="text"
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              placeholder="Buscar..."
-              className="w-full bg-[#0e0d0c] border border-white/[0.06] h-[32px] pl-[30px] pr-[10px] text-[12px] text-white font-['Noto_Sans'] rounded-md focus:border-[#a57255]/30 focus:outline-none placeholder:text-white/15"
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setTimeout(() => setSearchFocused(false), 250)}
+              onKeyDown={handleSearchKeyDown}
+              placeholder="Buscar paginas, secoes, textos..."
+              className="w-full bg-[#0e0d0c] border border-white/[0.06] h-[32px] pl-[30px] pr-[28px] text-[12px] text-white font-['Noto_Sans'] rounded-md focus:border-[#a57255]/30 focus:outline-none placeholder:text-white/15"
             />
+            {searchTerm && (
+              <button
+                onClick={() => { setSearchTerm(''); setSearchFocused(false); }}
+                className="absolute right-[8px] top-1/2 -translate-y-1/2 text-white/20 hover:text-white/50 transition-colors z-[1]"
+              >
+                <span className="text-[14px] leading-none">×</span>
+              </button>
+            )}
+
+            {/* Search results dropdown */}
+            {searchFocused && searchLower.length >= 2 && (
+              <div
+                ref={searchListRef}
+                className="absolute top-full left-0 mt-[4px] z-50 bg-[#1a1816] border border-white/[0.1] rounded-xl shadow-2xl max-h-[380px] overflow-y-auto painel-scrollbar"
+                style={{ width: 'max(100%, 320px)', right: 0 }}
+              >
+                {searchResults.length === 0 ? (
+                  <div className="px-[16px] py-[20px] text-center">
+                    <Search size={20} className="text-white/10 mx-auto mb-[8px]" />
+                    <p className="font-['Noto_Sans'] text-[12px] text-white/25">Nenhum resultado para "{searchTerm}"</p>
+                    <p className="font-['Noto_Sans'] text-[10px] text-white/15 mt-[4px]">Tente buscar por nomes de paginas, secoes ou textos do site</p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Header */}
+                    <div className="px-[12px] pt-[8px] pb-[4px] flex items-center justify-between">
+                      <span className="font-['Noto_Sans'] text-[9px] tracking-[0.5px] text-white/20 uppercase">
+                        {searchResults.length} resultado{searchResults.length !== 1 ? 's' : ''}
+                      </span>
+                      <span className="font-['Noto_Sans'] text-[9px] text-white/10">↑↓ navegar · Enter selecionar</span>
+                    </div>
+
+                    {/* Results grouped by page */}
+                    {(() => {
+                      const grouped: Record<string, SearchResult[]> = {};
+                      for (const r of searchResults) {
+                        if (!grouped[r.pageId]) grouped[r.pageId] = [];
+                        grouped[r.pageId].push(r);
+                      }
+
+                      const matchTypeLabel: Record<string, string> = {
+                        page: 'Pagina', section: 'Secao', field: 'Campo',
+                        key: 'Chave', value: 'Conteudo', default: 'Default', placeholder: 'Placeholder',
+                      };
+                      const matchTypeColor: Record<string, string> = {
+                        page: 'text-[#a57255]', section: 'text-blue-400/60', field: 'text-white/40',
+                        key: 'text-purple-400/50', value: 'text-emerald-400/60', default: 'text-amber-400/50', placeholder: 'text-white/20',
+                      };
+
+                      return Object.entries(grouped).map(([pageId, items]) => (
+                        <div key={pageId}>
+                          {/* Page group header */}
+                          <div className="px-[12px] pt-[6px] pb-[2px] flex items-center gap-[6px] border-t border-white/[0.04] first:border-t-0">
+                            <span className="font-['Noto_Sans'] text-[9px] font-semibold text-[#a57255]/60 uppercase tracking-[0.4px]">
+                              {items[0].pageLabel}
+                            </span>
+                          </div>
+
+                          {items.map((result) => {
+                            const thisIdx = searchResults.indexOf(result);
+                            const isActive = searchActiveIdx === thisIdx;
+
+                            // Highlight matching text
+                            const highlightMatch = (text: string) => {
+                              const idx = text.toLowerCase().indexOf(searchLower);
+                              if (idx < 0) return <>{text}</>;
+                              return (
+                                <>
+                                  {text.slice(0, idx)}
+                                  <span className="text-[#a57255] font-semibold">{text.slice(idx, idx + searchLower.length)}</span>
+                                  {text.slice(idx + searchLower.length)}
+                                </>
+                              );
+                            };
+
+                            return (
+                              <button
+                                key={result.uid}
+                                data-search-uid={result.uid}
+                                onMouseDown={(e) => { e.preventDefault(); navigateToResult(result); }}
+                                onMouseEnter={() => setSearchActiveIdx(thisIdx)}
+                                className={`w-full flex items-start gap-[8px] px-[12px] py-[6px] text-left transition-colors ${
+                                  isActive ? 'bg-[#a57255]/10' : 'hover:bg-white/[0.02]'
+                                }`}
+                              >
+                                {/* Type icon */}
+                                <div className="shrink-0 mt-[3px]">
+                                  {result.matchType === 'page' && <FileText size={11} className="text-[#a57255]/50" />}
+                                  {result.matchType === 'section' && <Layout size={11} className="text-blue-400/40" />}
+                                  {result.matchType === 'field' && <Type size={11} className="text-white/25" />}
+                                  {result.matchType === 'key' && <Hash size={11} className="text-purple-400/40" />}
+                                  {result.matchType === 'value' && <AlignLeft size={11} className="text-emerald-400/40" />}
+                                  {result.matchType === 'default' && <Pencil size={11} className="text-amber-400/40" />}
+                                  {result.matchType === 'placeholder' && <Type size={11} className="text-white/15" />}
+                                </div>
+
+                                {/* Content */}
+                                <div className="flex-1 min-w-0">
+                                  {/* Breadcrumb */}
+                                  {result.sectionTitle && (
+                                    <div className="flex items-center gap-[3px] mb-[1px]">
+                                      <span className="font-['Noto_Sans'] text-[9px] text-white/25 truncate">
+                                        {highlightMatch(result.sectionTitle)}
+                                      </span>
+                                      {result.fieldLabel && (
+                                        <>
+                                          <ChevronRight size={7} className="text-white/10 shrink-0" />
+                                          <span className="font-['Noto_Sans'] text-[9px] text-white/25 truncate">
+                                            {highlightMatch(result.fieldLabel)}
+                                          </span>
+                                        </>
+                                      )}
+                                    </div>
+                                  )}
+
+                                  {/* Match type = page: show page name */}
+                                  {result.matchType === 'page' && !result.sectionTitle && (
+                                    <span className="font-['Noto_Sans'] text-[11px] text-white/70 block truncate">
+                                      {highlightMatch(result.pageLabel)}
+                                    </span>
+                                  )}
+
+                                  {/* Snippet / matched value */}
+                                  {result.matchSnippet && (
+                                    <span className="font-['Noto_Sans'] text-[10px] text-white/30 italic block truncate leading-[16px]">
+                                      "{highlightMatch(result.matchSnippet)}"
+                                    </span>
+                                  )}
+                                </div>
+
+                                {/* Badge */}
+                                <span className={`font-['Noto_Sans'] text-[8px] shrink-0 mt-[3px] px-[4px] py-[1px] rounded-sm bg-white/[0.03] ${matchTypeColor[result.matchType] || 'text-white/10'}`}>
+                                  {matchTypeLabel[result.matchType] || result.matchType}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      ));
+                    })()}
+                  </>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Global progress */}
-        <div className="px-[18px] py-[10px] border-b border-white/[0.06]">
-          <div className="flex items-center justify-between mb-[5px]">
-            <span className="font-['Noto_Sans'] text-[10px] text-white/30">Preenchimento geral</span>
-            <span className="font-['Noto_Sans'] text-[10px] text-[#a57255]/70">{Math.round(filledFields / totalFields * 100)}%</span>
-          </div>
-          <div className="h-[3px] bg-white/[0.04] rounded-full overflow-hidden">
-            <div className="h-full bg-[#a57255]/60 rounded-full transition-all duration-500" style={{ width: `${totalFields > 0 ? (filledFields / totalFields * 100) : 0}%` }} />
-          </div>
-        </div>
+
 
         {/* Nav groups */}
         <nav className="flex-1 overflow-y-auto py-[6px]">
@@ -2097,9 +2628,8 @@ export function PainelPage() {
             items={globalPages}
             active={activePage}
             onSelect={setActivePage}
-            expanded={expandedGroup === 'global'}
-            onToggle={() => setExpandedGroup(expandedGroup === 'global' ? null : 'global')}
-            defaultExpanded
+            expanded={expandedGroups.has('global')}
+            onToggle={() => setExpandedGroups(prev => { const next = new Set(prev); next.has('global') ? next.delete('global') : next.add('global'); return next; })}
           />
 
           {/* Pages */}
@@ -2108,9 +2638,8 @@ export function PainelPage() {
             items={mainPages}
             active={activePage}
             onSelect={setActivePage}
-            expanded={expandedGroup === 'pages'}
-            onToggle={() => setExpandedGroup(expandedGroup === 'pages' ? null : 'pages')}
-            defaultExpanded
+            expanded={expandedGroups.has('pages')}
+            onToggle={() => setExpandedGroups(prev => { const next = new Set(prev); next.has('pages') ? next.delete('pages') : next.add('pages'); return next; })}
           />
 
           {/* Serviços */}
@@ -2119,8 +2648,19 @@ export function PainelPage() {
             items={lpPages}
             active={activePage}
             onSelect={setActivePage}
-            expanded={expandedGroup === 'lps'}
-            onToggle={() => setExpandedGroup(expandedGroup === 'lps' ? null : 'lps')}
+            expanded={expandedGroups.has('lps')}
+            onToggle={() => setExpandedGroups(prev => { const next = new Set(prev); next.has('lps') ? next.delete('lps') : next.add('lps'); return next; })}
+          />
+
+          {/* Ferramentas (SEO, GEO, Auditoria) */}
+          <NavGroup
+            label="Ferramentas"
+            items={toolPages}
+            active={activePage}
+            onSelect={setActivePage}
+            expanded={expandedGroups.has('tools')}
+            onToggle={() => setExpandedGroups(prev => { const next = new Set(prev); next.has('tools') ? next.delete('tools') : next.add('tools'); return next; })}
+            badges={toolBadges}
           />
         </nav>
 
@@ -2134,6 +2674,16 @@ export function PainelPage() {
           </button>
           <button onClick={handleSeedDefaults} disabled={isSaving} className={`w-full flex items-center gap-[8px] px-[10px] py-[7px] text-[12px] transition-colors font-['Noto_Sans'] rounded-md ${isSaving ? 'text-[#a57255]/30 cursor-wait' : 'text-[#a57255]/60 hover:text-[#a57255] hover:bg-[#a57255]/5'}`}>
             <RefreshCw size={13} className={isSaving ? 'animate-spin' : ''} /> {isSaving ? 'Sincronizando...' : 'Sincronizar Defaults'}
+          </button>
+          <button
+            onClick={handleMigrateImages}
+            disabled={isMigrating || isSaving}
+            className={`w-full flex items-center gap-[8px] px-[10px] py-[7px] text-[12px] transition-colors font-['Noto_Sans'] rounded-md ${
+              isMigrating ? 'text-emerald-400/50 cursor-wait' : 'text-emerald-500/60 hover:text-emerald-400 hover:bg-emerald-500/5'
+            } disabled:opacity-40`}
+          >
+            <ImageDown size={13} className={isMigrating ? 'animate-pulse' : ''} />
+            {isMigrating ? migrateProgress || 'Migrando...' : 'Migrar Imagens → Supabase'}
           </button>
         </div>
       </aside>
@@ -2159,19 +2709,21 @@ export function PainelPage() {
           </div>
 
           <div className="flex items-center gap-[8px]">
-            {/* Preview toggle — always visible */}
-            <button
-              onClick={() => setShowPreview(!showPreview)}
-              className={`flex items-center gap-[5px] h-[30px] px-[12px] rounded-md text-[12px] font-['Noto_Sans'] font-medium transition-all ${
-                showPreview
-                  ? 'bg-[#a57255]/15 text-[#a57255] border border-[#a57255]/30 shadow-sm shadow-[#a57255]/10'
-                  : 'text-white/40 hover:text-white/70 hover:bg-white/[0.04] border border-white/[0.08]'
-              }`}
-            >
-              {showPreview ? <EyeOff size={13} /> : <Eye size={13} />}
-              {showPreview ? 'Fechar Preview' : 'Preview ao Vivo'}
-              {showPreview && <span className="w-[5px] h-[5px] rounded-full bg-emerald-500 animate-pulse ml-[2px]" />}
-            </button>
+            {/* Preview toggle — only visible when page has a preview component */}
+            {pageHasPreview && (
+              <button
+                onClick={() => setShowPreview(!showPreview)}
+                className={`flex items-center gap-[5px] h-[30px] px-[12px] rounded-md text-[12px] font-['Noto_Sans'] font-medium transition-all ${
+                  showPreview
+                    ? 'bg-[#a57255]/15 text-[#a57255] border border-[#a57255]/30 shadow-sm shadow-[#a57255]/10'
+                    : 'text-white/40 hover:text-white/70 hover:bg-white/[0.04] border border-white/[0.08]'
+                }`}
+              >
+                {showPreview ? <EyeOff size={13} /> : <Eye size={13} />}
+                {showPreview ? 'Fechar Preview' : 'Preview ao Vivo'}
+                {showPreview && <span className="w-[5px] h-[5px] rounded-full bg-emerald-500 animate-pulse ml-[2px]" />}
+              </button>
+            )}
 
             <div className="h-[20px] w-px bg-white/[0.06]" />
 
@@ -2185,9 +2737,10 @@ export function PainelPage() {
               onClick={handleReset}
               disabled={isSaving}
               className="flex items-center gap-[5px] h-[30px] px-[10px] border border-white/[0.08] text-white/40 hover:text-white hover:border-white/[0.15] transition-colors font-['Noto_Sans'] text-[12px] rounded-md"
+              title="Descartar alteracoes e voltar ao ultimo estado salvo"
             >
               <RotateCcw size={13} />
-              Resetar
+              Descartar
             </button>
             <button
               onClick={handleSave}
@@ -2221,8 +2774,14 @@ export function PainelPage() {
                           </h2>
                         </div>
                         <div className="flex items-center gap-[12px] text-white/30 font-['Noto_Sans'] text-[12px]">
-                          {activePage === 'seo' ? (
+                          {activePage === 'dashboard' ? (
+                            <span>Visao geral — Completude, SEO, Imagens, CTAs</span>
+                          ) : activePage === 'seo' ? (
                             <span>5 abas — Dashboard, Meta Tags, Analise, Checklist, Schema.org</span>
+                          ) : activePage === 'geo' ? (
+                            <span>4 abas — Configuração, Monitorar, Otimizar, Checklist</span>
+                          ) : activePage === 'audit' ? (
+                            <span>Painel ↔ Componentes — Orfaos, Sem Editor, Dados Mortos, Assets Pendentes</span>
                           ) : (
                             <>
                               <span>{currentPage.sections.length} secoes</span>
@@ -2239,15 +2798,10 @@ export function PainelPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-[6px]">
-                        {sectionOrders[currentPage.id] && (
+                        {data[getSectionOrderKey(currentPage.id)] && (
                           <button
                             onClick={() => {
-                              setSectionOrders(prev => {
-                                const next = { ...prev };
-                                delete next[currentPage.id];
-                                try { localStorage.setItem('panel-section-orders', JSON.stringify(next)); } catch {}
-                                return next;
-                              });
+                              handleFieldChange(getSectionOrderKey(currentPage.id), '');
                             }}
                             className="flex items-center gap-[5px] h-[32px] px-[10px] text-white/30 hover:text-white hover:bg-white/[0.04] transition-colors font-['Noto_Sans'] text-[11px] rounded-lg"
                             title="Restaurar ordem original das secoes"
@@ -2272,9 +2826,19 @@ export function PainelPage() {
                 </div>
               )}
 
-              {/* Sections — drag-and-drop reordering or custom SEO panel */}
-              {currentPage && activePage === 'seo' ? (
+              {/* Sections — drag-and-drop reordering or custom panels */}
+              {currentPage && activePage === 'dashboard' ? (
+                <PainelDashboard data={data} onNavigate={setActivePage} />
+              ) : currentPage && activePage === 'seo' ? (
                 <SeoPanel data={data} onChange={handleFieldChange} />
+              ) : currentPage && activePage === 'geo' ? (
+                <GeoPanel data={data} onChange={handleFieldChange} getToken={getToken} />
+              ) : currentPage && activePage === 'audit' ? (
+                <AuditPanel
+                  panelKeys={PAGES.flatMap(page => page.sections.flatMap(sec => sec.fields.map(f => f.key)))}
+                  data={data}
+                  onNavigate={setActivePage}
+                />
               ) : currentPage && (() => {
                 const orderedSections = getOrderedSections(currentPage);
                 return orderedSections.map((section, idx) => (
@@ -2294,16 +2858,50 @@ export function PainelPage() {
             </div>
           </div>
 
-          {/* Preview panel — renders actual page component (no iframe) */}
-          {showPreview && (
-            <div className="w-[50%] border-l border-white/[0.06] flex flex-col bg-[#0a0908]">
+          {/* Preview panel — iframe-based live preview */}
+          {showPreview && (() => {
+            /* ── Device dimensions ── */
+            const DEVICE_SPECS = {
+              desktop: { w: 1920, h: 1080, label: '1920 × 1080' },
+              tablet:  { w: 768,  h: 1024, label: '768 × 1024'  },
+              mobile:  { w: 375,  h: 812,  label: '375 × 812'   },
+            } as const;
+            const spec = DEVICE_SPECS[previewDevice];
+            const deviceW = previewRotated && previewDevice !== 'desktop' ? spec.h : spec.w;
+            const deviceH = previewRotated && previewDevice !== 'desktop' ? spec.w : spec.h;
+            const dimLabel = previewRotated && previewDevice !== 'desktop'
+              ? `${spec.h} × ${spec.w}` : spec.label;
+
+            /* Zoom helpers */
+            const ZOOM_PRESETS = [50, 75, 100, 125, 150];
+            const effectiveZoom = previewZoom || 0; // 0 = auto-fit
+
+            /* Background class */
+            const bgClass = previewBg === 'light' ? 'bg-[#e5e5e5]'
+              : previewBg === 'grid' ? 'bg-[#1a1917]'
+              : 'bg-[#0e0d0c]';
+            const bgGridStyle = previewBg === 'grid' ? {
+              backgroundImage: 'linear-gradient(45deg, #222 25%, transparent 25%), linear-gradient(-45deg, #222 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #222 75%), linear-gradient(-45deg, transparent 75%, #222 75%)',
+              backgroundSize: '20px 20px',
+              backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
+            } : undefined;
+
+            const btnCls = (active: boolean) =>
+              `p-[3px] rounded transition-colors cursor-pointer ${active ? 'text-[#a57255]' : 'text-white/20 hover:text-white/40'}`;
+
+            const rawRoute = currentPage?.route
+              ? (currentPage.route.startsWith('/') ? currentPage.route : `/${currentPage.route}`)
+              : null;
+
+            return (
+            <div className="w-[50%] border-l border-white/[0.06] flex flex-col bg-[#0a0908] min-h-0">
               {/* Preview top bar — browser-like */}
               <div className="shrink-0 bg-[#151311] border-b border-white/[0.06]">
-                {/* Controls row */}
+                {/* Row 1: Controls */}
                 <div className="h-[38px] flex items-center justify-between px-[12px]">
-                  <div className="flex items-center gap-[8px]">
+                  <div className="flex items-center gap-[6px]">
                     {/* Traffic lights */}
-                    <div className="flex items-center gap-[5px] mr-[4px]">
+                    <div className="flex items-center gap-[5px] mr-[2px]">
                       <button
                         onClick={() => setShowPreview(false)}
                         className="w-[10px] h-[10px] rounded-full bg-red-500/70 hover:bg-red-500 transition-colors cursor-pointer"
@@ -2316,23 +2914,100 @@ export function PainelPage() {
                     <div className="h-[16px] w-px bg-white/[0.06]" />
 
                     {/* Device toggles */}
+                    {([
+                      { id: 'desktop' as const, icon: <Monitor size={13} />, tip: 'Desktop (1920px)' },
+                      { id: 'tablet'  as const, icon: <Tablet size={13} />,  tip: 'Tablet (768px)' },
+                      { id: 'mobile'  as const, icon: <Smartphone size={13} />, tip: 'Mobile (375px)' },
+                    ]).map(d => (
+                      <button
+                        key={d.id}
+                        onClick={() => { setPreviewDevice(d.id); setPreviewZoom(0); setPreviewRotated(false); }}
+                        className={btnCls(previewDevice === d.id)}
+                        title={d.tip}
+                      >
+                        {d.icon}
+                      </button>
+                    ))}
+
+                    {/* Rotate — tablet & mobile only */}
+                    {previewDevice !== 'desktop' && (
+                      <>
+                        <div className="h-[16px] w-px bg-white/[0.06] mx-[2px]" />
+                        <button
+                          onClick={() => setPreviewRotated(r => !r)}
+                          className={btnCls(previewRotated)}
+                          title={previewRotated ? 'Landscape → Portrait' : 'Portrait → Landscape'}
+                        >
+                          <RotateCw size={12} />
+                        </button>
+                      </>
+                    )}
+
+                    <div className="h-[16px] w-px bg-white/[0.06] mx-[2px]" />
+
+                    {/* Zoom controls */}
                     <button
-                      onClick={() => setPreviewDevice('desktop')}
-                      className={`p-[3px] rounded transition-colors cursor-pointer ${previewDevice === 'desktop' ? 'text-[#a57255]' : 'text-white/20 hover:text-white/40'}`}
-                      title="Desktop"
+                      onClick={() => setPreviewZoom(z => Math.max(25, (z || 100) - 25))}
+                      className="p-[3px] text-white/20 hover:text-white/40 transition-colors cursor-pointer"
+                      title="Zoom out"
                     >
-                      <Monitor size={13} />
+                      <Minus size={11} />
                     </button>
+
                     <button
-                      onClick={() => setPreviewDevice('mobile')}
-                      className={`p-[3px] rounded transition-colors cursor-pointer ${previewDevice === 'mobile' ? 'text-[#a57255]' : 'text-white/20 hover:text-white/40'}`}
-                      title="Mobile"
+                      onClick={() => setPreviewZoom(0)}
+                      className={`font-['Noto_Sans'] text-[10px] tabular-nums px-[6px] py-[1px] rounded transition-colors cursor-pointer ${effectiveZoom === 0 ? 'text-[#a57255] bg-[#a57255]/10' : 'text-white/30 hover:text-white/50 bg-white/[0.03]'}`}
+                      title="Responsivo (ajustar ao container)"
                     >
-                      <Smartphone size={13} />
+                      {effectiveZoom === 0 ? 'Fit' : `${effectiveZoom}%`}
                     </button>
+
+                    <button
+                      onClick={() => setPreviewZoom(z => Math.min(200, (z || 100) + 25))}
+                      className="p-[3px] text-white/20 hover:text-white/40 transition-colors cursor-pointer"
+                      title="Zoom in"
+                    >
+                      <Plus size={11} />
+                    </button>
+
+                    {/* Quick zoom presets */}
+                    {ZOOM_PRESETS.map(z => (
+                      <button
+                        key={z}
+                        onClick={() => setPreviewZoom(z === 100 && effectiveZoom === 100 ? 0 : z)}
+                        className={`font-['Noto_Sans'] text-[9px] tabular-nums px-[4px] py-[1px] rounded transition-colors cursor-pointer ${effectiveZoom === z ? 'text-[#a57255]' : 'text-white/15 hover:text-white/30'}`}
+                        title={`${z}%`}
+                      >
+                        {z}
+                      </button>
+                    ))}
                   </div>
 
-                  <div className="flex items-center gap-[6px]">
+                  <div className="flex items-center gap-[4px]">
+                    {/* Scroll to top */}
+                    <button
+                      onClick={() => {
+                        const scrollEl = previewContainerRef.current?.querySelector('.preview-scroll-container');
+                        if (scrollEl) scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className="p-[3px] text-white/20 hover:text-white/40 transition-colors cursor-pointer"
+                      title="Scroll ao topo"
+                    >
+                      <ArrowUp size={12} />
+                    </button>
+
+                    {/* Background toggle */}
+                    <button
+                      onClick={() => setPreviewBg(b => b === 'dark' ? 'light' : b === 'light' ? 'grid' : 'dark')}
+                      className="p-[3px] text-white/20 hover:text-white/40 transition-colors cursor-pointer"
+                      title={`Fundo: ${previewBg === 'dark' ? 'escuro' : previewBg === 'light' ? 'claro' : 'grid'}`}
+                    >
+                      {previewBg === 'dark' ? <Moon size={11} /> : previewBg === 'light' ? <Sun size={11} /> : <Grid3X3 size={11} />}
+                    </button>
+
+                    <div className="h-[16px] w-px bg-white/[0.06]" />
+
+                    {/* Open in new tab */}
                     {currentPage?.route && (
                       <Link
                         to={currentPage.route}
@@ -2346,26 +3021,28 @@ export function PainelPage() {
                   </div>
                 </div>
 
-                {/* URL bar */}
+                {/* Row 2: URL bar + dimensions */}
                 <div className="px-[12px] pb-[8px]">
                   <div className="flex items-center gap-[6px] bg-[#0e0d0c] rounded-md h-[28px] px-[10px] border border-white/[0.04]">
-                    <Globe size={10} className="text-white/15 shrink-0" />
-                    <span className="font-['Noto_Sans'] text-[11px] text-white/25 truncate flex-1">
-                      sousaaraujo.adv.br{currentPage?.route || ''}
+                    <Globe size={10} className="text-emerald-500/50 shrink-0" />
+                    <span className="font-['Noto_Sans'] text-[11px] text-white/35 truncate flex-1 select-none">
+                      sousaaraujo.adv.br{currentPage?.route || '/'}
                     </span>
-                    {previewDevice === 'desktop' && previewContainerSize.w > 0 && (
-                      <span className="font-['Noto_Sans'] text-[9px] text-white/15 tabular-nums shrink-0 bg-white/[0.04] px-[5px] py-[1px] rounded">
-                        {Math.round((previewContainerSize.w / 1920) * 100)}%
-                      </span>
-                    )}
+                    <span className="font-['Noto_Sans'] text-[9px] text-white/15 tabular-nums shrink-0 bg-white/[0.04] px-[5px] py-[1px] rounded">
+                      {dimLabel}
+                    </span>
+                    <span className="font-['Noto_Sans'] text-[9px] text-emerald-500/40 shrink-0">●</span>
                   </div>
                 </div>
               </div>
 
-              {/* Live page preview — rendered directly (no iframe) */}
+              {/* Inline preview area */}
               {(() => {
-                const PageComp = PreviewPages[activePage];
-                if (!PageComp) {
+                const rawRoute = currentPage?.route
+                  ? (currentPage.route.startsWith('/') ? currentPage.route : `/${currentPage.route}`)
+                  : null;
+
+                if (!rawRoute) {
                   return (
                     <div className="flex-1 flex flex-col items-center justify-center text-center px-[40px]">
                       <div className="w-[56px] h-[56px] rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center mb-[16px]">
@@ -2380,69 +3057,80 @@ export function PainelPage() {
                     </div>
                   );
                 }
-                /* ── Desktop: virtual 1920×1080 viewport scaled to fit ── */
-                /* ── Mobile: 375px with phone frame ── */
-                const VIRTUAL_W = 1920;
-                const VIRTUAL_H = 1080;
 
-                if (previewDevice === 'mobile') {
+                const cw = previewContainerSize.w;
+                const ch = previewContainerSize.h;
+
+                /* ── Mobile / Tablet: device frame with inline preview ── */
+                if (previewDevice === 'mobile' || previewDevice === 'tablet') {
+                  const frameW = deviceW;
+                  const autoScale = cw > 0 ? Math.min((cw - 32) / frameW, (ch - 16) / deviceH, 1) : 0.6;
+                  const finalScale = effectiveZoom > 0 ? effectiveZoom / 100 : autoScale;
+                  const isMobile = previewDevice === 'mobile';
+                  const borderRadius = isMobile ? 'rounded-[28px]' : 'rounded-[16px]';
+                  const borderW = isMobile ? 3 : 2;
+
                   return (
-                    <div ref={previewContainerRef} className="flex-1 overflow-hidden flex justify-center items-start bg-[#0e0d0c] p-[12px]">
+                    <div
+                      ref={previewContainerRef}
+                      className={`flex-1 overflow-auto flex justify-center items-start p-[12px] ${bgClass} min-h-0`}
+                      style={bgGridStyle}
+                    >
                       <div
-                        ref={previewScrollRef}
-                        className="w-[375px] overflow-y-auto overflow-x-hidden bg-white rounded-xl border-[3px] border-[#333] shadow-2xl transition-all duration-300"
-                        style={{ maxHeight: '100%', transform: 'scale(1)' }}
+                        className={`${borderRadius} shadow-2xl overflow-hidden shrink-0 transition-all duration-200`}
+                        style={{
+                          width: frameW,
+                          height: deviceH,
+                          transform: `scale(${finalScale})`,
+                          transformOrigin: 'top center',
+                          border: `${borderW}px solid #333`,
+                        }}
                       >
-                        <PreviewErrorBoundary pageId={activePage}>
-                          <Suspense fallback={<PreviewLoader />}>
-                            <PreviewLayout>
-                              <PageComp key={activePage} />
-                            </PreviewLayout>
-                          </Suspense>
-                        </PreviewErrorBoundary>
+                        <PanelPreview
+                          key={`${activePage}-${previewDevice}-${previewRotated}`}
+                          pageId={activePage}
+                          route={rawRoute}
+                          width={frameW}
+                          height={deviceH}
+                        />
                       </div>
                     </div>
                   );
                 }
 
-                /* Desktop: 1920×1080 virtual viewport scaled to fit container width.
-                   Height is capped at 1080px (Full HD) so it simulates a real monitor.
-                   The outer wrapper clips to the scaled dimensions; scroll happens inside. */
-                const cw = previewContainerSize.w;
-                const ch = previewContainerSize.h;
+                /* ── Desktop: responsive viewport with inline preview ── */
+                const BASE_W = deviceW;
+                const VIRTUAL_W = effectiveZoom > 0 ? Math.round(BASE_W * (100 / effectiveZoom)) : BASE_W;
                 const scale = cw > 0 ? cw / VIRTUAL_W : 0.5;
-                const scaledViewportH = Math.round(VIRTUAL_H * scale);
+                const visibleH = ch > 0 ? Math.round(ch / scale) : deviceH;
 
                 return (
                   <div
                     ref={previewContainerRef}
-                    className="flex-1 overflow-hidden bg-[#0e0d0c] flex items-start justify-center"
+                    className={`flex-1 overflow-hidden flex items-start justify-center ${bgClass} min-h-0`}
+                    style={bgGridStyle}
                   >
                     {cw > 0 && (
                       <div
                         className="relative overflow-hidden"
-                        style={{
-                          width: cw,
-                          height: Math.min(scaledViewportH, ch),
-                        }}
+                        style={{ width: cw, height: ch }}
                       >
                         <div
-                          ref={previewScrollRef}
-                          className="overflow-y-auto overflow-x-hidden bg-white absolute top-0 left-0"
+                          className="absolute top-0 left-0 overflow-hidden"
                           style={{
                             width: VIRTUAL_W,
-                            height: VIRTUAL_H,
+                            height: visibleH,
                             transform: `scale(${scale})`,
                             transformOrigin: 'top left',
                           }}
                         >
-                        <PreviewErrorBoundary pageId={activePage}>
-                          <Suspense fallback={<PreviewLoader />}>
-                            <PreviewLayout>
-                              <PageComp key={activePage} />
-                            </PreviewLayout>
-                          </Suspense>
-                        </PreviewErrorBoundary>
+                          <PanelPreview
+                            key={activePage}
+                            pageId={activePage}
+                            route={rawRoute}
+                            width={VIRTUAL_W}
+                            height={visibleH}
+                          />
                         </div>
                       </div>
                     )}
@@ -2450,7 +3138,8 @@ export function PainelPage() {
                 );
               })()}
             </div>
-          )}
+            );
+          })()}
         </div>
       </div>
 
@@ -2463,16 +3152,16 @@ export function PainelPage() {
 
 
 /* ─── Nav Group Component ─── */
-function NavGroup({ label, items, active, onSelect, expanded, onToggle, defaultExpanded }: {
+function NavGroup({ label, items, active, onSelect, expanded, onToggle, badges }: {
   label: string;
   items: PageConfig[];
   active: string;
   onSelect: (id: string) => void;
   expanded: boolean;
   onToggle: () => void;
-  defaultExpanded?: boolean;
+  badges?: Record<string, number>;
 }) {
-  const isOpen = defaultExpanded ? true : expanded;
+  const isOpen = expanded;
   if (items.length === 0) return null;
 
   return (
@@ -2489,6 +3178,7 @@ function NavGroup({ label, items, active, onSelect, expanded, onToggle, defaultE
         <div className="pb-[4px]">
           {items.map(page => {
             const isActive = active === page.id;
+            const badge = badges?.[page.id];
             return (
               <button
                 key={page.id}
@@ -2500,7 +3190,12 @@ function NavGroup({ label, items, active, onSelect, expanded, onToggle, defaultE
                 }`}
               >
                 <span className={isActive ? 'text-[#a57255]' : 'text-white/25'}>{page.icon}</span>
-                <span className="font-['Noto_Sans'] text-[12px] tracking-[-0.18px] truncate">{page.label}</span>
+                <span className="font-['Noto_Sans'] text-[12px] tracking-[-0.18px] truncate flex-1">{page.label}</span>
+                {badge != null && badge > 0 && (
+                  <span className="font-['Noto_Sans'] text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/20 px-[5px] py-[1px] rounded-full min-w-[18px] text-center">
+                    {badge}
+                  </span>
+                )}
               </button>
             );
           })}

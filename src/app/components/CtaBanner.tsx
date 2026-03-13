@@ -7,6 +7,7 @@
 
 import imgBackground from "figma:asset/fcf68d553754923b39d9072139ccfeb443b32d57.png";
 import { usePanel } from '../hooks/usePanelContent';
+import { trackCtaClick } from './PainelDashboard';
 
 export function CtaBanner(props?: {
   title?: string;
@@ -42,6 +43,7 @@ export function CtaBanner(props?: {
         </h2>
         <a
           href={content.buttonHref}
+          onClick={() => trackCtaClick('home')}
           className="inline-flex items-center justify-center bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[44px] md:h-[46px] px-[28px] md:px-[41px] font-['Noto_Sans'] font-medium text-[14px] md:text-[15px] leading-[25px] tracking-[-0.225px] text-white"
         >
           {content.buttonText}

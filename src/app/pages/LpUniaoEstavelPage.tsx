@@ -4,14 +4,14 @@
 import { ServiceTemplate, type ServiceData } from '../components/LpTemplate';
 
 import imgHero from 'figma:asset/6c627bf6bc0511aa5872bd0ed7a7d5df4a890ba9.png';
-import imgParallax from 'figma:asset/a417229c957cdd5306763b4c6f5b421056127f88.png';
 import imgSticky from 'figma:asset/4a36bb11fdcdbb05a48be1bedc1e4dcfd7d3dee4.png';
-import imgMetodo from 'figma:asset/d549692c425a1be1f547495a00b3374ff2fc8534.png';
 import imgLidiane from 'figma:asset/8eecaa51fea8463a93c801f405e4ef1e452f0526.png';
-import imgCtaBg from 'figma:asset/fcf68d553754923b39d9072139ccfeb443b32d57.png';
 import imgArticle1 from 'figma:asset/8939e27c373d2667cd5b70a5d8b055a4fd2fa218.png';
 import imgArticle2 from 'figma:asset/7172e73658649742fdd5acab43293d31612372af.png';
 import imgArticle3 from 'figma:asset/17ddbc7d87780fe3b96f8aa23873484672413186.png';
+import imgParallax from 'figma:asset/a417229c957cdd5306763b4c6f5b421056127f88.png';
+import imgMetodo from 'figma:asset/d549692c425a1be1f547495a00b3374ff2fc8534.png';
+import imgCtaBg from 'figma:asset/fcf68d553754923b39d9072139ccfeb443b32d57.png';
 
 export const uniaoData: ServiceData = {
   hero: {

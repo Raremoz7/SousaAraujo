@@ -3,12 +3,13 @@
  * Following the exact structure of HomologacaoPage
  */
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, createContext, useContext } from 'react';
 import { Link } from 'react-router';
 import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
 import { PlayButton } from './ui/PlayButton';
 import { Contact } from './Contact';
 import { readPanel } from '../hooks/usePanelContent';
+import { trackCtaClick } from './PainelDashboard';
 
 /* ─── SVG icons from Homologação ─── */
 import svgPaths from '../../imports/svg-6m3rhq93hc';
@@ -16,6 +17,9 @@ import { imgG4831 } from '../../imports/svg-vm94k';
 
 /* ─── Arrow path (reused across all CTAs) ─── */
 const ARROW_PATH = "M19.1609 0V0.220558L19.1825 0.24226H19.4661V18.8519H18.9411V0.856491L0.370449 19.4661L0.185224 19.2794L0 19.0921L18.5264 0.527421H0.29164V0H19.1609Z";
+
+/* ─── CTA Track Context ─── */
+const TrackKeyCtx = createContext('');
 
 /* ─── Types ─── */
 export interface ServiceData {
@@ -251,40 +255,32 @@ function AccordionArrow({ className = '' }: { className?: string }) {
 }
 
 function CtaButtonPixel({ label }: { label: string }) {
+  const tk = useContext(TrackKeyCtx);
   return (
     <a
       href="#contato"
-      className="group relative inline-block bg-[#a57255] hover:bg-[#8f6146] transition-colors shrink-0"
-      style={{ width: '316px', height: '49.314px' }}
+      onClick={() => tk && trackCtaClick(tk)}
+      className="group inline-flex items-center gap-[14px] border border-[#a57255] hover:bg-[#a57255]/10 transition-colors h-[49px] px-[22px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white shrink-0"
     >
-      <span
-        className="absolute rounded-full bg-[#a57255] group-hover:bg-[#8f6146] transition-colors"
-        style={{ left: '267.98px', top: '5.84px', width: '38.283px', height: '38.283px' }}
-      />
-      <span className="absolute" style={{ top: '30.04%', right: '6.17%', bottom: '30.48%', left: '87.67%' }}>
-        <svg className="absolute block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 19.4661 19.4661">
-          <path d={ARROW_PATH} fill="white" />
-        </svg>
-      </span>
-      <span
-        className="absolute -translate-y-1/2 font-['Noto_Sans'] font-medium text-white whitespace-nowrap"
-        style={{ left: '22.06px', top: '24.68px', fontSize: '15.184px', letterSpacing: '-0.2278px', lineHeight: '25.306px' }}
-      >
-        {label}
-      </span>
+      {label}
+      <svg fill="none" viewBox="0 0 10 10" className="w-[10px] h-[10px] shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
+        <path d="M0.360346 9.59673L9.48745 0.500255M0.411392 0.510465H9.47724M9.49766 9.39255V0.500255" stroke="white" strokeWidth="1.02093" />
+      </svg>
     </a>
   );
 }
 
 function CtaButtonInline({ label }: { label: string }) {
+  const tk = useContext(TrackKeyCtx);
   return (
     <a
       href="#contato"
-      className="inline-flex items-center gap-[14px] bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[49px] px-[22px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white"
+      onClick={() => tk && trackCtaClick(tk)}
+      className="group inline-flex items-center gap-[14px] border border-[#a57255] hover:bg-[#a57255]/10 transition-colors h-[49px] px-[22px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white"
     >
       {label}
-      <svg fill="none" viewBox="0 0 19.47 19.47" className="w-[19px] h-[19px] shrink-0">
-        <path d={ARROW_PATH} fill="white" />
+      <svg fill="none" viewBox="0 0 10 10" className="w-[10px] h-[10px] shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
+        <path d="M0.360346 9.59673L9.48745 0.500255M0.411392 0.510465H9.47724M9.49766 9.39255V0.500255" stroke="white" strokeWidth="1.02093" />
       </svg>
     </a>
   );
@@ -297,6 +293,7 @@ const EASE_EXPAND = [0.22, 0.61, 0.36, 1] as const;
 function PageHero({ data }: { data: ServiceData }) {
   const { hero } = data;
   const ctaLabel = hero.ctaText || data.ctaText || 'Agendar Consulta de Viabilidade';
+  const tk = useContext(TrackKeyCtx);
   return (
     <section className="relative w-full min-h-[600px] md:min-h-[720px] lg:min-h-[800px] overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
@@ -317,7 +314,12 @@ function PageHero({ data }: { data: ServiceData }) {
           </p>
         </FadeIn>
         <FadeIn delay={0.25}>
-          <a href="#contato" aria-label="Agendar consulta de viabilidade" className="inline-flex items-center justify-center bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[46px] px-[32px] font-['Noto_Sans'] font-medium text-[15px] text-white tracking-[-0.225px]">{ctaLabel}</a>
+          <a href="#contato" aria-label="Agendar consulta de viabilidade" onClick={() => tk && trackCtaClick(tk)} className="group inline-flex items-center gap-[14px] border border-[#a57255] hover:bg-[#a57255]/10 transition-colors h-[49px] px-[22px] font-['Noto_Sans'] font-medium text-[15px] text-white tracking-[-0.225px]">
+            {ctaLabel}
+            <svg fill="none" viewBox="0 0 10 10" className="w-[10px] h-[10px] shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
+              <path d="M0.360346 9.59673L9.48745 0.500255M0.411392 0.510465H9.47724M9.49766 9.39255V0.500255" stroke="white" strokeWidth="1.02093" />
+            </svg>
+          </a>
         </FadeIn>
 
         {/* Play Button */}
@@ -501,12 +503,18 @@ function ScenariosSection({ data }: { data: ServiceData }) {
 
 function OnlineBanner({ data }: { data: ServiceData }) {
   const ctaLabel = data.ctaText || 'Agendar Consulta de Viabilidade';
+  const tk = useContext(TrackKeyCtx);
   return (
     <section className="bg-[#452b1e] py-[60px] md:py-[80px]">
       <div className="max-w-[1440px] mx-auto px-[20px] md:px-[40px] lg:px-[110px] text-center">
         <FadeIn>
           <h2 className="font-['Marcellus'] text-[28px] md:text-[36px] lg:text-[43px] leading-[1.25] lg:leading-[52px] tracking-[-0.516px] text-white max-w-[997px] mx-auto mb-[32px]">{data.onlineBanner}</h2>
-          <a href="#contato" className="inline-flex items-center justify-center bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[46px] px-[32px] font-['Noto_Sans'] font-medium text-[15px] text-white tracking-[-0.225px]">{ctaLabel}</a>
+          <a href="#contato" onClick={() => tk && trackCtaClick(tk)} className="group inline-flex items-center gap-[14px] border border-[#a57255] hover:bg-[#a57255]/10 transition-colors h-[49px] px-[22px] font-['Noto_Sans'] font-medium text-[15px] text-white tracking-[-0.225px]">
+            {ctaLabel}
+            <svg fill="none" viewBox="0 0 10 10" className="w-[10px] h-[10px] shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">
+              <path d="M0.360346 9.59673L9.48745 0.500255M0.411392 0.510465H9.47724M9.49766 9.39255V0.500255" stroke="white" strokeWidth="1.02093" />
+            </svg>
+          </a>
         </FadeIn>
       </div>
     </section>
@@ -700,9 +708,10 @@ function FaqSection({ data }: { data: ServiceData }) {
 export function ServiceTemplate({ data, panelId }: { data: ServiceData; panelId?: string }) {
   // Merge panel overrides into data when panelId is provided
   const d = panelId ? applyPanelOverrides(data, panelId) : data;
+  const trackKey = panelId?.replace('lp-', '') || '';
 
   return (
-    <>
+    <TrackKeyCtx.Provider value={trackKey}>
       <PageHero data={d} />
       <TrustSection data={d} />
       <ParallaxSection data={d} />
@@ -717,13 +726,42 @@ export function ServiceTemplate({ data, panelId }: { data: ServiceData; panelId?
       <HistoriasSection data={d} />
       <FaqSection data={d} />
       <Contact />
-    </>
+    </TrackKeyCtx.Provider>
   );
 }
 
 /* ─── Panel Override Helper ─── */
 function p(panelId: string, key: string, fallback: string): string {
   return readPanel(`${panelId}.${key}`, fallback);
+}
+
+/**
+ * Panel override for IMAGE fields only.
+ * Only uses the panel value if it's a user-provided URL (Supabase Storage,
+ * Unsplash, user CDN, etc.). Rejects stale auto-seeded URLs that may have
+ * expired across Figma Make rebuilds.
+ *
+ * Strategy: the fallback (from the fresh figma:asset import) is ALWAYS the
+ * most reliable source. We only override it with a panel value that we're
+ * confident was explicitly set by the user — which means Supabase Storage
+ * signed URLs (from our upload system) or URLs from well-known permanent hosts.
+ */
+function pImg(panelId: string, key: string, fallback: string): string {
+  const val = readPanel(`${panelId}.${key}`, fallback);
+  // If readPanel returned the fallback, use it directly (no panel override exists)
+  if (val === fallback) return fallback;
+  // Accept Supabase Storage signed URLs (uploaded via our panel)
+  if (val.includes('supabase.co/storage')) return val;
+  // Accept well-known permanent image hosts
+  if (val.includes('unsplash.com') || val.includes('cloudinary.com') || val.includes('imgur.com')) return val;
+  // Accept data URIs
+  if (val.startsWith('data:image/')) return val;
+  // For any other URL: compare with the fallback. If the fallback is a real URL
+  // (resolved figma:asset), the panel value is likely a stale copy → prefer fallback
+  if (fallback && fallback.startsWith('http')) return fallback;
+  // If fallback is not a URL (e.g. empty), accept the panel value
+  if (val.startsWith('http')) return val;
+  return fallback;
 }
 
 function applyPanelOverrides(data: ServiceData, id: string): ServiceData {
@@ -734,7 +772,7 @@ function applyPanelOverrides(data: ServiceData, id: string): ServiceData {
       title: p(id, 'hero.title', data.hero.title),
       highlightedTitle: data.hero.highlightedTitle ? p(id, 'hero.highlightedTitle', data.hero.highlightedTitle) : undefined,
       subtitle: p(id, 'hero.subtitle', data.hero.subtitle),
-      image: p(id, 'hero.image', data.hero.image),
+      image: pImg(id, 'hero.image', data.hero.image),
       ctaText: p(id, 'hero.ctaText', data.hero.ctaText || ''),
       maxWidth: data.hero.maxWidth,
     },
@@ -747,10 +785,10 @@ function applyPanelOverrides(data: ServiceData, id: string): ServiceData {
       title: p(id, 'trust.title', data.trust.title),
       body: p(id, 'trust.body', data.trust.body),
     },
-    parallaxImage: p(id, 'parallax.image', data.parallaxImage),
+    parallaxImage: pImg(id, 'parallax.image', data.parallaxImage),
     metodo: {
       title: p(id, 'metodo.title', data.metodo.title),
-      image: p(id, 'metodo.image', data.metodo.image),
+      image: pImg(id, 'metodo.image', data.metodo.image),
       steps: data.metodo.steps.map((s, i) => ({
         label: p(id, `metodo.step${i+1}.label`, s.label),
         desc: p(id, `metodo.step${i+1}.desc`, s.desc),
@@ -767,7 +805,7 @@ function applyPanelOverrides(data: ServiceData, id: string): ServiceData {
         title: p(id, `scenarios.deep${i+1}.title`, d.title),
         text: p(id, `scenarios.deep${i+1}.text`, d.text),
       })),
-      stickyImage: p(id, 'scenarios.stickyImage', data.scenarios.stickyImage),
+      stickyImage: pImg(id, 'scenarios.stickyImage', data.scenarios.stickyImage),
     },
     onlineBanner: p(id, 'onlineBanner', data.onlineBanner),
     passoAPasso: data.passoAPasso.map((s, i) => ({
@@ -783,18 +821,18 @@ function applyPanelOverrides(data: ServiceData, id: string): ServiceData {
     })),
     costCta: {
       title: p(id, 'costCta.title', data.costCta.title),
-      bgImage: p(id, 'costCta.bgImage', data.costCta.bgImage),
+      bgImage: pImg(id, 'costCta.bgImage', data.costCta.bgImage),
     },
     whyTrust: {
       trustItems: data.whyTrust.trustItems.map((t, i) => p(id, `whyTrust.trust${i+1}`, t)),
       consultaItems: data.whyTrust.consultaItems.map((c, i) => p(id, `whyTrust.consulta${i+1}`, c)),
-      lidianeImage: p(id, 'whyTrust.lidianeImage', data.whyTrust.lidianeImage),
+      lidianeImage: pImg(id, 'whyTrust.lidianeImage', data.whyTrust.lidianeImage),
     },
     historias: {
       title: p(id, 'historias.title', data.historias.title),
       items: data.historias.items.map((h, i) => ({
         ...h,
-        img: p(id, `historias.item${i+1}.img`, h.img),
+        img: pImg(id, `historias.item${i+1}.img`, h.img),
         subtitle: p(id, `historias.item${i+1}.subtitle`, h.subtitle),
         body: p(id, `historias.item${i+1}.body`, h.body),
       })),

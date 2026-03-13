@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { imgRectangle4 } from '../../imports/images';
 import { PlayButton } from './ui/PlayButton';
 import { usePanel } from '../hooks/usePanelContent';
+import { trackCtaClick } from './PainelDashboard';
 import svgArrow from '../../imports/svg-od596xq1d5';
 import LidianeSousaAraujo from '../../imports/LidianeSousaAraujo';
 
@@ -109,6 +110,7 @@ export function Hero(props?: {
           <a
             href={content.ctaHref}
             className="inline-flex items-center gap-[10px] px-[22px] py-[10px] border-[1.5px] border-[#a57255] bg-transparent text-white font-['Noto_Sans'] font-medium text-[13px] md:text-[14px] leading-[25px] tracking-[-0.225px] hover:bg-[#a57255]/10 transition-all duration-300 group"
+            onClick={() => trackCtaClick('home')}
           >
             <span>{content.ctaText}</span>
             <svg

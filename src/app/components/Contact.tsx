@@ -12,6 +12,7 @@ import imgBackground from "figma:asset/5ef7c5358541da50c7d84d33ae870248235d1b9f.
 import imgPin from "figma:asset/3e71c6d61aa0e57d1a665be82b28cb9ea6a34e93.png";
 import imgPhone from "figma:asset/39e61b656ddd5fe3d719f00ef6da22c2fe461e03.png";
 import { usePanel } from '../hooks/usePanelContent';
+import { trackCtaClick } from './PainelDashboard';
 
 export function Contact() {
   const panelAddress = usePanel('contato.address', 'Edifício Varig - Asa Norte, Brasília - DF, 70714-020');
@@ -37,6 +38,7 @@ export function Contact() {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus(null);
+    trackCtaClick('contato');
 
     // Simulate form submission
     setTimeout(() => {

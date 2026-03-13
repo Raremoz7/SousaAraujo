@@ -13,6 +13,7 @@ import imgTeamPhoto    from 'figma:asset/2b85fa036dea8b3032c27b752074d867c5fe1f1
 import imgGallery1     from 'figma:asset/f93fab1ef1d5d123bb5e3c544b05533319fc528f.png';
 import imgGallery2     from 'figma:asset/0a2c4b4b53a6b852695e6a0c347b2fd603ee66f2.png';
 import imgGallery3     from 'figma:asset/9972a3ecc156d325ee1f67a9bdb5e6e98cd03776.png';
+import imgBioPortrait  from 'figma:asset/9011c1e99e5527fd880212ae959a9024a698f1b3.png';
 import imgArticle1     from 'figma:asset/8f998da633bb92dcab13a208c71a97e2986d6c06.png';
 import imgArticle2     from 'figma:asset/a6246b350004d1d692b469864824af4843190e94.png';
 import imgArticle3     from 'figma:asset/a417229c957cdd5306763b4c6f5b421056127f88.png';
@@ -247,7 +248,7 @@ function BioSection() {
         {/* ── Left column: portrait, sticky ── */}
         <div className="sticky top-0 w-full">
           <img
-            src={LidianeSousaAraujo}
+            src={imgBioPortrait}
             alt="Dra. Lidiane Sousa Araújo"
             className="w-full h-screen object-cover object-center"
           />
@@ -617,7 +618,7 @@ function PartnersSection() {
                   <img
                     src={img}
                     alt={galleryAlts[i]}
-                    className="w-full h-[260px] sm:h-[320px] md:h-[380px] lg:h-[424px] object-cover object-top hover:scale-105 transition-transform duration-500"
+                    className={`w-full h-[260px] sm:h-[320px] md:h-[380px] lg:h-[424px] object-cover ${i === 1 ? 'object-center' : 'object-top'} hover:scale-105 transition-transform duration-500`}
                   />
                 </div>
               </FadeIn>

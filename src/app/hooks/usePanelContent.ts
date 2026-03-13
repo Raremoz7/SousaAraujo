@@ -19,32 +19,55 @@ let initialized = false;
 // Busca dados iniciais da API
 export async function fetchPanelData() {
   if (initialized) return;
-  try {
-    const res = await fetch(API_URL, {
-      headers: {
-        'Authorization': `Bearer ${publicAnonKey}`
+  const MAX_RETRIES = 3;
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const res = await fetch(API_URL, {
+        headers: {
+          'Authorization': `Bearer ${publicAnonKey}`
+        }
+      });
+      if (res.ok) {
+        const json = await res.json();
+        let data = json.data || {};
+        // Handle case where data was stored as a JSON string (legacy double-serialization)
+        if (typeof data === 'string') {
+          try { data = JSON.parse(data); } catch { data = {}; }
+        }
+        cachedData = data;
+        snapshot = { ...cachedData };
+        initialized = true;
+        listeners.forEach(l => l());
+        return;
       }
-    });
-    if (res.ok) {
-      const json = await res.json();
-      let data = json.data || {};
-      // Handle case where data was stored as a JSON string (legacy double-serialization)
-      if (typeof data === 'string') {
-        try { data = JSON.parse(data); } catch { data = {}; }
-      }
-      cachedData = data;
-      snapshot = { ...cachedData };
-      initialized = true;
-      listeners.forEach(l => l());
+      console.warn(`[PanelContent] Fetch attempt ${attempt}/${MAX_RETRIES} — status ${res.status}`);
+    } catch (error) {
+      console.warn(`[PanelContent] Fetch attempt ${attempt}/${MAX_RETRIES} failed:`, error);
     }
-  } catch (error) {
-    console.error("Erro ao carregar dados do painel:", error);
+    if (attempt < MAX_RETRIES) {
+      await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt - 1)));
+    }
   }
+  // All retries failed — mark as initialized so we don't keep retrying
+  initialized = true;
+  console.error('[PanelContent] Todas as tentativas de fetch falharam. Componentes usarao fallbacks.');
 }
 
 // Inicia a busca automaticamente no client
 if (typeof window !== 'undefined') {
   fetchPanelData();
+
+  // Listen for live panel updates from parent window (when loaded in iframe preview)
+  window.addEventListener('message', (event) => {
+    // Only accept same-origin messages
+    if (event.origin !== window.location.origin) return;
+    if (event.data?.type === 'panel-live-update' && event.data.data) {
+      cachedData = event.data.data;
+      snapshot = { ...cachedData };
+      initialized = true;
+      listeners.forEach(l => l());
+    }
+  });
 }
 
 // Update cache manualmente — usado pelo PainelPage para sincronizar o preview ao vivo

@@ -3,16 +3,15 @@
  */
 import { ServiceTemplate, type ServiceData } from '../components/LpTemplate';
 
-/* ─── Images ─── */
 import imgHero from 'figma:asset/4e0368effa05e19184d3051ff856b436790a646f.png';
-import imgParallax from 'figma:asset/9562cf95d4534ca9712322239006072b5f19f9db.png';
 import imgSticky from 'figma:asset/fe31c56b206b46ccd45b92193e312d3f204a3004.png';
-import imgMetodo from 'figma:asset/d549692c425a1be1f547495a00b3374ff2fc8534.png';
 import imgLidiane from 'figma:asset/8eecaa51fea8463a93c801f405e4ef1e452f0526.png';
-import imgCtaBg from 'figma:asset/fcf68d553754923b39d9072139ccfeb443b32d57.png';
 import imgArticle1 from 'figma:asset/d8b8b9ab06b1e4e35d69c1e21c563f564a52db01.png';
 import imgArticle2 from 'figma:asset/5ca336344371170b49c80ff31572f02cea56d1bd.png';
 import imgArticle3 from 'figma:asset/f3ac85d60ca06c6c5d27967251b6c478f4898a2c.png';
+import imgParallax from 'figma:asset/9562cf95d4534ca9712322239006072b5f19f9db.png';
+import imgMetodo from 'figma:asset/d549692c425a1be1f547495a00b3374ff2fc8534.png';
+import imgCtaBg from 'figma:asset/fcf68d553754923b39d9072139ccfeb443b32d57.png';
 
 export const guardaData: ServiceData = {
   hero: {

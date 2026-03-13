@@ -16,7 +16,7 @@ export function ContatoPage() {
   const mapSrc = (mapImage && isValidPanelValue(mapImage)) ? mapImage : imgMap;
 
   const mapContent = (
-    <div className="max-w-[1440px] mx-auto">
+    <div>
       <img
         src={mapSrc}
         alt={mapAlt}
@@ -30,7 +30,7 @@ export function ContatoPage() {
       <Contact />
 
       {/* Google Maps / Static Map Section */}
-      <section className="bg-[#161312]">
+      <section className="bg-[#161312] py-6">
         <ScrollReveal>
           {mapLink && isValidPanelValue(mapLink) ? (
             <a

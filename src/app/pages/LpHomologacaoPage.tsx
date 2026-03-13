@@ -8,6 +8,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
 import { PlayButton } from '../components/ui/PlayButton';
 import { Contact } from '../components/Contact';
 import { readPanel } from '../hooks/usePanelContent';
+import { trackCtaClick } from '../components/PainelDashboard';
 
 /* ─── SVG icons (Group2108) ─── */
 import svgPaths from '../../imports/svg-6m3rhq93hc';
@@ -274,7 +275,7 @@ function PageHero() {
           </p>
         </FadeIn>
         <FadeIn delay={0.25}>
-          <a href="#contato" aria-label="Agendar consulta de viabilidade para homologação" className="inline-flex items-center justify-center bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[46px] px-[32px] font-['Noto_Sans'] font-medium text-[15px] text-white tracking-[-0.225px]">
+          <a href="#contato" aria-label="Agendar consulta de viabilidade para homologação" onClick={() => trackCtaClick('homologacao')} className="inline-flex items-center justify-center bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[46px] px-[32px] font-['Noto_Sans'] font-medium text-[15px] text-white tracking-[-0.225px]">
             Agendar Consulta de Viabilidade
           </a>
         </FadeIn>
@@ -335,6 +336,7 @@ function TrustSection() {
             <FadeIn delay={0.3}>
               <a
                 href="#contato"
+                onClick={() => trackCtaClick('homologacao')}
                 className="inline-flex items-center gap-[14px] bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[49px] px-[28px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white self-start"
               >
                 Agendar Consulta de Viabilidade
@@ -431,6 +433,7 @@ function ScenariosSection() {
               </p>
               <a
                 href="#contato"
+                onClick={() => trackCtaClick('homologacao')}
                 className="inline-flex items-center gap-[14px] bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[49px] px-[22px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white"
               >
                 Agendar Consulta de Viabilidade
@@ -486,6 +489,7 @@ function ScenariosSection() {
             <FadeIn delay={0.3}>
               <a
                 href="#contato"
+                onClick={() => trackCtaClick('homologacao')}
                 className="inline-flex items-center gap-[14px] bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[49px] px-[22px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white mt-[40px]"
               >
                 Agendar Consulta de Viabilidade
@@ -522,7 +526,7 @@ function OnlineBanner() {
           <h2 className="font-['Marcellus'] text-[28px] md:text-[36px] lg:text-[43px] leading-[1.25] lg:leading-[52px] tracking-[-0.516px] text-white max-w-[997px] mx-auto mb-[32px]">
             {bannerText}
           </h2>
-          <a href="#contato" className="inline-flex items-center justify-center bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[46px] px-[32px] font-['Noto_Sans'] font-medium text-[15px] text-white tracking-[-0.225px]">
+          <a href="#contato" onClick={() => trackCtaClick('homologacao')} className="inline-flex items-center justify-center bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[46px] px-[32px] font-['Noto_Sans'] font-medium text-[15px] text-white tracking-[-0.225px]">
             Agendar Consulta de Viabilidade
           </a>
         </FadeIn>
@@ -584,6 +588,7 @@ function MetodoSaaSection() {
           <FadeIn delay={0.3}>
             <a
               href="#contato"
+              onClick={() => trackCtaClick('homologacao')}
               className="inline-flex items-center gap-[14px] bg-[#a57255] hover:bg-[#8f6146] transition-colors h-[49px] px-[22px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white self-start"
             >
               Agendar Consulta de Viabilidade
@@ -731,6 +736,7 @@ function ComoFuncionaSection() {
                     </motion.p>
                     <motion.a
                       href="#contato"
+                      onClick={() => trackCtaClick('homologacao')}
                       className="inline-flex items-center gap-[8px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white hover:text-[#a57255] transition-colors group/link"
                       initial={{ opacity: 0, y: 16 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -773,6 +779,7 @@ function RiscoCtaBanner() {
         <FadeIn delay={0.12}>
           <a
             href="#contato"
+            onClick={() => trackCtaClick('homologacao')}
             className="group relative inline-block bg-[#a57255] hover:bg-[#8f6146] transition-colors shrink-0"
             style={{ width: '316px', height: '49.314px' }}
           >
@@ -844,6 +851,7 @@ function CostCtaBanner() {
         <FadeIn delay={0.15}>
           <a
             href="#contato"
+            onClick={() => trackCtaClick('homologacao')}
             className="group relative inline-block bg-[#a57255] hover:bg-[#8f6146] transition-colors shrink-0"
             style={{ width: '316px', height: '49.314px' }}
           >
@@ -881,6 +889,7 @@ function WhyTrustSection() {
     return (
       <a
         href="#contato"
+        onClick={() => trackCtaClick('homologacao')}
         className="group relative inline-block bg-[#a57255] hover:bg-[#8f6146] transition-colors shrink-0 self-start"
         style={{ width: '316px', height: '49.314px' }}
       >

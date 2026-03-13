@@ -13,11 +13,11 @@ function flattenServiceData(id: string, d: ServiceData): Record<string, string> 
   const out: Record<string, string> = {};
   const set = (key: string, val: string | undefined) => { if (val) out[`${id}.${key}`] = val; };
 
-  // Hero
+  // Hero (images NOT seeded — resolved figma:asset URLs expire on rebuild;
+  //        images are only stored when user explicitly uploads via the panel)
   set('hero.title', d.hero.title);
   if (d.hero.highlightedTitle) set('hero.highlightedTitle', d.hero.highlightedTitle);
   set('hero.subtitle', d.hero.subtitle);
-  set('hero.image', d.hero.image);
   if (d.hero.ctaText) set('hero.ctaText', d.hero.ctaText);
   if (d.hero.maxWidth) set('hero.maxWidth', d.hero.maxWidth);
 
@@ -26,18 +26,16 @@ function flattenServiceData(id: string, d: ServiceData): Record<string, string> 
   set('trust.title', d.trust.title);
   set('trust.body', d.trust.body);
 
-  // Parallax
-  set('parallax.image', d.parallaxImage);
+  // Parallax — image NOT seeded
 
-  // Metodo
+  // Metodo — image NOT seeded
   set('metodo.title', d.metodo.title);
-  set('metodo.image', d.metodo.image);
   d.metodo.steps.forEach((s, i) => {
     set(`metodo.step${i + 1}.label`, s.label);
     set(`metodo.step${i + 1}.desc`, s.desc);
   });
 
-  // Scenarios
+  // Scenarios — stickyImage NOT seeded
   set('scenarios.title', d.scenarios.title);
   d.scenarios.items.forEach((s, i) => set(`scenarios.item${i + 1}`, s));
   set('scenarios.ctaSubtitle', d.scenarios.ctaSubtitle);
@@ -47,7 +45,6 @@ function flattenServiceData(id: string, d: ServiceData): Record<string, string> 
     set(`scenarios.deep${i + 1}.title`, dd.title);
     set(`scenarios.deep${i + 1}.text`, dd.text);
   });
-  set('scenarios.stickyImage', d.scenarios.stickyImage);
 
   // Banners
   set('onlineBanner', d.onlineBanner);
@@ -66,19 +63,16 @@ function flattenServiceData(id: string, d: ServiceData): Record<string, string> 
     set(`objecao${i + 1}.a`, o.a);
   });
 
-  // CostCta
+  // CostCta — bgImage NOT seeded
   set('costCta.title', d.costCta.title);
-  set('costCta.bgImage', d.costCta.bgImage);
 
-  // WhyTrust
+  // WhyTrust — lidianeImage NOT seeded
   d.whyTrust.trustItems.forEach((t, i) => set(`whyTrust.trust${i + 1}`, t));
   d.whyTrust.consultaItems.forEach((c, i) => set(`whyTrust.consulta${i + 1}`, c));
-  set('whyTrust.lidianeImage', d.whyTrust.lidianeImage);
 
-  // Historias
+  // Historias — images NOT seeded
   set('historias.title', d.historias.title);
   d.historias.items.forEach((h, i) => {
-    set(`historias.item${i + 1}.img`, h.img);
     set(`historias.item${i + 1}.subtitle`, h.subtitle);
     set(`historias.item${i + 1}.body`, h.body);
   });

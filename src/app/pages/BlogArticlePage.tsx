@@ -5,11 +5,14 @@
 
 import { useParams, Link } from 'react-router';
 import { motion } from 'motion/react';
+import { Helmet } from 'react-helmet-async';
 import { Contact } from '../components/Contact';
 import { CtaBanner } from '../components/CtaBanner';
 import svgArrow from '../../imports/svg-od596xq1d5';
 import { getArticleBySlug, blogArticles } from '../../data/blogArticles';
 import type { ContentBlock, FaqItem, BlogArticle } from '../../data/blogArticles';
+
+const SITE_URL = 'https://souza-araujo-advogados.figma.site';
 
 /* ─── Images from Figma (same as BlogPage) ─── */
 import imgArticle1 from 'figma:asset/a2616d7c2ac778c6f8d75f07e421726c6e9f2b6a.png';
@@ -276,8 +279,51 @@ export function BlogArticlePage() {
 
   const heroImage = blogImages[article.imageIndex];
 
+  const articleJsonLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": article.metaTitle,
+    "description": article.metaDescription,
+    "image": `${SITE_URL}/og-cover.jpg`,
+    "datePublished": article.fullDate,
+    "author": {
+      "@type": "Person",
+      "name": "Dra. Lidiane Sousa Araujo",
+      "url": `${SITE_URL}/sobre`
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sousa Araujo Advocacia",
+      "url": SITE_URL
+    },
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `${SITE_URL}/blog/${article.slug}`
+    }
+  });
+
   return (
     <>
+      <Helmet>
+        <title>{article.metaTitle}</title>
+        <meta name="description" content={article.metaDescription} />
+        <meta name="keywords" content={article.keyword} />
+        <link rel="canonical" href={`${SITE_URL}/blog/${article.slug}`} />
+        <meta name="robots" content="index, follow" />
+        <meta property="og:title" content={article.metaTitle} />
+        <meta property="og:description" content={article.metaDescription} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={`${SITE_URL}/blog/${article.slug}`} />
+        <meta property="og:image" content={`${SITE_URL}/og-cover.jpg`} />
+        <meta property="og:site_name" content="Sousa Araujo Advocacia" />
+        <meta property="og:locale" content="pt_BR" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={article.metaTitle} />
+        <meta name="twitter:description" content={article.metaDescription} />
+        <meta name="twitter:image" content={`${SITE_URL}/og-cover.jpg`} />
+        <script type="application/ld+json">{articleJsonLd}</script>
+      </Helmet>
+
       {/* ── Hero compacto ── */}
       <section className="relative w-full h-[340px] md:h-[420px] lg:h-[500px] overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">

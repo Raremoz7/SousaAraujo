@@ -4,6 +4,7 @@ import { NavLink, Link, useLocation } from 'react-router';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import Vector from '../../imports/Vector';
 import { readPanel } from '../hooks/usePanelContent';
+import { usePreviewMode } from '../hooks/usePreviewMode';
 
 /**
  * Navbar Component
@@ -47,7 +48,7 @@ function clsx(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-function NavItem({ item }: { item: { label: string; href: string; ariaLabel: string } }) {
+function NavItem({ item, scrolled }: { item: { label: string; href: string; ariaLabel: string }; scrolled?: boolean }) {
   return (
     <NavLink
       to={item.href}
@@ -55,9 +56,14 @@ function NavItem({ item }: { item: { label: string; href: string; ariaLabel: str
       aria-label={item.ariaLabel}
       className={({ isActive }) =>
         clsx(
-          "font-['Roboto'] font-medium text-white hover:text-[#a57255] transition-colors text-[14px] xl:text-[15px] tracking-[-0.225px] relative",
-          isActive &&
-            "after:absolute after:bottom-[-21px] after:left-0 after:right-0 after:h-[2px] after:bg-[#a57255] text-[#a57255]"
+          "font-['Roboto'] font-medium transition-colors text-[14px] xl:text-[15px] tracking-[-0.225px] relative",
+          scrolled
+            ? "text-white/80 hover:text-white"
+            : "text-white hover:text-[#a57255]",
+          isActive && scrolled &&
+            "after:absolute after:bottom-[-21px] after:left-0 after:right-0 after:h-[2px] after:bg-white !text-white font-semibold",
+          isActive && !scrolled &&
+            "after:absolute after:bottom-[-21px] after:left-0 after:right-0 after:h-[2px] after:bg-[#a57255] !text-white font-semibold"
         )
       }
       style={{ fontVariationSettings: "'wdth' 100" }}
@@ -71,8 +77,11 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [servicosOpen, setServicosOpen] = useState(false);
   const [servicosMobileOpen, setServicosMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const servicosRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+  const previewMode = usePreviewMode();
+  const forceMobile = previewMode === 'mobile' || previewMode === 'tablet';
 
   // Read menu data from panel
   const menuItems = getMenuItems();
@@ -82,6 +91,16 @@ export function Navbar() {
   const ctaText = readPanel('navbar.cta.text', 'Agendar Atendimento');
   const extraLabel1 = readPanel('navbar.extra1.label', 'Rede de Parceiros');
   const extraLabel2 = readPanel('navbar.extra2.label', 'Vídeos Educativos');
+
+  // Solid background on scroll
+  useEffect(() => {
+    function handleScroll() {
+      setScrolled(window.scrollY > 20);
+    }
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Close dropdown on route change
   useEffect(() => {
@@ -104,9 +123,19 @@ export function Navbar() {
   const isServicosActive = servicosItems.some(s => location.pathname === s.href);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-black/70 via-black/30 to-transparent" aria-label="Navegação principal">
+    <nav
+      className={clsx(
+        "fixed top-0 left-0 right-0 z-50 transition-colors duration-300",
+        scrolled ? "bg-[#452b1e]" : "bg-gradient-to-b from-black/70 via-black/30 to-transparent"
+      )}
+      style={forceMobile ? { position: 'relative' } : undefined}
+      aria-label="Navegação principal"
+    >
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-[56px] sm:h-[69px] border-b border-[#a57255]">
+        <div className={clsx(
+          "flex items-center justify-between h-[56px] sm:h-[69px] border-b transition-colors duration-300",
+          scrolled ? "border-transparent" : "border-[#a57255]"
+        )}>
 
           {/* Logo */}
           <Link to="/" aria-label="Sousa Araújo Advocacia — página inicial" className="flex items-center">
@@ -116,10 +145,10 @@ export function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-8 xl:gap-12">
+          <div className="hidden lg:flex items-center gap-8 xl:gap-12" style={forceMobile ? { display: 'none' } : undefined}>
             {/* Home, Sobre, Áreas de Atuação */}
             {menuItems.map((item) => (
-              <NavItem key={item.href} item={item} />
+              <NavItem key={item.href} item={item} scrolled={scrolled} />
             ))}
 
             {/* Serviços Dropdown — 4ª posição */}
@@ -130,9 +159,12 @@ export function Navbar() {
                 aria-haspopup="true"
                 aria-label="Abrir menu de serviços"
                 className={clsx(
-                  "font-['Roboto'] font-medium hover:text-[#a57255] transition-colors text-[14px] xl:text-[15px] tracking-[-0.225px] flex items-center gap-1 relative",
-                  (servicosOpen || isServicosActive) ? "text-[#a57255]" : "text-white",
-                  isServicosActive && "after:absolute after:bottom-[-21px] after:left-0 after:right-0 after:h-[2px] after:bg-[#a57255]"
+                  "font-['Roboto'] font-medium transition-colors text-[14px] xl:text-[15px] tracking-[-0.225px] flex items-center gap-1 relative",
+                  scrolled
+                    ? ((servicosOpen || isServicosActive) ? "text-white font-semibold" : "text-white/80 hover:text-white")
+                    : ((servicosOpen || isServicosActive) ? "!text-white font-semibold" : "text-white hover:text-[#a57255]"),
+                  isServicosActive && scrolled && "after:absolute after:bottom-[-21px] after:left-0 after:right-0 after:h-[2px] after:bg-white",
+                  isServicosActive && !scrolled && "after:absolute after:bottom-[-21px] after:left-0 after:right-0 after:h-[2px] after:bg-[#a57255]"
                 )}
                 style={{ fontVariationSettings: "'wdth' 100" }}
               >
@@ -211,12 +243,12 @@ export function Navbar() {
 
             {/* Blog, FAQ, Contato */}
             {menuItemsAfter.map((item) => (
-              <NavItem key={item.href} item={item} />
+              <NavItem key={item.href} item={item} scrolled={scrolled} />
             ))}
           </div>
 
           {/* CTA Button — Desktop */}
-          <div className="hidden lg:block">
+          <div className="hidden lg:block" style={forceMobile ? { display: 'none' } : undefined}>
             <Link
               to="/contato"
               aria-label="Agendar atendimento com a Sousa Araújo Advocacia"
@@ -234,7 +266,7 @@ export function Navbar() {
           </div>
 
           {/* Mobile menu button */}
-          <div className="lg:hidden">
+          <div className="lg:hidden" style={forceMobile ? { display: 'block' } : undefined}>
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-white hover:text-[#a57255] transition-colors"
@@ -249,7 +281,7 @@ export function Navbar() {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="lg:hidden bg-[#161312] border-t border-[#a57255]/20" role="navigation" aria-label="Menu mobile">
+        <div className="lg:hidden bg-[#161312] border-t border-[#a57255]/20" style={forceMobile ? { display: 'block' } : undefined} role="navigation" aria-label="Menu mobile">
           <div className="px-4 pt-2 pb-3 space-y-1">
             {/* Home, Sobre, Áreas */}
             {menuItems.map((item) => (

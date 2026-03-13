@@ -35,14 +35,16 @@ const ROUTE_TO_SEO_ID: Record<string, string> = {
   '/registro-de-marca-inpi': 'inpi',
 };
 
-const SITE_URL = 'https://sousaaraujo.adv.br';
+const SITE_URL = 'https://souza-araujo-advogados.figma.site';
 
 export function SeoHead() {
   const { pathname } = useLocation();
   
   // Resolve SEO ID from current route
-  // For blog articles (/blog/:slug), use blog SEO
-  const seoId = ROUTE_TO_SEO_ID[pathname] || (pathname.startsWith('/blog/') ? 'blog' : null);
+  // For blog articles (/blog/:slug), skip — BlogArticlePage handles its own SEO
+  if (pathname.startsWith('/blog/') && pathname !== '/blog') return null;
+  
+  const seoId = ROUTE_TO_SEO_ID[pathname] || null;
   
   // If no SEO config for this route (e.g. /painel), render nothing
   if (!seoId) return null;
@@ -177,6 +179,10 @@ function SeoHelmet({ seoId, pathname }: { seoId: string; pathname: string }) {
       <meta property="og:url" content={`${SITE_URL}${pathname}`} />
       <meta property="og:site_name" content={siteName} />
       <meta property="og:locale" content="pt_BR" />
+
+      {/* hreflang */}
+      <link rel="alternate" hreflang="pt-BR" href={`${SITE_URL}${pathname}`} />
+      <link rel="alternate" hreflang="x-default" href={`${SITE_URL}${pathname}`} />
 
       {/* Twitter Card */}
       <meta name="twitter:card" content={twitterCard} />

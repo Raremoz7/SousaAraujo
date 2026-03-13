@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /painel
+
+Sitemap: https://souza-araujo-advogados.figma.site/sitemap.xml

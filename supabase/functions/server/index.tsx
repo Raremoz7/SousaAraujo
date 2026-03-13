@@ -15,10 +15,39 @@ app.use('*', cors({
 
 const KV_KEY = 'sa-painel-data';
 
-// Route for signup
+// Helper: extract user token from X-User-Token header and validate
+async function authenticateUser(c: any): Promise<{ userId: string } | Response> {
+  const userToken = c.req.header('X-User-Token');
+  if (!userToken) {
+    return c.json({ error: 'Unauthorized: missing X-User-Token header' }, 401);
+  }
+
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL') || '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+  );
+
+  const { data: { user }, error: authError } = await supabase.auth.getUser(userToken);
+  if (authError || !user?.id) {
+    console.log('Auth validation failed:', authError?.message || 'no user');
+    return c.json({ error: `Unauthorized: ${authError?.message || 'no user'}` }, 401);
+  }
+
+  return { userId: user.id };
+}
+
+// Allowed admin emails (lowercase)
+const ALLOWED_ADMIN_EMAILS = ['sa@somo.com'];
+
+// Route for signup — restricted to allowed emails only
 app.post('/signup', async (c) => {
   try {
     const { email, password } = await c.req.json();
+
+    if (!email || !ALLOWED_ADMIN_EMAILS.includes(email.toLowerCase().trim())) {
+      return c.json({ error: 'Acesso não autorizado. Este email não tem permissão.' }, 403);
+    }
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') || '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
@@ -53,20 +82,13 @@ app.get('/panel', async (c) => {
 // Route for PUT panel data (requires auth)
 app.put('/panel', async (c) => {
   try {
-    const authHeader = c.req.header('Authorization');
-    if (!authHeader) return c.json({ error: 'Unauthorized: no auth header' }, 401);
-    
-    const token = authHeader.split(' ')[1];
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') || '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
-    );
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError || !user) return c.json({ error: `Unauthorized: ${authError?.message || 'no user'}` }, 401);
+    const auth = await authenticateUser(c);
+    if (auth instanceof Response) return auth;
 
     const body = await c.req.json();
     // Store as JSONB object directly (kv_store handles JSONB)
     await kv.set(KV_KEY, body.data);
+    console.log(`Panel data saved by user ${auth.userId}, keys: ${Object.keys(body.data || {}).length}`);
     return c.json({ success: true });
   } catch (error: any) {
     console.log("KV Put error:", error);
@@ -78,18 +100,8 @@ app.put('/panel', async (c) => {
 // Requires auth
 app.post('/panel/seed', async (c) => {
   try {
-    const authHeader = c.req.header('Authorization');
-    if (!authHeader) return c.json({ error: 'Unauthorized: no auth header' }, 401);
-    
-    const token = authHeader.split(' ')[1];
-    if (!token) return c.json({ error: 'Unauthorized: malformed auth header' }, 401);
-
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') || '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
-    );
-    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-    if (authError || !user) return c.json({ error: `Unauthorized: ${authError?.message || 'no user'}` }, 401);
+    const auth = await authenticateUser(c);
+    if (auth instanceof Response) return auth;
 
     let body: any;
     try {
@@ -136,6 +148,184 @@ app.post('/panel/seed', async (c) => {
   } catch (error: any) {
     console.log("Seed error:", error?.message || error);
     return c.json({ error: `Error seeding defaults: ${error?.message || 'unknown error'}` }, 500);
+  }
+});
+
+// ─── GEO History ───
+const GEO_HISTORY_KEY = 'sa-geo-history';
+const GEO_HISTORY_MAX = 200;
+
+// GET geo history (public read — same pattern as /panel)
+app.get('/geo-history', async (c) => {
+  try {
+    const raw = await kv.get(GEO_HISTORY_KEY);
+    const entries = Array.isArray(raw) ? raw : [];
+    return c.json({ entries });
+  } catch (error: any) {
+    console.log("GEO history get error:", error);
+    return c.json({ error: `Error fetching GEO history: ${error.message}` }, 500);
+  }
+});
+
+// POST geo history — append entries (requires auth)
+app.post('/geo-history', async (c) => {
+  try {
+    const auth = await authenticateUser(c);
+    if (auth instanceof Response) return auth;
+
+    const body = await c.req.json();
+    const newEntries = Array.isArray(body.entries) ? body.entries : [];
+    if (newEntries.length === 0) return c.json({ success: true, total: 0 });
+
+    // Get existing
+    let existing: any[] = [];
+    try {
+      const raw = await kv.get(GEO_HISTORY_KEY);
+      if (Array.isArray(raw)) existing = raw;
+    } catch { existing = []; }
+
+    // Append and cap at max
+    const merged = [...existing, ...newEntries].slice(-GEO_HISTORY_MAX);
+    await kv.set(GEO_HISTORY_KEY, merged);
+
+    console.log(`GEO history saved: ${newEntries.length} new, ${merged.length} total`);
+    return c.json({ success: true, total: merged.length });
+  } catch (error: any) {
+    console.log("GEO history save error:", error?.message || error);
+    return c.json({ error: `Error saving GEO history: ${error?.message || 'unknown error'}` }, 500);
+  }
+});
+
+// DELETE geo history — clear all (requires auth)
+app.delete('/geo-history', async (c) => {
+  try {
+    const auth = await authenticateUser(c);
+    if (auth instanceof Response) return auth;
+
+    await kv.set(GEO_HISTORY_KEY, []);
+    console.log('GEO history cleared');
+    return c.json({ success: true });
+  } catch (error: any) {
+    console.log("GEO history clear error:", error?.message || error);
+    return c.json({ error: `Error clearing GEO history: ${error?.message || 'unknown error'}` }, 500);
+  }
+});
+
+// ─── Image Upload to Supabase Storage ───
+const IMAGE_BUCKET = 'make-979eabbc-images';
+
+// Idempotently ensure the bucket exists
+let bucketReady = false;
+async function ensureBucket() {
+  if (bucketReady) return;
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL') || '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+  );
+  const { data: buckets } = await supabase.storage.listBuckets();
+  const exists = buckets?.some((b: any) => b.name === IMAGE_BUCKET);
+  if (!exists) {
+    const { error } = await supabase.storage.createBucket(IMAGE_BUCKET, { public: false });
+    if (error) console.log('Bucket creation error:', error.message);
+    else console.log(`Bucket "${IMAGE_BUCKET}" created`);
+  }
+  bucketReady = true;
+}
+
+// POST /upload-image — accepts multipart form with "file" field, returns signed URL
+app.post('/upload-image', async (c) => {
+  try {
+    const auth = await authenticateUser(c);
+    if (auth instanceof Response) return auth;
+
+    await ensureBucket();
+
+    const formData = await c.req.formData();
+    const file = formData.get('file') as File | null;
+    if (!file) {
+      return c.json({ error: 'No file provided in form data' }, 400);
+    }
+
+    // Validate file type
+    const allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/avif'];
+    if (!allowed.includes(file.type)) {
+      return c.json({ error: `Tipo de arquivo não suportado: ${file.type}. Use JPG, PNG, WebP, GIF, SVG ou AVIF.` }, 400);
+    }
+
+    // Max 10MB
+    if (file.size > 10 * 1024 * 1024) {
+      return c.json({ error: 'Arquivo muito grande. Máximo: 10MB.' }, 400);
+    }
+
+    // Generate unique filename: timestamp-random.ext
+    const ext = file.name.split('.').pop() || 'png';
+    const timestamp = Date.now();
+    const rand = Math.random().toString(36).substring(2, 8);
+    const path = `panel/${timestamp}-${rand}.${ext}`;
+
+    const arrayBuffer = await file.arrayBuffer();
+    const uint8 = new Uint8Array(arrayBuffer);
+
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') || '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+    );
+
+    const { error: uploadError } = await supabase.storage
+      .from(IMAGE_BUCKET)
+      .upload(path, uint8, {
+        contentType: file.type,
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.log('Upload error:', uploadError.message);
+      return c.json({ error: `Erro no upload: ${uploadError.message}` }, 500);
+    }
+
+    // Create a signed URL valid for 10 years (315360000 seconds)
+    const { data: signedData, error: signError } = await supabase.storage
+      .from(IMAGE_BUCKET)
+      .createSignedUrl(path, 315360000);
+
+    if (signError || !signedData?.signedUrl) {
+      console.log('Signed URL error:', signError?.message);
+      return c.json({ error: `Erro ao gerar URL: ${signError?.message || 'unknown'}` }, 500);
+    }
+
+    console.log(`Image uploaded by user ${auth.userId}: ${path} (${(file.size / 1024).toFixed(1)}KB)`);
+    return c.json({ url: signedData.signedUrl, path, size: file.size });
+  } catch (error: any) {
+    console.log('Upload handler error:', error?.message || error);
+    return c.json({ error: `Erro no upload: ${error?.message || 'unknown error'}` }, 500);
+  }
+});
+
+// DELETE /upload-image — delete an image from storage
+app.delete('/upload-image', async (c) => {
+  try {
+    const auth = await authenticateUser(c);
+    if (auth instanceof Response) return auth;
+
+    const { path } = await c.req.json();
+    if (!path) return c.json({ error: 'Path is required' }, 400);
+
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') || '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
+    );
+
+    const { error } = await supabase.storage.from(IMAGE_BUCKET).remove([path]);
+    if (error) {
+      console.log('Delete image error:', error.message);
+      return c.json({ error: `Erro ao deletar: ${error.message}` }, 500);
+    }
+
+    console.log(`Image deleted by user ${auth.userId}: ${path}`);
+    return c.json({ success: true });
+  } catch (error: any) {
+    console.log('Delete image handler error:', error?.message || error);
+    return c.json({ error: `Erro ao deletar imagem: ${error?.message || 'unknown'}` }, 500);
   }
 });
 

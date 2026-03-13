@@ -83,6 +83,19 @@ export function Footer() {
   const footerAddress = usePanel('footer.location.address', 'Edifício Varig - Setor Comercial Norte, quadra 04, bloco B, sala 702, 7 andar Pétala D - Asa Norte, Brasília - DF, 70714-020');
   const footerCopyright = usePanel('footer.copyright', 'Termos de Uso  ·  Política de Privacidade © 2026 SA | Sousa Araújo Advocacia · Todos os direitos reservados Comunicação em conformidade com o Provimento OAB 205/2021 – Desenvolvido por Mix7');
 
+  const socialInstagram = usePanel('footer.social.instagram', '#');
+  const socialFacebook = usePanel('footer.social.facebook', '#');
+  const socialTiktok = usePanel('footer.social.tiktok', '#');
+  const socialLinkedin = usePanel('footer.social.linkedin', '#');
+  const socialYoutube = usePanel('footer.social.youtube', '#');
+
+  const newsletterLabel = usePanel('footer.newsletter.label', 'Receba nossos conteúdos');
+  const newsletterButton = usePanel('footer.newsletter.buttonText', 'Inscrever-se');
+  const contactTitle = usePanel('footer.contact.title', 'Iniciar uma Conversa');
+  const locationTitle = usePanel('footer.location.title', 'Nossa Localização');
+  const ctaText = usePanel('footer.ctaText', 'Agendar Atendimento');
+  const ctaHref = usePanel('footer.ctaHref', '/contato');
+
   return (
     <footer className="bg-[#452b1e]">
       {/* ── Row 1: Logo + Description ── */}
@@ -105,13 +118,13 @@ export function Footer() {
           <div className="flex flex-col justify-end h-full lg:pr-[80px]">
             <div className="flex items-center border-b border-[#c1bbbb]/60 pb-[6px]">
               <span className="font-['Noto_Sans'] text-[13px] text-[#a57255]/70 whitespace-nowrap mr-[12px]">
-                Receba nossos conteúdos
+                {newsletterLabel}
               </span>
               <a
                 href="#newsletter"
                 className="inline-flex items-center gap-[6px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white hover:text-[#a57255] transition-colors whitespace-nowrap group ml-auto"
               >
-                Inscrever-se
+                {newsletterButton}
                 <ArrowIcon className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
               </a>
             </div>
@@ -120,7 +133,7 @@ export function Footer() {
           {/* Iniciar uma Conversa */}
           <div className="lg:pl-[0px]">
             <h3 className="font-['Noto_Sans'] font-medium text-[21px] leading-[30px] tracking-[-0.42px] text-[#a57255] mb-[18px]">
-              Iniciar uma Conversa
+              {contactTitle}
             </h3>
             <div className="space-y-[12px]">
               <a href={`mailto:${footerEmail}`} aria-label={`Enviar e-mail para ${footerEmail}`} className="flex items-center gap-[10px] text-white hover:text-[#a57255] transition-colors">
@@ -141,7 +154,7 @@ export function Footer() {
           {/* Nossa Localização */}
           <div>
             <h3 className="font-['Noto_Sans'] font-medium text-[21px] leading-[30px] tracking-[-0.42px] text-[#a57255] mb-[18px]">
-              Nossa Localização
+              {locationTitle}
             </h3>
             <div className="flex items-start gap-[10px]">
               <svg className="w-[12px] h-[17px] shrink-0 mt-[3px]" fill="none" viewBox="0 0 12 17">
@@ -159,11 +172,11 @@ export function Footer() {
               Redes Sociais
             </h3>
             <div className="flex items-center gap-[14px] text-white">
-              <a href="#" aria-label="Seguir no Instagram" className="hover:text-[#a57255] transition-colors"><InstagramIcon /></a>
-              <a href="#" aria-label="Seguir no Facebook" className="hover:text-[#a57255] transition-colors"><FacebookIcon /></a>
-              <a href="#" aria-label="Seguir no TikTok" className="hover:text-[#a57255] transition-colors"><TiktokIcon /></a>
-              <a href="#" aria-label="Seguir no LinkedIn" className="hover:text-[#a57255] transition-colors"><LinkedInIcon /></a>
-              <a href="#" aria-label="Inscrever-se no YouTube" className="hover:text-[#a57255] transition-colors"><YouTubeIcon /></a>
+              <a href={socialInstagram} aria-label="Seguir no Instagram" className="hover:text-[#a57255] transition-colors"><InstagramIcon /></a>
+              <a href={socialFacebook} aria-label="Seguir no Facebook" className="hover:text-[#a57255] transition-colors"><FacebookIcon /></a>
+              <a href={socialTiktok} aria-label="Seguir no TikTok" className="hover:text-[#a57255] transition-colors"><TiktokIcon /></a>
+              <a href={socialLinkedin} aria-label="Seguir no LinkedIn" className="hover:text-[#a57255] transition-colors"><LinkedInIcon /></a>
+              <a href={socialYoutube} aria-label="Inscrever-se no YouTube" className="hover:text-[#a57255] transition-colors"><YouTubeIcon /></a>
             </div>
           </div>
         </div>
@@ -191,11 +204,11 @@ export function Footer() {
           </nav>
 
           <Link
-            to="/contato"
+            to={ctaHref}
             aria-label="Agendar atendimento com a Sousa Araújo Advocacia"
             className="inline-flex items-center gap-[8px] font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white hover:text-[#a57255] transition-colors group"
           >
-            Agendar Atendimento
+            {ctaText}
             <ArrowIcon className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </Link>
         </div>

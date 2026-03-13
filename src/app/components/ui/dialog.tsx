@@ -6,28 +6,39 @@ import { XIcon } from "lucide-react";
 
 import { cn } from "./utils";
 
+// Filter out Figma inspector internal props (_fgT, _fgS, _fgB, etc.)
+function filterFigmaProps<T extends Record<string, unknown>>(props: T): T {
+  const filtered = {} as Record<string, unknown>;
+  for (const key in props) {
+    if (!key.startsWith('_fg')) {
+      filtered[key] = props[key];
+    }
+  }
+  return filtered as T;
+}
+
 function Dialog({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />;
+  return <DialogPrimitive.Root data-slot="dialog" {...filterFigmaProps(props)} />;
 }
 
 function DialogTrigger({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Trigger>) {
-  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
+  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...filterFigmaProps(props)} />;
 }
 
 function DialogPortal({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Portal>) {
-  return <DialogPrimitive.Portal data-slot="dialog-portal" {...props} />;
+  return <DialogPrimitive.Portal data-slot="dialog-portal" {...filterFigmaProps(props)} />;
 }
 
 function DialogClose({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Close>) {
-  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
+  return <DialogPrimitive.Close data-slot="dialog-close" {...filterFigmaProps(props)} />;
 }
 
 function DialogOverlay({
