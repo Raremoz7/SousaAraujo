@@ -10,6 +10,7 @@ import { PlayButton } from './ui/PlayButton';
 import { Contact } from './Contact';
 import { readPanel } from '../hooks/usePanelContent';
 import { trackCtaClick } from './PainelDashboard';
+import { usePreviewMode } from '../hooks/usePreviewMode';
 
 /* ─── SVG icons from Homologação ─── */
 import svgPaths from '../../imports/svg-6m3rhq93hc';
@@ -194,16 +195,7 @@ function IconBalance() {
 
 /* ─── Shared UI components ─── */
 function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.8, delay, ease: [0.4, 0, 0.2, 1] }}
-    >
-      {children}
-    </motion.div>
-  );
+  return <>{children}</>;
 }
 
 function Accordion({ items }: { items: { q: string; a: string }[] }) {
@@ -294,8 +286,11 @@ function PageHero({ data }: { data: ServiceData }) {
   const { hero } = data;
   const ctaLabel = hero.ctaText || data.ctaText || 'Agendar Consulta de Viabilidade';
   const tk = useContext(TrackKeyCtx);
+  const previewMode = usePreviewMode();
+  const forceMobile = previewMode === 'mobile' || previewMode === 'tablet';
+
   return (
-    <section className="relative w-full min-h-[600px] md:min-h-[720px] lg:min-h-[800px] overflow-hidden">
+    <section className="relative w-full min-h-[600px] md:min-h-[720px] lg:min-h-[800px] overflow-hidden" style={forceMobile ? { minHeight: 600 } : undefined}>
       <div className="absolute inset-0 pointer-events-none">
         <img 
           src={hero.image} 
@@ -308,9 +303,15 @@ function PageHero({ data }: { data: ServiceData }) {
         <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(180.958deg, rgba(22,19,18,0) 38%, rgb(22,19,18) 96%)' }} />
         <div className="absolute inset-x-0 top-0 h-[120px]" style={{ background: 'linear-gradient(to bottom, rgba(22,19,18,0.55) 0%, transparent 100%)' }} />
       </div>
-      <div className="relative max-w-[1440px] mx-auto px-[110px] pt-[365px] pb-[12px]">
+      <div
+        className="relative max-w-[1440px] mx-auto px-[110px] pt-[365px] pb-[12px]"
+        style={forceMobile ? { padding: '0 20px', paddingTop: 320, paddingBottom: 60, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' } : undefined}
+      >
         <FadeIn>
-          <h1 className="font-['Marcellus'] text-[36px] sm:text-[46px] md:text-[54px] lg:text-[58px] leading-[1.15] tracking-[-0.87px] text-white mb-[24px]" style={{ maxWidth: hero.maxWidth || '820px' }}>
+          <h1
+            className="font-['Marcellus'] text-[36px] sm:text-[46px] md:text-[54px] lg:text-[58px] leading-[1.15] tracking-[-0.87px] text-white mb-[24px]"
+            style={forceMobile ? { fontSize: 32, maxWidth: '100%' } : { maxWidth: hero.maxWidth || '820px' }}
+          >
             {hero.title}
             {hero.highlightedTitle && <>{' '}<span className="text-[#a57255]">{hero.highlightedTitle}</span></>}
           </h1>
@@ -330,7 +331,7 @@ function PageHero({ data }: { data: ServiceData }) {
         </FadeIn>
 
         {/* Play Button */}
-        <div className="hidden lg:block absolute right-[110px] top-[365px]">
+        <div className="hidden lg:block absolute right-[110px] top-[365px]" style={forceMobile ? { display: 'none' } : undefined}>
           <PlayButton size={100} />
         </div>
       </div>

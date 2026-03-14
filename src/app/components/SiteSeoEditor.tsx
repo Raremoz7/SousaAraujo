@@ -125,10 +125,10 @@ export function SiteSeoEditor({ data, onChange }: SiteSeoEditorProps) {
       {/* Header */}
       <div className="flex items-center gap-[8px] mb-[12px]">
         <Building2 size={15} className="text-[#a57255]" />
-        <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-white">
+        <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-gray-900">
           Dados do Site (JSON-LD)
         </h3>
-        <span className="font-['Noto_Sans'] text-[10px] text-white/25">
+        <span className="font-['Noto_Sans'] text-[10px] text-gray-400">
           Alimentam o Schema LocalBusiness
         </span>
       </div>
@@ -137,12 +137,12 @@ export function SiteSeoEditor({ data, onChange }: SiteSeoEditorProps) {
       {GROUPS.map(group => (
         <div
           key={group.id}
-          className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px] mb-[8px] hover:border-white/[0.1] transition-colors"
+          className="bg-white border border-gray-200 rounded-xl p-[14px] mb-[8px] hover:border-gray-300 transition-colors"
         >
           {/* Group title */}
           <div className="flex items-center gap-[6px] mb-[10px]">
             <span className="text-[#a57255]/70">{group.icon}</span>
-            <span className="font-['Noto_Sans'] text-[11px] font-semibold text-white/70 uppercase tracking-[0.5px]">
+            <span className="font-['Noto_Sans'] text-[11px] font-semibold text-gray-600 uppercase tracking-[0.5px]">
               {group.title}
             </span>
             {isGroupDirty(group.fields) && (
@@ -159,7 +159,7 @@ export function SiteSeoEditor({ data, onChange }: SiteSeoEditorProps) {
           }`}>
             {group.fields.map(field => (
               <div key={field.key}>
-                <label className="font-['Noto_Sans'] text-[10px] text-white/40 mb-[3px] block truncate">
+                <label className="font-['Noto_Sans'] text-[10px] text-gray-400 mb-[3px] block truncate">
                   {field.label}
                 </label>
                 <input
@@ -169,7 +169,7 @@ export function SiteSeoEditor({ data, onChange }: SiteSeoEditorProps) {
                   onBlur={() => handleBlur(field.key)}
                   placeholder={field.placeholder ?? ''}
                   maxLength={field.maxLength}
-                  className="w-full bg-[#161312] border border-white/[0.06] text-white font-['Noto_Sans'] text-[12px] leading-[18px] h-[34px] px-[10px] rounded-md focus:border-[#a57255]/40 focus:outline-none focus:ring-1 focus:ring-[#a57255]/20 transition-all placeholder:text-white/15"
+                  className="w-full bg-white border border-gray-200 text-gray-900 font-['Noto_Sans'] text-[12px] leading-[18px] h-[34px] px-[10px] rounded-md focus:border-[#a57255]/40 focus:outline-none focus:ring-1 focus:ring-[#a57255]/20 transition-all placeholder:text-gray-300"
                 />
               </div>
             ))}

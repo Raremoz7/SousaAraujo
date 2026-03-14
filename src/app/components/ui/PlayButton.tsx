@@ -6,6 +6,7 @@
 
 import svgPaths from '../../../imports/svg-he7mfdirs7';
 import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from './dialog';
+import React from 'react';
 
 interface PlayButtonProps {
   className?: string;
@@ -14,16 +15,24 @@ interface PlayButtonProps {
   videoUrl?: string;
 }
 
+/* Wrapper that strips Figma inspector props (_fg*) before they hit the DOM */
+const SafeDiv = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & Record<string, unknown>>(
+  (props, ref) => {
+    const clean: Record<string, unknown> = {};
+    for (const k in props) {
+      if (!k.startsWith('_fg')) clean[k] = props[k];
+    }
+    return <div ref={ref} {...(clean as React.HTMLAttributes<HTMLDivElement>)} />;
+  }
+);
+SafeDiv.displayName = 'SafeDiv';
+
 export function PlayButton({ className = '', size = 133, onClick, videoUrl }: PlayButtonProps) {
   const pulseSize = size * 1.6; // pulse rings go beyond the button
 
-  const ButtonContent = (
-    <button
-      onClick={onClick}
-      aria-label="Assistir vídeo"
-      className={`relative group cursor-pointer ${className}`}
-      style={{ width: pulseSize, height: pulseSize }}
-    >
+  // Inner visual content (no interactive wrapper — the parent handles that)
+  const innerContent = (
+    <>
       {/* ── Pulsing radial rings ── */}
       <span
         className="absolute rounded-full border border-[#AC795F]/40 animate-[heroPulse1_3s_ease-out_infinite]"
@@ -114,14 +123,22 @@ export function PlayButton({ className = '', size = 133, onClick, videoUrl }: Pl
           100% { transform: translate(-50%, -50%) scale(1.55); opacity: 0; }
         }
       `}</style>
-    </button>
+    </>
   );
 
   if (videoUrl) {
     return (
       <Dialog>
         <DialogTrigger asChild>
-          {ButtonContent}
+          <SafeDiv
+            role="button"
+            tabIndex={0}
+            aria-label="Assistir vídeo"
+            className={`relative group cursor-pointer ${className}`}
+            style={{ width: pulseSize, height: pulseSize }}
+          >
+            {innerContent}
+          </SafeDiv>
         </DialogTrigger>
         <DialogContent className="max-w-4xl bg-black border-none p-0 overflow-hidden w-[90vw]">
           <DialogTitle className="sr-only">Vídeo Institucional</DialogTitle>
@@ -141,5 +158,14 @@ export function PlayButton({ className = '', size = 133, onClick, videoUrl }: Pl
     );
   }
 
-  return ButtonContent;
+  return (
+    <button
+      onClick={onClick}
+      aria-label="Assistir vídeo"
+      className={`relative group cursor-pointer ${className}`}
+      style={{ width: pulseSize, height: pulseSize }}
+    >
+      {innerContent}
+    </button>
+  );
 }

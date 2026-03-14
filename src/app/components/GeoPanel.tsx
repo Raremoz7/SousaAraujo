@@ -90,14 +90,14 @@ function CircularScore({ score, size = 100 }: { score: number; size?: number }) 
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={5} />
+        <circle cx={size / 2} cy={size / 2} r={radius} fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth={5} />
         <circle
           cx={size / 2} cy={size / 2} r={radius} fill="none" stroke={color} strokeWidth={5}
           strokeDasharray={circumference} strokeDashoffset={strokeDashoffset}
           strokeLinecap="round" className="transition-all duration-700"
         />
       </svg>
-      <span className="absolute font-['Noto_Sans'] font-bold text-white" style={{ fontSize: size * 0.28 }}>
+      <span className="absolute font-['Noto_Sans'] font-bold text-gray-900" style={{ fontSize: size * 0.28 }}>
         {score}
       </span>
     </div>
@@ -573,15 +573,15 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
   return (
     <div className="space-y-[16px]">
       {/* Tabs */}
-      <div className="flex gap-[2px] bg-[#1a1816] rounded-xl p-[3px] border border-white/[0.06]">
+      <div className="flex gap-[2px] bg-gray-50 rounded-xl p-[3px] border border-gray-200">
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-[6px] px-[14px] py-[8px] rounded-lg font-['Noto_Sans'] text-[12px] font-medium transition-all ${
               activeTab === tab.id
-                ? 'bg-[#a57255]/15 text-[#a57255] border border-[#a57255]/20'
-                : 'text-white/40 hover:text-white/70 hover:bg-white/[0.03] border border-transparent'
+                ? 'bg-[#a57255]/10 text-[#a57255] border border-[#a57255]/20'
+                : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100 border border-transparent'
             }`}
           >
             {tab.icon}
@@ -596,17 +596,17 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
       {activeTab === 'config' && (
         <div className="space-y-[16px]">
           {/* Provedores de IA */}
-          <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
-            <div className="px-[16px] py-[12px] border-b border-white/[0.06]">
-              <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-white flex items-center gap-[8px]">
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="px-[16px] py-[12px] border-b border-gray-200">
+              <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-gray-900 flex items-center gap-[8px]">
                 <Radio size={14} className="text-[#a57255]" />
                 Provedores de IA
               </h3>
-              <p className="font-['Noto_Sans'] text-[10px] text-white/30 mt-[2px]">
+              <p className="font-['Noto_Sans'] text-[10px] text-gray-400 mt-[2px]">
                 Configure as chaves de API dos provedores que deseja usar
               </p>
             </div>
-            <div className="divide-y divide-white/[0.04]">
+            <div className="divide-y divide-gray-100">
               {GEO_PROVIDERS_DEFAULT.map(provider => {
                 const keyKey = `geo.api.${provider.id}`;
                 const hasKey = !!data[keyKey]?.trim();
@@ -616,8 +616,8 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                   <div key={provider.id} className="px-[16px] py-[12px]">
                     <div className="flex items-center gap-[10px] mb-[8px]">
                       <div className="w-[8px] h-[8px] rounded-full shrink-0" style={{ backgroundColor: provider.color }} />
-                      <span className="font-['Noto_Sans'] text-[12px] font-medium text-white">{provider.label}</span>
-                      <span className="font-['Noto_Sans'] text-[10px] text-white/25">{provider.model}</span>
+                      <span className="font-['Noto_Sans'] text-[12px] font-medium text-gray-900">{provider.label}</span>
+                      <span className="font-['Noto_Sans'] text-[10px] text-gray-400">{provider.model}</span>
                       <div className="flex-1" />
                       {hasKey ? (
                         <span className="font-['Noto_Sans'] text-[9px] px-[6px] py-[2px] rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -637,11 +637,11 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                           placeholder={provider.keyPlaceholder}
                           onChange={e => onChange(keyKey, e.target.value)}
                           onBlur={e => onChange(keyKey, e.target.value)}
-                          className="w-full bg-[#111] border border-white/[0.08] rounded-lg px-[10px] py-[7px] font-['Noto_Sans'] text-[11px] text-white/80 placeholder:text-white/15 focus:outline-none focus:border-[#a57255]/40 transition-colors pr-[32px]"
+                          className="w-full bg-gray-50 border border-gray-200 rounded-lg px-[10px] py-[7px] font-['Noto_Sans'] text-[11px] text-gray-800 placeholder:text-gray-300 focus:outline-none focus:border-[#a57255]/40 transition-colors pr-[32px]"
                         />
                         <button
                           onClick={() => toggleKeyVisibility(provider.id)}
-                          className="absolute right-[8px] top-1/2 -translate-y-1/2 text-white/20 hover:text-white/50 transition-colors"
+                          className="absolute right-[8px] top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 transition-colors"
                         >
                           {isVisible ? <EyeOff size={13} /> : <Eye size={13} />}
                         </button>
@@ -656,7 +656,7 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                       </a>
                     </div>
                     {provider.note && (
-                      <p className="font-['Noto_Sans'] text-[9px] text-white/20 mt-[4px] ml-[2px]">{provider.note}</p>
+                      <p className="font-['Noto_Sans'] text-[9px] text-gray-400 mt-[4px] ml-[2px]">{provider.note}</p>
                     )}
                   </div>
                 );
@@ -665,16 +665,16 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
           </div>
 
           {/* Provedor ativo */}
-          <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
-            <div className="px-[16px] py-[12px] border-b border-white/[0.06]">
-              <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-white">Provedor ativo para monitoramento</h3>
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="px-[16px] py-[12px] border-b border-gray-200">
+              <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-gray-900">Provedor ativo para monitoramento</h3>
             </div>
             <div className="px-[16px] py-[12px]">
               {configuredProviders.length > 0 ? (
                 <select
                   value={data['geo.config.activeProvider'] || ''}
                   onChange={e => onChange('geo.config.activeProvider', e.target.value)}
-                  className="w-full bg-[#111] border border-white/[0.08] rounded-lg px-[10px] py-[7px] font-['Noto_Sans'] text-[11px] text-white/80 focus:outline-none focus:border-[#a57255]/40 transition-colors appearance-none"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-[10px] py-[7px] font-['Noto_Sans'] text-[11px] text-gray-800 focus:outline-none focus:border-[#a57255]/40 transition-colors appearance-none"
                 >
                   <option value="">Selecione um provedor</option>
                   {configuredProviders.map(p => (
@@ -691,13 +691,13 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
           </div>
 
           {/* Perfil do escritório */}
-          <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
-            <div className="px-[16px] py-[12px] border-b border-white/[0.06]">
-              <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-white flex items-center gap-[8px]">
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="px-[16px] py-[12px] border-b border-gray-200">
+              <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-gray-900 flex items-center gap-[8px]">
                 <FileText size={14} className="text-[#a57255]" />
                 Perfil do Escritório
               </h3>
-              <p className="font-['Noto_Sans'] text-[10px] text-white/30 mt-[2px]">
+              <p className="font-['Noto_Sans'] text-[10px] text-gray-400 mt-[2px]">
                 Dados usados para gerar llms.txt e prompts de sistema
               </p>
             </div>
@@ -710,14 +710,14 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                   { key: 'geo.profile.city', label: 'Cidade de atuação', field: 'city' as const },
                 ] as const).map(item => (
                   <div key={item.key} className={item.field === 'city' ? 'col-span-2 max-w-[50%]' : ''}>
-                    <label className="font-['Noto_Sans'] text-[10px] text-white/40 block mb-[4px]">{item.label}</label>
+                    <label className="font-['Noto_Sans'] text-[10px] text-gray-400 block mb-[4px]">{item.label}</label>
                     <input
                       type="text"
                       value={data[item.key] || ''}
                       placeholder={GEO_PROFILE_DEFAULTS[item.field]}
                       onChange={e => onChange(item.key, e.target.value)}
                       onBlur={e => onChange(item.key, e.target.value)}
-                      className="w-full bg-[#111] border border-white/[0.08] rounded-lg px-[10px] py-[7px] font-['Noto_Sans'] text-[11px] text-white/80 placeholder:text-white/15 focus:outline-none focus:border-[#a57255]/40 transition-colors"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-lg px-[10px] py-[7px] font-['Noto_Sans'] text-[11px] text-gray-800 placeholder:text-gray-300 focus:outline-none focus:border-[#a57255]/40 transition-colors"
                     />
                   </div>
                 ))}
@@ -729,14 +729,14 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                 { key: 'geo.profile.audiences', label: 'Público-alvo (um por linha)', field: 'audiences' as const, rows: 3 },
               ] as const).map(item => (
                 <div key={item.key}>
-                  <label className="font-['Noto_Sans'] text-[10px] text-white/40 block mb-[4px]">{item.label}</label>
+                  <label className="font-['Noto_Sans'] text-[10px] text-gray-400 block mb-[4px]">{item.label}</label>
                   <textarea
                     value={data[item.key] || ''}
                     placeholder={GEO_PROFILE_DEFAULTS[item.field]}
                     onChange={e => onChange(item.key, e.target.value)}
                     onBlur={e => onChange(item.key, e.target.value)}
                     rows={item.rows}
-                    className="w-full bg-[#111] border border-white/[0.08] rounded-lg px-[10px] py-[7px] font-['Noto_Sans'] text-[11px] text-white/80 placeholder:text-white/15 focus:outline-none focus:border-[#a57255]/40 transition-colors resize-none"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-lg px-[10px] py-[7px] font-['Noto_Sans'] text-[11px] text-gray-800 placeholder:text-gray-300 focus:outline-none focus:border-[#a57255]/40 transition-colors resize-none"
                   />
                 </div>
               ))}
@@ -751,9 +751,9 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
       {activeTab === 'monitor' && (
         <div className="space-y-[16px]">
           {/* Provider selector + Testar Todos */}
-          <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl px-[16px] py-[12px]">
+          <div className="bg-white border border-gray-200 rounded-xl px-[16px] py-[12px]">
             <div className="flex items-center justify-between mb-[8px]">
-              <p className="font-['Noto_Sans'] text-[11px] text-white/50">Selecione um provedor para testar</p>
+              <p className="font-['Noto_Sans'] text-[11px] text-gray-500">Selecione um provedor para testar</p>
               <div className="flex items-center gap-[6px]">
                 {/* History toggle */}
                 <button
@@ -761,7 +761,7 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                   className={`flex items-center gap-[4px] px-[8px] py-[4px] rounded-md font-['Noto_Sans'] text-[10px] font-medium transition-all border ${
                     showHistory
                       ? 'bg-[#a57255]/10 text-[#a57255] border-[#a57255]/20'
-                      : 'bg-white/[0.04] text-white/40 border-white/[0.06] hover:text-white/70'
+                      : 'bg-gray-50 text-gray-400 border-gray-200 hover:text-gray-700'
                   }`}
                 >
                   <History size={11} />
@@ -778,8 +778,8 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                       onClick={() => setMonitorProvider(p.id)}
                       className={`flex items-center gap-[6px] px-[10px] py-[5px] rounded-lg font-['Noto_Sans'] text-[11px] font-medium transition-all border ${
                         effectiveMonitorProvider === p.id
-                          ? 'text-white border-white/20 bg-white/[0.06]'
-                          : 'text-white/40 border-white/[0.06] hover:text-white/70 hover:bg-white/[0.03]'
+                          ? 'text-gray-900 border-gray-300 bg-gray-100'
+                          : 'text-gray-400 border-gray-200 hover:text-gray-700 hover:bg-gray-50'
                       }`}
                     >
                       <div className="w-[6px] h-[6px] rounded-full" style={{ backgroundColor: p.color }} />
@@ -816,15 +816,15 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
             {runAllActive && (
               <div className="mt-[10px]">
                 <div className="flex items-center justify-between mb-[4px]">
-                  <span className="font-['Noto_Sans'] text-[10px] text-white/50 flex items-center gap-[4px]">
+                  <span className="font-['Noto_Sans'] text-[10px] text-gray-500 flex items-center gap-[4px]">
                     <Loader2 size={11} className="animate-spin text-[#a57255]" />
                     Testando: {runAllProgress.currentLabel}
                   </span>
-                  <span className="font-['Noto_Sans'] text-[10px] text-white/30">
+                  <span className="font-['Noto_Sans'] text-[10px] text-gray-400">
                     {runAllProgress.current}/{runAllProgress.total}
                   </span>
                 </div>
-                <div className="h-[3px] bg-white/[0.06] rounded-full overflow-hidden">
+                <div className="h-[3px] bg-gray-100 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-[#a57255] rounded-full transition-all duration-500 ease-out"
                     style={{ width: `${(runAllProgress.current / runAllProgress.total) * 100}%` }}
@@ -845,7 +845,7 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
               const hasProvider = !!effectiveMonitorProvider && configuredProviders.some(p => p.id === effectiveMonitorProvider);
 
               return (
-                <div key={query.id} className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
+                <div key={query.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
                   <div className="px-[12px] py-[10px]">
                     <div className="flex items-center gap-[8px] mb-[6px]">
                       <span
@@ -857,15 +857,15 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                       {result && !isError && (
                         <span className={`font-['Noto_Sans'] text-[9px] font-medium px-[6px] py-[1px] rounded-full ${
                           result.mentioned
-                            ? 'bg-emerald-500/10 text-emerald-400'
-                            : 'bg-white/[0.04] text-white/30'
+                            ? 'bg-emerald-50 text-emerald-600'
+                            : 'bg-gray-50 text-gray-400'
                         }`}>
                           {result.mentioned ? '✓ Mencionado' : '✗ Não mencionado'}
                         </span>
                       )}
                     </div>
-                    <h4 className="font-['Noto_Sans'] text-[12px] font-bold text-white leading-[16px]">{query.label}</h4>
-                    <p className="font-['Noto_Sans'] text-[11px] text-white/40 mt-[3px] leading-[15px]">{query.query}</p>
+                    <h4 className="font-['Noto_Sans'] text-[12px] font-bold text-gray-900 leading-[16px]">{query.label}</h4>
+                    <p className="font-['Noto_Sans'] text-[11px] text-gray-400 mt-[3px] leading-[15px]">{query.query}</p>
 
                     <div className="mt-[8px] flex items-center gap-[6px]">
                       {isLoading ? (
@@ -877,7 +877,7 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                         <button
                           onClick={() => runQuery(query)}
                           disabled={!hasProvider || runAllActive}
-                          className="flex items-center gap-[4px] px-[8px] py-[4px] rounded-md font-['Noto_Sans'] text-[10px] font-medium bg-white/[0.04] text-white/40 border border-white/[0.06] hover:text-white/70 hover:bg-white/[0.06] transition-all disabled:opacity-30"
+                          className="flex items-center gap-[4px] px-[8px] py-[4px] rounded-md font-['Noto_Sans'] text-[10px] font-medium bg-gray-50 text-gray-400 border border-gray-200 hover:text-gray-700 hover:bg-gray-100 transition-all disabled:opacity-30"
                         >
                           <Play size={10} /> Testar novamente
                         </button>
@@ -888,7 +888,7 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                           className={`flex items-center gap-[4px] px-[8px] py-[4px] rounded-md font-['Noto_Sans'] text-[10px] font-medium transition-all border ${
                             hasProvider && !runAllActive
                               ? 'bg-[#a57255]/10 text-[#a57255] border-[#a57255]/20 hover:bg-[#a57255]/20'
-                              : 'bg-white/[0.02] text-white/20 border-white/[0.04] cursor-not-allowed'
+                              : 'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed'
                           }`}
                         >
                           <Play size={10} /> Testar
@@ -899,24 +899,24 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
 
                   {/* Result block */}
                   {result && (
-                    <div className="border-t border-white/[0.04]">
+                    <div className="border-t border-gray-100">
                       <button
                         onClick={() => setExpandedResults(prev => {
                           const n = new Set(prev);
                           if (n.has(query.id)) n.delete(query.id); else n.add(query.id);
                           return n;
                         })}
-                        className="w-full flex items-center gap-[6px] px-[12px] py-[6px] text-left hover:bg-white/[0.02] transition-colors"
+                        className="w-full flex items-center gap-[6px] px-[12px] py-[6px] text-left hover:bg-gray-50 transition-colors"
                       >
-                        {isExpanded ? <ChevronDown size={11} className="text-white/30" /> : <ChevronRight size={11} className="text-white/30" />}
-                        <span className="font-['Noto_Sans'] text-[9px] text-white/25">
+                        {isExpanded ? <ChevronDown size={11} className="text-gray-400" /> : <ChevronRight size={11} className="text-gray-400" />}
+                        <span className="font-['Noto_Sans'] text-[9px] text-gray-400">
                           via {result.providerLabel} — {formatTime(result.timestamp)}
                         </span>
                       </button>
                       {isExpanded && (
                         <div className="px-[12px] pb-[10px]">
                           <pre className={`font-mono text-[11px] leading-[17px] whitespace-pre-wrap rounded-lg p-[10px] max-h-[200px] overflow-y-auto ${
-                            isError ? 'bg-red-500/5 text-red-400/80' : 'bg-[#111] text-emerald-400/80'
+                            isError ? 'bg-red-50 text-red-500' : 'bg-gray-50 text-emerald-600'
                           }`}>
                             {result.response}
                           </pre>
@@ -933,17 +933,17 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
           {showHistory && (
             <div className="space-y-[10px]">
               {/* History header card */}
-              <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
-                <div className="px-[16px] py-[12px] border-b border-white/[0.06] flex items-center justify-between">
-                  <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-white flex items-center gap-[8px]">
+              <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div className="px-[16px] py-[12px] border-b border-gray-200 flex items-center justify-between">
+                  <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-gray-900 flex items-center gap-[8px]">
                     <History size={14} className="text-[#a57255]" />
                     Histórico de Monitoramento
                   </h3>
                   <div className="flex items-center gap-[6px]">
-                    {historyLoading && <Loader2 size={12} className="animate-spin text-white/30" />}
+                    {historyLoading && <Loader2 size={12} className="animate-spin text-gray-300" />}
                     <button
                       onClick={loadHistory}
-                      className="font-['Noto_Sans'] text-[10px] text-white/30 hover:text-white/60 transition-colors"
+                      className="font-['Noto_Sans'] text-[10px] text-gray-400 hover:text-gray-600 transition-colors"
                     >
                       Atualizar
                     </button>
@@ -951,7 +951,7 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                       <>
                         <button
                           onClick={exportCSV}
-                          className="flex items-center gap-[3px] px-[7px] py-[3px] rounded-md font-['Noto_Sans'] text-[10px] font-medium bg-white/[0.04] text-white/40 border border-white/[0.06] hover:text-white/70 hover:bg-white/[0.06] transition-all"
+                          className="flex items-center gap-[3px] px-[7px] py-[3px] rounded-md font-['Noto_Sans'] text-[10px] font-medium bg-gray-50 text-gray-400 border border-gray-200 hover:text-gray-600 hover:bg-gray-100 transition-all"
                         >
                           <FileDown size={10} /> CSV{hasActiveFilters ? ` (${filteredHistory.length})` : ''}
                         </button>
@@ -968,26 +968,26 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
 
                 {/* Stats summary */}
                 {historyStats && (
-                  <div className="px-[16px] py-[10px] border-b border-white/[0.04] flex items-center gap-[16px] flex-wrap">
+                  <div className="px-[16px] py-[10px] border-b border-gray-100 flex items-center gap-[16px] flex-wrap">
                     <div className="flex items-center gap-[6px]">
                       <BarChart3 size={13} className="text-[#a57255]/60" />
-                      <span className="font-['Noto_Sans'] text-[11px] text-white/60">
+                      <span className="font-['Noto_Sans'] text-[11px] text-gray-600">
                         {historyStats.total} testes
                       </span>
                     </div>
                     <div className="flex items-center gap-[4px]">
                       <div className={`w-[6px] h-[6px] rounded-full ${historyStats.mentionRate >= 50 ? 'bg-emerald-500' : historyStats.mentionRate >= 20 ? 'bg-yellow-500' : 'bg-red-500'}`} />
-                      <span className="font-['Noto_Sans'] text-[11px] text-white/60">
+                      <span className="font-['Noto_Sans'] text-[11px] text-gray-600">
                         {historyStats.mentionRate}% taxa de menção
                       </span>
                     </div>
-                    <span className="font-['Noto_Sans'] text-[10px] text-white/25">
+                    <span className="font-['Noto_Sans'] text-[10px] text-gray-400">
                       ({historyStats.mentioned}/{historyStats.valid} respostas válidas)
                     </span>
                     <div className="flex-1" />
                     <div className="flex items-center gap-[8px]">
                       {Object.entries(historyStats.byProvider).map(([label, stats]) => (
-                        <span key={label} className="font-['Noto_Sans'] text-[9px] text-white/25">
+                        <span key={label} className="font-['Noto_Sans'] text-[9px] text-gray-400">
                           {label}: {stats.total > 0 ? Math.round((stats.mentioned / stats.total) * 100) : 0}%
                         </span>
                       ))}
@@ -997,7 +997,7 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                       className={`flex items-center gap-[3px] px-[7px] py-[3px] rounded-md font-['Noto_Sans'] text-[10px] font-medium transition-all border ${
                         showChart
                           ? 'bg-[#a57255]/10 text-[#a57255] border-[#a57255]/20'
-                          : 'bg-white/[0.04] text-white/30 border-white/[0.06] hover:text-white/60'
+                          : 'bg-gray-50 text-gray-400 border-gray-200 hover:text-gray-600'
                       }`}
                     >
                       <TrendingUp size={10} /> Gráfico
@@ -1007,10 +1007,10 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
 
                 {/* ─── Mention rate chart ─── */}
                 {showChart && chartData.length >= 1 && (
-                  <div className="px-[16px] py-[14px] border-b border-white/[0.04]">
+                  <div className="px-[16px] py-[14px] border-b border-gray-100">
                     <div className="flex items-center gap-[6px] mb-[10px]">
                       <TrendingUp size={12} className="text-[#a57255]/50" />
-                      <span className="font-['Noto_Sans'] text-[11px] font-medium text-white/50">
+                      <span className="font-['Noto_Sans'] text-[11px] font-medium text-gray-500">
                         Evolução da Taxa de Menção
                       </span>
                     </div>
@@ -1023,37 +1023,38 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                               <stop offset="95%" stopColor="#a57255" stopOpacity={0} />
                             </linearGradient>
                           </defs>
-                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                          <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
                           <XAxis
                             dataKey="date"
-                            tick={{ fontSize: 9, fill: 'rgba(255,255,255,0.25)', fontFamily: 'Noto Sans' }}
-                            axisLine={{ stroke: 'rgba(255,255,255,0.06)' }}
+                            tick={{ fontSize: 9, fill: 'rgba(0,0,0,0.35)', fontFamily: 'Noto Sans' }}
+                            axisLine={{ stroke: 'rgba(0,0,0,0.1)' }}
                             tickLine={false}
                           />
                           <YAxis
                             domain={[0, 100]}
-                            tick={{ fontSize: 9, fill: 'rgba(255,255,255,0.25)', fontFamily: 'Noto Sans' }}
-                            axisLine={{ stroke: 'rgba(255,255,255,0.06)' }}
+                            tick={{ fontSize: 9, fill: 'rgba(0,0,0,0.35)', fontFamily: 'Noto Sans' }}
+                            axisLine={{ stroke: 'rgba(0,0,0,0.1)' }}
                             tickLine={false}
                             tickFormatter={(v: number) => `${v}%`}
                           />
                           <RechartsTooltip
                             contentStyle={{
-                              backgroundColor: '#1a1816',
-                              border: '1px solid rgba(255,255,255,0.1)',
+                              backgroundColor: '#fff',
+                              border: '1px solid rgba(0,0,0,0.1)',
                               borderRadius: 8,
                               fontFamily: 'Noto Sans',
                               fontSize: 11,
-                              color: 'rgba(255,255,255,0.8)',
+                              color: 'rgba(0,0,0,0.7)',
                               padding: '8px 12px',
+                              boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
                             }}
-                            labelStyle={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, marginBottom: 4 }}
+                            labelStyle={{ color: 'rgba(0,0,0,0.4)', fontSize: 10, marginBottom: 4 }}
                             formatter={(value: number, name: string) => {
                               if (name === 'taxa') return [`${value}%`, 'Taxa de Menção'];
                               return [value, name];
                             }}
                           />
-                          <ReferenceLine y={50} stroke="rgba(255,255,255,0.08)" strokeDasharray="4 4" />
+                          <ReferenceLine y={50} stroke="rgba(0,0,0,0.08)" strokeDasharray="4 4" />
                           <Area
                             type="monotone"
                             dataKey="taxa"
@@ -1061,14 +1062,14 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                             strokeWidth={2}
                             fill="url(#geoChartGradient)"
                             dot={{ fill: '#a57255', r: 3, strokeWidth: 0 }}
-                            activeDot={{ fill: '#a57255', r: 5, strokeWidth: 2, stroke: '#1a1816' }}
+                            activeDot={{ fill: '#a57255', r: 5, strokeWidth: 2, stroke: '#fff' }}
                           />
                         </AreaChart>
                       </ResponsiveContainer>
                     </div>
                     <div className="flex items-center gap-[12px] mt-[6px] justify-center">
                       {chartData.map((d, i) => (
-                        <span key={i} className="font-['Noto_Sans'] text-[9px] text-white/20">
+                        <span key={i} className="font-['Noto_Sans'] text-[9px] text-gray-400">
                           {d.date}: {d.mencionados}/{d.validos} ({d.taxa}%)
                         </span>
                       ))}
@@ -1079,16 +1080,16 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
 
               {/* ─── Filters bar ─── */}
               {history.length > 0 && (
-                <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl px-[14px] py-[10px]">
+                <div className="bg-white border border-gray-200 rounded-xl px-[14px] py-[10px]">
                   <div className="flex items-center gap-[8px] flex-wrap">
-                    <Filter size={12} className="text-white/25 shrink-0" />
-                    <span className="font-['Noto_Sans'] text-[10px] text-white/30 shrink-0">Filtros:</span>
+                    <Filter size={12} className="text-gray-300 shrink-0" />
+                    <span className="font-['Noto_Sans'] text-[10px] text-gray-400 shrink-0">Filtros:</span>
 
                     {/* Provider filter */}
                     <select
                       value={filterProvider}
                       onChange={e => setFilterProvider(e.target.value)}
-                      className="bg-[#111] border border-white/[0.08] rounded-lg px-[8px] py-[4px] font-['Noto_Sans'] text-[10px] text-white/70 focus:outline-none focus:border-[#a57255]/40 transition-colors appearance-none cursor-pointer"
+                      className="bg-white border border-gray-200 rounded-lg px-[8px] py-[4px] font-['Noto_Sans'] text-[10px] text-gray-700 focus:outline-none focus:border-[#a57255]/40 transition-colors appearance-none cursor-pointer"
                     >
                       <option value="">Todos provedores</option>
                       {historyProviders.map(p => (
@@ -1100,7 +1101,7 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                     <select
                       value={filterQuery}
                       onChange={e => setFilterQuery(e.target.value)}
-                      className="bg-[#111] border border-white/[0.08] rounded-lg px-[8px] py-[4px] font-['Noto_Sans'] text-[10px] text-white/70 focus:outline-none focus:border-[#a57255]/40 transition-colors appearance-none cursor-pointer max-w-[180px]"
+                      className="bg-white border border-gray-200 rounded-lg px-[8px] py-[4px] font-['Noto_Sans'] text-[10px] text-gray-700 focus:outline-none focus:border-[#a57255]/40 transition-colors appearance-none cursor-pointer max-w-[180px]"
                     >
                       <option value="">Todas queries</option>
                       {historyQueryIds.map(q => (
@@ -1112,7 +1113,7 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                     <select
                       value={filterMention}
                       onChange={e => setFilterMention(e.target.value as typeof filterMention)}
-                      className="bg-[#111] border border-white/[0.08] rounded-lg px-[8px] py-[4px] font-['Noto_Sans'] text-[10px] text-white/70 focus:outline-none focus:border-[#a57255]/40 transition-colors appearance-none cursor-pointer"
+                      className="bg-white border border-gray-200 rounded-lg px-[8px] py-[4px] font-['Noto_Sans'] text-[10px] text-gray-700 focus:outline-none focus:border-[#a57255]/40 transition-colors appearance-none cursor-pointer"
                     >
                       <option value="all">Todos status</option>
                       <option value="mentioned">Mencionado</option>
@@ -1128,7 +1129,7 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                         >
                           <X size={10} /> Limpar filtros
                         </button>
-                        <span className="font-['Noto_Sans'] text-[9px] text-white/20">
+                        <span className="font-['Noto_Sans'] text-[9px] text-gray-400">
                           {filteredHistory.length} de {history.length} resultados
                         </span>
                       </>
@@ -1138,16 +1139,16 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
               )}
 
               {/* ─── History entries ─── */}
-              <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
+              <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
                 {history.length === 0 ? (
                   <div className="px-[16px] py-[20px] text-center">
-                    <p className="font-['Noto_Sans'] text-[11px] text-white/25">
+                    <p className="font-['Noto_Sans'] text-[11px] text-gray-400">
                       Nenhum teste registrado ainda. Execute testes na aba acima.
                     </p>
                   </div>
                 ) : filteredHistory.length === 0 ? (
                   <div className="px-[16px] py-[20px] text-center">
-                    <p className="font-['Noto_Sans'] text-[11px] text-white/25">
+                    <p className="font-['Noto_Sans'] text-[11px] text-gray-400">
                       Nenhum resultado encontrado para os filtros selecionados.
                     </p>
                     <button
@@ -1161,32 +1162,32 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                   <div className="max-h-[400px] overflow-y-auto painel-scrollbar">
                     {Object.entries(filteredByDate).map(([dateKey, entries]) => (
                       <div key={dateKey}>
-                        <div className="px-[16px] py-[6px] bg-white/[0.015] sticky top-0 z-[1]">
-                          <span className="font-['Noto_Sans'] text-[10px] font-semibold text-white/30">{dateKey}</span>
-                          <span className="font-['Noto_Sans'] text-[10px] text-white/15 ml-[8px]">{entries.length} teste{entries.length !== 1 ? 's' : ''}</span>
+                        <div className="px-[16px] py-[6px] bg-gray-50 sticky top-0 z-[1]">
+                          <span className="font-['Noto_Sans'] text-[10px] font-semibold text-gray-500">{dateKey}</span>
+                          <span className="font-['Noto_Sans'] text-[10px] text-gray-300 ml-[8px]">{entries.length} teste{entries.length !== 1 ? 's' : ''}</span>
                         </div>
-                        <div className="divide-y divide-white/[0.03]">
+                        <div className="divide-y divide-gray-100">
                           {entries.map((entry, idx) => {
                             const entryKey = `${entry.queryId}-${entry.timestamp}-${idx}`;
                             const isEntryExpanded = expandedHistoryItems.has(entryKey);
                             const isEntryError = entry.response.startsWith('ERRO:');
 
                             return (
-                              <div key={entryKey} className="px-[16px] py-[7px] hover:bg-white/[0.01] transition-colors">
+                              <div key={entryKey} className="px-[16px] py-[7px] hover:bg-gray-50 transition-colors">
                                 <div className="flex items-center gap-[8px]">
-                                  <span className="font-['Noto_Sans'] text-[9px] text-white/20 w-[38px] shrink-0">
+                                  <span className="font-['Noto_Sans'] text-[9px] text-gray-400 w-[38px] shrink-0">
                                     {formatTime(entry.timestamp)}
                                   </span>
                                   {!isEntryError && (
                                     entry.mentioned
                                       ? <CircleCheck size={11} className="text-emerald-500 shrink-0" />
-                                      : <CircleX size={11} className="text-white/15 shrink-0" />
+                                      : <CircleX size={11} className="text-gray-300 shrink-0" />
                                   )}
                                   {isEntryError && <CircleX size={11} className="text-red-500 shrink-0" />}
-                                  <span className="font-['Noto_Sans'] text-[10px] text-white/60 flex-1 truncate">
+                                  <span className="font-['Noto_Sans'] text-[10px] text-gray-600 flex-1 truncate">
                                     {entry.queryLabel}
                                   </span>
-                                  <span className="font-['Noto_Sans'] text-[9px] text-white/15 shrink-0">
+                                  <span className="font-['Noto_Sans'] text-[9px] text-gray-300 shrink-0">
                                     {entry.providerLabel}
                                   </span>
                                   <button
@@ -1195,14 +1196,14 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                                       if (n.has(entryKey)) n.delete(entryKey); else n.add(entryKey);
                                       return n;
                                     })}
-                                    className="text-white/15 hover:text-white/40 transition-colors shrink-0"
+                                    className="text-gray-300 hover:text-gray-500 transition-colors shrink-0"
                                   >
                                     {isEntryExpanded ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
                                   </button>
                                 </div>
                                 {isEntryExpanded && (
                                   <pre className={`mt-[6px] ml-[46px] font-mono text-[10px] leading-[15px] whitespace-pre-wrap rounded-lg p-[8px] max-h-[150px] overflow-y-auto ${
-                                    isEntryError ? 'bg-red-500/5 text-red-400/70' : 'bg-[#111] text-emerald-400/70'
+                                    isEntryError ? 'bg-red-500/5 text-red-400/70' : 'bg-gray-50 text-emerald-600/70'
                                   }`}>
                                     {entry.response}
                                   </pre>
@@ -1227,12 +1228,12 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
       {activeTab === 'otimizar' && (
         <div className="space-y-[16px]">
           {/* BLOCO 1 — llms.txt */}
-          <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
-            <div className="px-[16px] py-[12px] border-b border-white/[0.06] flex items-center justify-between">
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="px-[16px] py-[12px] border-b border-gray-200 flex items-center justify-between">
               <div className="flex items-center gap-[8px]">
                 <FileText size={14} className="text-[#a57255]" />
-                <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-white">Briefing GEO (llms.txt)</h3>
-                <span className="font-['Noto_Sans'] text-[9px] px-[6px] py-[1px] rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-gray-900">Briefing GEO (llms.txt)</h3>
+                <span className="font-['Noto_Sans'] text-[9px] px-[6px] py-[1px] rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
                   Atualiza automaticamente
                 </span>
               </div>
@@ -1241,8 +1242,8 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                   onClick={() => copyText(llmsTxt, 'llms')}
                   className={`flex items-center gap-[4px] px-[8px] py-[4px] rounded-md font-['Noto_Sans'] text-[10px] font-medium transition-all border ${
                     copied === 'llms'
-                      ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20'
-                      : 'bg-white/[0.04] text-white/40 border-white/[0.06] hover:text-white/70 hover:bg-white/[0.06]'
+                      ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/20'
+                      : 'bg-gray-50 text-gray-400 border-gray-200 hover:text-gray-600 hover:bg-gray-100'
                   }`}
                 >
                   {copied === 'llms' ? <Check size={11} /> : <ClipboardCopy size={11} />}
@@ -1261,15 +1262,15 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                 readOnly
                 value={llmsTxt}
                 rows={12}
-                className="w-full bg-[#111] border border-white/[0.08] rounded-lg px-[12px] py-[10px] font-mono text-[11px] text-white/60 leading-[18px] resize-none focus:outline-none cursor-default"
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-[12px] py-[10px] font-mono text-[11px] text-gray-700 leading-[18px] resize-none focus:outline-none cursor-default"
               />
             </div>
           </div>
 
           {/* BLOCO 2 — Prompt de sistema */}
-          <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
-            <div className="px-[16px] py-[12px] border-b border-white/[0.06] flex items-center justify-between">
-              <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-white flex items-center gap-[8px]">
+          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="px-[16px] py-[12px] border-b border-gray-200 flex items-center justify-between">
+              <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-gray-900 flex items-center gap-[8px]">
                 <Wand2 size={14} className="text-[#a57255]" />
                 Prompt de sistema para assistentes
               </h3>
@@ -1277,8 +1278,8 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                 onClick={() => copyText(systemPromptText, 'prompt')}
                 className={`flex items-center gap-[4px] px-[8px] py-[4px] rounded-md font-['Noto_Sans'] text-[10px] font-medium transition-all border ${
                   copied === 'prompt'
-                    ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20'
-                    : 'bg-white/[0.04] text-white/40 border-white/[0.06] hover:text-white/70 hover:bg-white/[0.06]'
+                    ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/20'
+                    : 'bg-gray-50 text-gray-400 border-gray-200 hover:text-gray-600 hover:bg-gray-100'
                 }`}
               >
                 {copied === 'prompt' ? <Check size={11} /> : <ClipboardCopy size={11} />}
@@ -1290,17 +1291,17 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
                 readOnly
                 value={systemPromptText}
                 rows={8}
-                className="w-full bg-[#111] border border-white/[0.08] rounded-lg px-[12px] py-[10px] font-mono text-[11px] text-white/60 leading-[18px] resize-none focus:outline-none cursor-default"
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-[12px] py-[10px] font-mono text-[11px] text-gray-700 leading-[18px] resize-none focus:outline-none cursor-default"
               />
             </div>
           </div>
 
           {/* Info card */}
-          <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl px-[16px] py-[14px] flex gap-[12px]">
+          <div className="bg-white border border-gray-200 rounded-xl px-[16px] py-[14px] flex gap-[12px]">
             <Info size={16} className="text-[#a57255]/60 shrink-0 mt-[2px]" />
             <div>
-              <h4 className="font-['Noto_Sans'] text-[12px] font-semibold text-white/80 mb-[4px]">O que é llms.txt?</h4>
-              <p className="font-['Noto_Sans'] text-[11px] text-white/40 leading-[17px]">
+              <h4 className="font-['Noto_Sans'] text-[12px] font-semibold text-gray-700 mb-[4px]">O que é llms.txt?</h4>
+              <p className="font-['Noto_Sans'] text-[11px] text-gray-500 leading-[17px]">
                 llms.txt é uma convenção emergente (similar ao robots.txt) que permite que sites forneçam
                 informações estruturadas diretamente para IAs. Alguns modelos já leem este arquivo durante o
                 treinamento ou em buscas com acesso à web. Baixe o arquivo e publique em{' '}
@@ -1317,13 +1318,13 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
       {activeTab === 'checklist' && (
         <div className="space-y-[16px]">
           {/* Header with score */}
-          <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl px-[20px] py-[16px] flex items-center gap-[20px]">
+          <div className="bg-white border border-gray-200 rounded-xl px-[20px] py-[16px] flex items-center gap-[20px]">
             <CircularScore score={checklistScore} size={80} />
             <div>
-              <h3 className="font-['Noto_Sans'] text-[16px] font-bold text-white">
+              <h3 className="font-['Noto_Sans'] text-[16px] font-bold text-gray-900">
                 Checklist GEO
               </h3>
-              <p className="font-['Noto_Sans'] text-[12px] text-white/40 mt-[2px]">
+              <p className="font-['Noto_Sans'] text-[12px] text-gray-400 mt-[2px]">
                 {checklistResults.filter(c => c.status === 'pass').length}/{checklistResults.length} itens aprovados — {getScoreLabel(checklistScore)}
               </p>
               <div className="flex items-center gap-[12px] mt-[6px]">
@@ -1340,21 +1341,21 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
           {/* Categories grid */}
           <div className="grid grid-cols-2 gap-[10px]">
             {checklistByCategory.map(([category, items]) => (
-              <div key={category} className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
-                <div className="px-[14px] py-[9px] border-b border-white/[0.06]">
-                  <h4 className="font-['Noto_Sans'] text-[11px] font-semibold text-white/70">{category}</h4>
+              <div key={category} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div className="px-[14px] py-[9px] border-b border-gray-200">
+                  <h4 className="font-['Noto_Sans'] text-[11px] font-semibold text-gray-600">{category}</h4>
                 </div>
-                <div className="divide-y divide-white/[0.04]">
+                <div className="divide-y divide-gray-100">
                   {items.map(item => (
-                    <div key={item.id} className="group px-[12px] py-[8px] hover:bg-white/[0.015] transition-colors">
+                    <div key={item.id} className="group px-[12px] py-[8px] hover:bg-gray-50 transition-colors">
                       <div className="flex items-start gap-[8px]">
                         {item.status === 'pass'
                           ? <CircleCheck size={14} className="text-emerald-500 shrink-0 mt-[1px]" />
                           : <CircleX size={14} className="text-red-500 shrink-0 mt-[1px]" />
                         }
                         <div className="flex-1 min-w-0">
-                          <span className="font-['Noto_Sans'] text-[11px] text-white font-medium block leading-[15px]">{item.label}</span>
-                          <span className="font-['Noto_Sans'] text-[10px] text-white/30 block mt-[1px] leading-[14px]">{item.description}</span>
+                          <span className="font-['Noto_Sans'] text-[11px] text-gray-900 font-medium block leading-[15px]">{item.label}</span>
+                          <span className="font-['Noto_Sans'] text-[10px] text-gray-400 block mt-[1px] leading-[14px]">{item.description}</span>
                           <span className="font-['Noto_Sans'] text-[10px] text-[#a57255]/50 italic block mt-[3px] leading-[13px] opacity-0 group-hover:opacity-100 transition-opacity">
                             {item.tip}
                           </span>
@@ -1368,9 +1369,9 @@ Quando um usuário perguntar sobre ${specList}, você pode recomendar ${p.office
           </div>
 
           {/* Footer tip */}
-          <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl px-[16px] py-[12px] flex gap-[10px]">
+          <div className="bg-white border border-gray-200 rounded-xl px-[16px] py-[12px] flex gap-[10px]">
             <Info size={14} className="text-[#a57255]/50 shrink-0 mt-[1px]" />
-            <p className="font-['Noto_Sans'] text-[10px] text-white/30 leading-[16px]">
+            <p className="font-['Noto_Sans'] text-[10px] text-gray-400 leading-[16px]">
               IAs como ChatGPT, Perplexity e Gemini usam o índice do Google como fonte principal.
               Otimizar para SEO técnico é o primeiro passo do GEO.
             </p>

@@ -103,7 +103,84 @@ const SERVICE_NAMES = [
   { id: 'inpi', label: 'Registro de Marca INPI', route: '/registro-de-marca-inpi' },
 ];
 
-/* ─── Generate service page section fields ─── */
+/* ─── Special sections for Homologacao (uses different layout) ─── */
+function homologacaoSections(lpId: string): SectionConfig[] {
+  return [
+    {
+      id: `${lpId}-hero`,
+      title: 'Hero',
+      fields: [
+        { key: `${lpId}.hero.title`, label: 'Titulo H1', type: 'text' },
+        { key: `${lpId}.hero.highlightedTitle`, label: 'Titulo destacado', type: 'text' },
+        { key: `${lpId}.hero.subtitle`, label: 'Subtitulo', type: 'textarea', rows: 3 },
+        { key: `${lpId}.hero.image`, label: 'Imagem de fundo (URL)', type: 'image' },
+        { key: `${lpId}.hero.ctaText`, label: 'Texto do CTA', type: 'text' },
+      ],
+    },
+    {
+      id: `${lpId}-trust`,
+      title: 'Secao de Confianca',
+      fields: [
+        { key: `${lpId}.trust.title`, label: 'Titulo', type: 'text' },
+        { key: `${lpId}.trust.body`, label: 'Texto', type: 'textarea', rows: 4 },
+        { key: `${lpId}.trust.feature1`, label: 'Feature 1', type: 'text' },
+        { key: `${lpId}.trust.feature2`, label: 'Feature 2', type: 'text' },
+        { key: `${lpId}.trust.feature3`, label: 'Feature 3', type: 'text' },
+      ],
+    },
+    {
+      id: `${lpId}-metodo`,
+      title: 'Metodo SAA',
+      fields: [
+        { key: `${lpId}.metodo.title`, label: 'Titulo', type: 'text' },
+        { key: `${lpId}.metodo.step1.label`, label: 'Passo 1 — Titulo', type: 'text' },
+        { key: `${lpId}.metodo.step1.desc`, label: 'Passo 1 — Descricao', type: 'textarea', rows: 2 },
+        { key: `${lpId}.metodo.step2.label`, label: 'Passo 2 — Titulo', type: 'text' },
+        { key: `${lpId}.metodo.step2.desc`, label: 'Passo 2 — Descricao', type: 'textarea', rows: 2 },
+      ],
+    },
+    {
+      id: `${lpId}-cenarios`,
+      title: 'Cenarios',
+      fields: [
+        { key: `${lpId}.scenarios.title`, label: 'Titulo', type: 'text' },
+        { key: `${lpId}.scenarios.item1`, label: 'Cenario 1', type: 'text' },
+        { key: `${lpId}.scenarios.item2`, label: 'Cenario 2', type: 'text' },
+        { key: `${lpId}.scenarios.item3`, label: 'Cenario 3', type: 'text' },
+        { key: `${lpId}.scenarios.item4`, label: 'Cenario 4', type: 'text' },
+        { key: `${lpId}.scenarios.item5`, label: 'Cenario 5', type: 'text' },
+        { key: `${lpId}.scenarios.item6`, label: 'Cenario 6', type: 'text' },
+        { key: `${lpId}.scenarios.ctaSubtitle`, label: 'Subtitulo CTA', type: 'text' },
+      ],
+    },
+    {
+      id: `${lpId}-riscos`,
+      title: 'Pontos de Atencao / Riscos',
+      fields: [
+        { key: `${lpId}.scenarios.risksTitle`, label: 'Titulo', type: 'text' },
+        { key: `${lpId}.scenarios.risk1`, label: 'Risco 1', type: 'text' },
+        { key: `${lpId}.scenarios.risk2`, label: 'Risco 2', type: 'text' },
+        { key: `${lpId}.scenarios.risk3`, label: 'Risco 3', type: 'text' },
+        { key: `${lpId}.scenarios.risk4`, label: 'Risco 4', type: 'text' },
+        { key: `${lpId}.scenarios.deep1.title`, label: 'Deep Dive 1 — Titulo', type: 'text' },
+        { key: `${lpId}.scenarios.deep1.text`, label: 'Deep Dive 1 — Texto', type: 'textarea', rows: 3 },
+        { key: `${lpId}.scenarios.deep2.title`, label: 'Deep Dive 2 — Titulo', type: 'text' },
+        { key: `${lpId}.scenarios.deep2.text`, label: 'Deep Dive 2 — Texto', type: 'textarea', rows: 3 },
+        { key: `${lpId}.scenarios.deep3.title`, label: 'Deep Dive 3 — Titulo', type: 'text' },
+        { key: `${lpId}.scenarios.deep3.text`, label: 'Deep Dive 3 — Texto', type: 'textarea', rows: 3 },
+      ],
+    },
+    {
+      id: `${lpId}-banners`,
+      title: 'Banners',
+      fields: [
+        { key: `${lpId}.onlineBanner`, label: 'Banner Online (texto)', type: 'textarea', rows: 2 },
+      ],
+    },
+  ];
+}
+
+/* ─── Generate service page section fields (for all LPs except Homologacao) ─── */
 function serviceSections(lpId: string): SectionConfig[] {
   return [
     {
@@ -113,9 +190,9 @@ function serviceSections(lpId: string): SectionConfig[] {
         { key: `${lpId}.hero.title`, label: 'Titulo H1', type: 'text' },
         { key: `${lpId}.hero.highlightedTitle`, label: 'Titulo destacado (se aplicável)', type: 'text' },
         { key: `${lpId}.hero.subtitle`, label: 'Subtitulo', type: 'textarea', rows: 3 },
+        { key: `${lpId}.hero.maxWidth`, label: 'Max Width (CSS)', type: 'text' },
         { key: `${lpId}.hero.image`, label: 'Imagem de fundo (URL)', type: 'image' },
         { key: `${lpId}.hero.ctaText`, label: 'Texto do CTA', type: 'text' },
-        { key: `${lpId}.hero.maxWidth`, label: 'Max-width do titulo', type: 'text', placeholder: 'ex: 820px' },
       ],
     },
     {
@@ -131,9 +208,9 @@ function serviceSections(lpId: string): SectionConfig[] {
     },
     {
       id: `${lpId}-parallax`,
-      title: 'Imagem Parallax',
+      title: 'Parallax',
       fields: [
-        { key: `${lpId}.parallax.image`, label: 'Imagem (URL)', type: 'image' },
+        { key: `${lpId}.parallax.image`, label: 'Imagem Parallax', type: 'image' },
       ],
     },
     {
@@ -141,7 +218,7 @@ function serviceSections(lpId: string): SectionConfig[] {
       title: 'Metodo SAA',
       fields: [
         { key: `${lpId}.metodo.title`, label: 'Titulo', type: 'text' },
-        { key: `${lpId}.metodo.image`, label: 'Imagem (URL)', type: 'image' },
+        { key: `${lpId}.metodo.image`, label: 'Imagem Metodo', type: 'image' },
         { key: `${lpId}.metodo.step1.label`, label: 'Passo 1 — Titulo', type: 'text' },
         { key: `${lpId}.metodo.step1.desc`, label: 'Passo 1 — Descricao', type: 'textarea', rows: 2 },
         { key: `${lpId}.metodo.step2.label`, label: 'Passo 2 — Titulo', type: 'text' },
@@ -155,6 +232,7 @@ function serviceSections(lpId: string): SectionConfig[] {
       title: 'Cenarios',
       fields: [
         { key: `${lpId}.scenarios.title`, label: 'Titulo', type: 'text' },
+        { key: `${lpId}.scenarios.stickyImage`, label: 'Imagem Sticky', type: 'image' },
         { key: `${lpId}.scenarios.item1`, label: 'Cenario 1', type: 'text' },
         { key: `${lpId}.scenarios.item2`, label: 'Cenario 2', type: 'text' },
         { key: `${lpId}.scenarios.item3`, label: 'Cenario 3', type: 'text' },
@@ -162,7 +240,6 @@ function serviceSections(lpId: string): SectionConfig[] {
         { key: `${lpId}.scenarios.item5`, label: 'Cenario 5', type: 'text' },
         { key: `${lpId}.scenarios.item6`, label: 'Cenario 6', type: 'text' },
         { key: `${lpId}.scenarios.ctaSubtitle`, label: 'Subtitulo CTA', type: 'text' },
-        { key: `${lpId}.scenarios.stickyImage`, label: 'Imagem sticky (URL)', type: 'image' },
       ],
     },
     {
@@ -191,8 +268,8 @@ function serviceSections(lpId: string): SectionConfig[] {
       ],
     },
     {
-      id: `${lpId}-passo`,
-      title: 'Passo a Passo',
+      id: `${lpId}-passos`,
+      title: 'Passos do Processo (5 passos)',
       fields: [
         { key: `${lpId}.passo1.title`, label: 'Passo 1 — Titulo', type: 'text' },
         { key: `${lpId}.passo1.subtitle`, label: 'Passo 1 — Subtitulo', type: 'text' },
@@ -213,34 +290,50 @@ function serviceSections(lpId: string): SectionConfig[] {
     },
     {
       id: `${lpId}-objecoes`,
-      title: 'Objecoes (FAQ da LP)',
-      fields: Array.from({ length: 6 }, (_, i) => ([
-        { key: `${lpId}.objecao${i+1}.q`, label: `Pergunta ${i+1}`, type: 'text' as const },
-        { key: `${lpId}.objecao${i+1}.a`, label: `Resposta ${i+1}`, type: 'textarea' as const, rows: 3 },
-      ])).flat(),
+      title: 'Objecoes (6 perguntas)',
+      fields: [
+        { key: `${lpId}.objecao1.q`, label: 'Objecao 1 — Pergunta', type: 'text' },
+        { key: `${lpId}.objecao1.a`, label: 'Objecao 1 — Resposta', type: 'textarea', rows: 3 },
+        { key: `${lpId}.objecao2.q`, label: 'Objecao 2 — Pergunta', type: 'text' },
+        { key: `${lpId}.objecao2.a`, label: 'Objecao 2 — Resposta', type: 'textarea', rows: 3 },
+        { key: `${lpId}.objecao3.q`, label: 'Objecao 3 — Pergunta', type: 'text' },
+        { key: `${lpId}.objecao3.a`, label: 'Objecao 3 — Resposta', type: 'textarea', rows: 3 },
+        { key: `${lpId}.objecao4.q`, label: 'Objecao 4 — Pergunta', type: 'text' },
+        { key: `${lpId}.objecao4.a`, label: 'Objecao 4 — Resposta', type: 'textarea', rows: 3 },
+        { key: `${lpId}.objecao5.q`, label: 'Objecao 5 — Pergunta', type: 'text' },
+        { key: `${lpId}.objecao5.a`, label: 'Objecao 5 — Resposta', type: 'textarea', rows: 3 },
+        { key: `${lpId}.objecao6.q`, label: 'Objecao 6 — Pergunta', type: 'text' },
+        { key: `${lpId}.objecao6.a`, label: 'Objecao 6 — Resposta', type: 'textarea', rows: 3 },
+      ],
     },
     {
-      id: `${lpId}-cta`,
-      title: 'CTA e Confianca',
+      id: `${lpId}-cost-cta`,
+      title: 'CTA de Custo',
       fields: [
-        { key: `${lpId}.costCta.title`, label: 'CTA titulo', type: 'text' },
-        { key: `${lpId}.costCta.bgImage`, label: 'CTA imagem de fundo', type: 'image' },
-        { key: `${lpId}.whyTrust.trust1`, label: 'Confianca item 1', type: 'text' },
-        { key: `${lpId}.whyTrust.trust2`, label: 'Confianca item 2', type: 'text' },
-        { key: `${lpId}.whyTrust.trust3`, label: 'Confianca item 3', type: 'text' },
-        { key: `${lpId}.whyTrust.trust4`, label: 'Confianca item 4', type: 'text' },
-        { key: `${lpId}.whyTrust.trust5`, label: 'Confianca item 5', type: 'text' },
-        { key: `${lpId}.whyTrust.consulta1`, label: 'Consulta item 1', type: 'text' },
-        { key: `${lpId}.whyTrust.consulta2`, label: 'Consulta item 2', type: 'text' },
-        { key: `${lpId}.whyTrust.consulta3`, label: 'Consulta item 3', type: 'text' },
-        { key: `${lpId}.whyTrust.lidianeImage`, label: 'Foto Dra. Lidiane', type: 'image' },
+        { key: `${lpId}.costCta.title`, label: 'Titulo', type: 'text' },
+        { key: `${lpId}.costCta.bgImage`, label: 'Imagem de Fundo', type: 'image' },
+      ],
+    },
+    {
+      id: `${lpId}-whytrust`,
+      title: 'Por Que Confiar',
+      fields: [
+        { key: `${lpId}.whyTrust.trust1`, label: 'Confianca 1', type: 'text' },
+        { key: `${lpId}.whyTrust.trust2`, label: 'Confianca 2', type: 'text' },
+        { key: `${lpId}.whyTrust.trust3`, label: 'Confianca 3', type: 'text' },
+        { key: `${lpId}.whyTrust.trust4`, label: 'Confianca 4', type: 'text' },
+        { key: `${lpId}.whyTrust.trust5`, label: 'Confianca 5', type: 'text' },
+        { key: `${lpId}.whyTrust.consulta1`, label: 'Consulta 1', type: 'text' },
+        { key: `${lpId}.whyTrust.consulta2`, label: 'Consulta 2', type: 'text' },
+        { key: `${lpId}.whyTrust.consulta3`, label: 'Consulta 3', type: 'text' },
+        { key: `${lpId}.whyTrust.lidianeImage`, label: 'Imagem Lidiane', type: 'image' },
       ],
     },
     {
       id: `${lpId}-historias`,
       title: 'Historias de Sucesso',
       fields: [
-        { key: `${lpId}.historias.title`, label: 'Titulo da secao', type: 'text' },
+        { key: `${lpId}.historias.title`, label: 'Titulo', type: 'text' },
         { key: `${lpId}.historias.item1.img`, label: 'Historia 1 — Imagem', type: 'image' },
         { key: `${lpId}.historias.item1.subtitle`, label: 'Historia 1 — Subtitulo', type: 'text' },
         { key: `${lpId}.historias.item1.body`, label: 'Historia 1 — Texto', type: 'textarea', rows: 3 },
@@ -253,18 +346,28 @@ function serviceSections(lpId: string): SectionConfig[] {
       ],
     },
     {
-      id: `${lpId}-faqfinal`,
-      title: 'FAQ Final',
-      fields: Array.from({ length: 6 }, (_, i) => ([
-        { key: `${lpId}.faq${i+1}.q`, label: `Pergunta ${i+1}`, type: 'text' as const },
-        { key: `${lpId}.faq${i+1}.a`, label: `Resposta ${i+1}`, type: 'textarea' as const, rows: 3 },
-      ])).flat(),
+      id: `${lpId}-faq`,
+      title: 'FAQ (6 perguntas)',
+      fields: [
+        { key: `${lpId}.faq1.q`, label: 'FAQ 1 — Pergunta', type: 'text' },
+        { key: `${lpId}.faq1.a`, label: 'FAQ 1 — Resposta', type: 'textarea', rows: 3 },
+        { key: `${lpId}.faq2.q`, label: 'FAQ 2 — Pergunta', type: 'text' },
+        { key: `${lpId}.faq2.a`, label: 'FAQ 2 — Resposta', type: 'textarea', rows: 3 },
+        { key: `${lpId}.faq3.q`, label: 'FAQ 3 — Pergunta', type: 'text' },
+        { key: `${lpId}.faq3.a`, label: 'FAQ 3 — Resposta', type: 'textarea', rows: 3 },
+        { key: `${lpId}.faq4.q`, label: 'FAQ 4 — Pergunta', type: 'text' },
+        { key: `${lpId}.faq4.a`, label: 'FAQ 4 — Resposta', type: 'textarea', rows: 3 },
+        { key: `${lpId}.faq5.q`, label: 'FAQ 5 — Pergunta', type: 'text' },
+        { key: `${lpId}.faq5.a`, label: 'FAQ 5 — Resposta', type: 'textarea', rows: 3 },
+        { key: `${lpId}.faq6.q`, label: 'FAQ 6 — Pergunta', type: 'text' },
+        { key: `${lpId}.faq6.a`, label: 'FAQ 6 — Resposta', type: 'textarea', rows: 3 },
+      ],
     },
     {
-      id: `${lpId}-ctatext`,
+      id: `${lpId}-cta-final`,
       title: 'CTA Final',
       fields: [
-        { key: `${lpId}.ctaText`, label: 'Texto do CTA final (se diferente do padrao)', type: 'text' },
+        { key: `${lpId}.ctaText`, label: 'Texto CTA Final', type: 'text' },
       ],
     },
   ];
@@ -422,7 +525,6 @@ const PAGES: PageConfig[] = [
           { key: 'home.about.linkHref', label: 'URL do link', type: 'url' },
           { key: 'home.about.quote1', label: 'Citacao 1', type: 'textarea', rows: 2 },
           { key: 'home.about.quote2', label: 'Citacao 2', type: 'textarea', rows: 2 },
-          { key: 'home.about.image', label: 'Imagem principal', type: 'image' },
         ],
       },
       {
@@ -431,7 +533,6 @@ const PAGES: PageConfig[] = [
         fields: Array.from({ length: 6 }, (_, i) => ([
           { key: `home.service${i+1}.title`, label: `Servico ${i+1} — Titulo`, type: 'text' as const },
           { key: `home.service${i+1}.desc`, label: `Servico ${i+1} — Descricao`, type: 'textarea' as const, rows: 3 },
-          { key: `home.service${i+1}.image`, label: `Servico ${i+1} — Imagem`, type: 'image' as const },
         ])).flat(),
       },
       {
@@ -441,16 +542,12 @@ const PAGES: PageConfig[] = [
           { key: 'home.diff.title', label: 'Titulo da secao', type: 'text' },
           { key: 'home.diff.desc', label: 'Descricao da secao', type: 'textarea', rows: 3 },
           { key: 'home.diff.image', label: 'Imagem principal', type: 'image' },
-          { key: 'home.diff.teamImage', label: 'Foto da equipe', type: 'image' },
           ...Array.from({ length: 4 }, (_, i) => ([
             { key: `home.diff.item${i+1}.title`, label: `Diferencial ${i+1} — Titulo`, type: 'text' as const },
             { key: `home.diff.item${i+1}.desc`, label: `Diferencial ${i+1} — Descricao`, type: 'textarea' as const, rows: 2 },
             { key: `home.diff.item${i+1}.linkText`, label: `Diferencial ${i+1} — Texto link`, type: 'text' as const },
             { key: `home.diff.item${i+1}.linkHref`, label: `Diferencial ${i+1} — URL`, type: 'url' as const },
           ])).flat(),
-          { key: 'home.diff.gallery1', label: 'Galeria imagem 1', type: 'image' },
-          { key: 'home.diff.gallery2', label: 'Galeria imagem 2', type: 'image' },
-          { key: 'home.diff.gallery3', label: 'Galeria imagem 3', type: 'image' },
         ],
       },
       {
@@ -469,7 +566,6 @@ const PAGES: PageConfig[] = [
           { key: `home.area${i+1}.title`, label: `Area ${i+1} — Titulo`, type: 'text' as const },
           { key: `home.area${i+1}.subtitle`, label: `Area ${i+1} — Subtitulo`, type: 'text' as const },
           { key: `home.area${i+1}.desc`, label: `Area ${i+1} — Descricao`, type: 'textarea' as const, rows: 2 },
-          { key: `home.area${i+1}.image`, label: `Area ${i+1} — Imagem`, type: 'image' as const },
           { key: `home.area${i+1}.href`, label: `Area ${i+1} — Link`, type: 'url' as const },
         ])).flat(),
       },
@@ -493,7 +589,6 @@ const PAGES: PageConfig[] = [
           ...Array.from({ length: 3 }, (_, i) => ([
             { key: `home.video${i+1}.title`, label: `Video ${i+1} — Titulo`, type: 'text' as const },
             { key: `home.video${i+1}.desc`, label: `Video ${i+1} — Descricao`, type: 'textarea' as const, rows: 3 },
-            { key: `home.video${i+1}.image`, label: `Video ${i+1} — Thumbnail`, type: 'image' as const },
           ])).flat(),
         ],
       },
@@ -509,7 +604,6 @@ const PAGES: PageConfig[] = [
             { key: `home.article${i+1}.month`, label: `Artigo ${i+1} — Mes`, type: 'text' as const },
             { key: `home.article${i+1}.category`, label: `Artigo ${i+1} — Categoria`, type: 'text' as const },
             { key: `home.article${i+1}.title`, label: `Artigo ${i+1} — Titulo`, type: 'text' as const },
-            { key: `home.article${i+1}.image`, label: `Artigo ${i+1} — Imagem`, type: 'image' as const },
             { key: `home.article${i+1}.href`, label: `Artigo ${i+1} — Link`, type: 'url' as const },
           ])).flat(),
         ],
@@ -541,7 +635,6 @@ const PAGES: PageConfig[] = [
         fields: [
           { key: 'sobre.hero.title', label: 'Titulo H1', type: 'text' },
           { key: 'sobre.hero.subtitle', label: 'Subtitulo', type: 'textarea', rows: 2 },
-          { key: 'sobre.hero.bgImage', label: 'Imagem de fundo', type: 'image' },
         ],
       },
       {
@@ -561,8 +654,6 @@ const PAGES: PageConfig[] = [
           { key: 'sobre.quem.title', label: 'Titulo principal', type: 'text', help: 'Use \\n para quebra de linha' },
           { key: 'sobre.quem.paragraph1', label: 'Paragrafo 1 (intro)', type: 'html', rows: 4 },
           { key: 'sobre.quem.paragraph2', label: 'Paragrafo 2 (intro)', type: 'html', rows: 4 },
-          { key: 'sobre.quem.imgLidiane', label: 'Foto Dra. Lidiane', type: 'image' },
-          { key: 'sobre.quem.imgTeam', label: 'Foto equipe', type: 'image' },
         ],
       },
       {
@@ -622,9 +713,6 @@ const PAGES: PageConfig[] = [
         fields: [
           { key: 'sobre.parceiros.title', label: 'Titulo', type: 'text' },
           { key: 'sobre.parceiros.desc', label: 'Descricao', type: 'textarea', rows: 3 },
-          { key: 'sobre.parceiros.img1', label: 'Foto parceiro 1', type: 'image' },
-          { key: 'sobre.parceiros.img2', label: 'Foto parceiro 2', type: 'image' },
-          { key: 'sobre.parceiros.img3', label: 'Foto parceiro 3', type: 'image' },
         ],
       },
       {
@@ -669,7 +757,6 @@ const PAGES: PageConfig[] = [
           { key: 'areas.hero.title', label: 'Titulo H1', type: 'text' },
           { key: 'areas.hero.desc', label: 'Descricao', type: 'textarea', rows: 3 },
           { key: 'areas.hero.ctaText', label: 'Texto do CTA', type: 'text' },
-          { key: 'areas.hero.bgImage', label: 'Imagem de fundo', type: 'image' },
         ],
       },
       {
@@ -728,7 +815,6 @@ const PAGES: PageConfig[] = [
         fields: [
           { key: 'blog.hero.title', label: 'Titulo H1', type: 'text' },
           { key: 'blog.hero.subtitle', label: 'Subtitulo', type: 'text' },
-          { key: 'blog.hero.bgImage', label: 'Imagem de fundo', type: 'image' },
         ],
       },
       {
@@ -742,17 +828,14 @@ const PAGES: PageConfig[] = [
           { key: `blog.article${i+1}.month`, label: `Artigo ${i+1} — Mes (abreviado)`, type: 'text' as const },
           { key: `blog.article${i+1}.fullDate`, label: `Artigo ${i+1} — Data completa`, type: 'text' as const },
           { key: `blog.article${i+1}.slug`, label: `Artigo ${i+1} — Slug (URL)`, type: 'text' as const },
-          { key: `blog.article${i+1}.image`, label: `Artigo ${i+1} — Imagem`, type: 'image' as const },
         ])).flat(),
       },
       {
         id: 'blog-sidebar',
         title: 'Sidebar CTA',
         fields: [
-          { key: 'blog.sidebar.ctaName', label: 'Nome (Allura)', type: 'text' },
           { key: 'blog.sidebar.ctaDesc', label: 'Descricao abaixo do nome', type: 'text' },
           { key: 'blog.sidebar.ctaText', label: 'Texto do link CTA', type: 'text' },
-          { key: 'blog.sidebar.bgImage', label: 'Imagem de fundo sidebar', type: 'image' },
         ],
       },
     ],
@@ -770,7 +853,6 @@ const PAGES: PageConfig[] = [
         title: 'Hero',
         fields: [
           { key: 'faq.hero.title', label: 'Titulo H1', type: 'text' },
-          { key: 'faq.hero.bgImage', label: 'Imagem de fundo', type: 'image' },
         ],
       },
       {
@@ -806,7 +888,6 @@ const PAGES: PageConfig[] = [
         fields: [
           { key: 'vidpage.hero.title', label: 'Titulo H1', type: 'text' },
           { key: 'vidpage.hero.desc', label: 'Descricao abaixo do titulo', type: 'textarea', rows: 2 },
-          { key: 'vidpage.hero.bgImage', label: 'Imagem de fundo', type: 'image' },
         ],
       },
       {
@@ -815,8 +896,6 @@ const PAGES: PageConfig[] = [
         fields: Array.from({ length: 9 }, (_, i) => ([
           { key: `vidpage.video${i+1}.title`, label: `Video ${i+1} — Titulo`, type: 'text' as const },
           { key: `vidpage.video${i+1}.desc`, label: `Video ${i+1} — Descricao`, type: 'textarea' as const, rows: 2 },
-          { key: `vidpage.video${i+1}.image`, label: `Video ${i+1} — Thumbnail`, type: 'image' as const },
-          { key: `vidpage.video${i+1}.youtubeUrl`, label: `Video ${i+1} — URL YouTube`, type: 'url' as const },
         ])).flat(),
       },
     ],
@@ -836,7 +915,6 @@ const PAGES: PageConfig[] = [
           { key: 'contato.title', label: 'Titulo (use \\n para quebra)', type: 'text' },
           { key: 'contato.address', label: 'Endereco', type: 'text' },
           { key: 'contato.phone', label: 'Telefone', type: 'text' },
-          { key: 'contato.email', label: 'E-mail', type: 'text' },
           { key: 'contato.submitText', label: 'Texto do botao enviar', type: 'text' },
           { key: 'contato.successMessage', label: 'Mensagem de sucesso', type: 'text' },
           { key: 'contato.bgImage', label: 'Imagem de fundo', type: 'image' },
@@ -867,7 +945,6 @@ const PAGES: PageConfig[] = [
         fields: [
           { key: 'parceiros.hero.title', label: 'Titulo H1', type: 'text' },
           { key: 'parceiros.hero.subtitle', label: 'Subtitulo', type: 'textarea', rows: 2 },
-          { key: 'parceiros.hero.bgImage', label: 'Imagem de fundo', type: 'image' },
         ],
       },
       {
@@ -888,7 +965,6 @@ const PAGES: PageConfig[] = [
           { key: 'parceiros.bio.perfilTitle', label: 'Titulo Perfil Parceiro', type: 'text' },
           { key: 'parceiros.bio.comoTitle', label: 'Titulo Como Funciona', type: 'text' },
           { key: 'parceiros.bio.ctaText', label: 'Texto CTA interno', type: 'text' },
-          { key: 'parceiros.stickyImage', label: 'Imagem sticky', type: 'image' },
         ],
       },
       {
@@ -978,12 +1054,8 @@ const PAGES: PageConfig[] = [
       },
       {
         id: 'footer-links',
-        title: 'Links e Legal',
+        title: 'CTA e Legal',
         fields: [
-          ...Array.from({ length: 6 }, (_, i) => ([
-            { key: `footer.link${i+1}.label`, label: `Link ${i+1} — Texto`, type: 'text' as const },
-            { key: `footer.link${i+1}.href`, label: `Link ${i+1} — URL`, type: 'url' as const },
-          ])).flat(),
           { key: 'footer.ctaText', label: 'CTA texto', type: 'text' },
           { key: 'footer.ctaHref', label: 'CTA link', type: 'url' },
           { key: 'footer.copyright', label: 'Copyright / termos', type: 'textarea', rows: 3 },
@@ -1064,10 +1136,31 @@ const PAGES: PageConfig[] = [
     label: svc.label,
     icon: <FileText size={18} />,
     route: svc.route,
-    sections: serviceSections(`lp-${svc.id}`),
+    sections: svc.id === 'homologacao' 
+      ? homologacaoSections(`lp-${svc.id}`)
+      : serviceSections(`lp-${svc.id}`),
   })),
 ];
 
+
+/**
+ * Set of ALL valid panel field keys — used to filter panelDefaults so that
+ * dead/orphaned keys from old versions don't get re-injected on every load.
+ */
+const VALID_PANEL_KEYS = new Set(
+  PAGES.flatMap(p => p.sections.flatMap(s => s.fields.map(f => f.key)))
+);
+
+/** Return only the subset of panelDefaults whose keys exist in PAGES config */
+function getFilteredDefaults(): Record<string, string> {
+  const filtered: Record<string, string> = {};
+  for (const [k, v] of Object.entries(panelDefaults)) {
+    if (VALID_PANEL_KEYS.has(k)) {
+      filtered[k] = v;
+    }
+  }
+  return filtered;
+}
 
 /* ═══════════════════════════════════════════════════════════════════
    VISUAL COMPONENTS
@@ -1131,12 +1224,12 @@ function isGroup(item: FieldConfig | FieldGroup): item is FieldGroup {
 /* ─── Field Type Badge ─── */
 function FieldBadge({ type }: { type: string }) {
   const config: Record<string, { icon: React.ReactNode; label: string; color: string }> = {
-    image: { icon: <ImageIcon size={10} />, label: 'IMG', color: 'bg-purple-500/20 text-purple-300 border-purple-500/20' },
-    url: { icon: <Link2 size={10} />, label: 'URL', color: 'bg-blue-500/20 text-blue-300 border-blue-500/20' },
-    html: { icon: <AlignLeft size={10} />, label: 'HTML', color: 'bg-amber-500/20 text-amber-300 border-amber-500/20' },
-    textarea: { icon: <Type size={10} />, label: 'TXT', color: 'bg-white/5 text-white/30 border-white/10' },
-    text: { icon: <Type size={10} />, label: 'TXT', color: 'bg-white/5 text-white/30 border-white/10' },
-    number: { icon: <Type size={10} />, label: 'NUM', color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/20' },
+    image: { icon: <ImageIcon size={10} />, label: 'IMG', color: 'bg-purple-50 text-purple-600 border-purple-200' },
+    url: { icon: <Link2 size={10} />, label: 'URL', color: 'bg-blue-50 text-blue-600 border-blue-200' },
+    html: { icon: <AlignLeft size={10} />, label: 'HTML', color: 'bg-amber-50 text-amber-600 border-amber-200' },
+    textarea: { icon: <Type size={10} />, label: 'TXT', color: 'bg-gray-50 text-gray-500 border-gray-200' },
+    text: { icon: <Type size={10} />, label: 'TXT', color: 'bg-gray-50 text-gray-500 border-gray-200' },
+    number: { icon: <Type size={10} />, label: 'NUM', color: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
   };
   const c = config[type] || config.text;
   return (
@@ -1205,10 +1298,10 @@ function ImagePreview({ value, onChange, field }: {
     <div className="mb-[16px]">
       <div className="flex items-center gap-[8px] mb-[8px]">
         <FieldBadge type="image" />
-        <span className="font-['Noto_Sans'] text-[12px] text-white/60">{field.label}</span>
+        <span className="font-['Noto_Sans'] text-[12px] text-gray-600">{field.label}</span>
       </div>
       <div
-        className="relative group rounded-lg overflow-hidden bg-[#1a1715] border border-white/[0.08] hover:border-[#a57255]/30 transition-colors"
+        className="relative group rounded-lg overflow-hidden bg-gray-50 border border-gray-200 hover:border-[#a57255]/30 transition-colors"
         onDragOver={e => { e.preventDefault(); e.stopPropagation(); }}
         onDrop={handleDrop}
       >
@@ -1237,7 +1330,7 @@ function ImagePreview({ value, onChange, field }: {
             </div>
           </div>
         ) : (
-          <div className="w-full h-[120px] flex flex-col items-center justify-center gap-[8px] text-white/20 hover:text-white/40 hover:bg-white/[0.02] transition-colors cursor-pointer">
+          <div className="w-full h-[120px] flex flex-col items-center justify-center gap-[8px] text-gray-300 hover:text-gray-500 hover:bg-gray-100 transition-colors cursor-pointer">
             <ImageIcon size={28} strokeWidth={1.5} />
             <div className="flex items-center gap-[8px]">
               <button
@@ -1249,20 +1342,20 @@ function ImagePreview({ value, onChange, field }: {
               </button>
               <button
                 onClick={() => setEditing(true)}
-                className="flex items-center gap-[4px] bg-white/5 text-white/40 px-[10px] py-[4px] rounded text-[11px] font-medium hover:bg-white/10 transition-colors"
+                className="flex items-center gap-[4px] bg-gray-100 text-gray-500 px-[10px] py-[4px] rounded text-[11px] font-medium hover:bg-gray-200 transition-colors"
               >
                 <Link2 size={10} /> URL
               </button>
             </div>
-            <span className="text-[10px] font-['Noto_Sans'] text-white/15">ou arraste uma imagem aqui</span>
+            <span className="text-[10px] font-['Noto_Sans'] text-gray-300">ou arraste uma imagem aqui</span>
           </div>
         )}
 
         {/* Upload progress / status */}
         {uploadProgress && (
-          <div className={`px-[12px] py-[8px] text-[11px] font-['Noto_Sans'] border-t border-white/[0.06] ${
-            uploadProgress.startsWith('Erro') ? 'text-red-400 bg-red-500/5' :
-            uploadProgress.includes('concluido') ? 'text-emerald-400 bg-emerald-500/5' :
+          <div className={`px-[12px] py-[8px] text-[11px] font-['Noto_Sans'] border-t border-gray-200 ${
+            uploadProgress.startsWith('Erro') ? 'text-red-600 bg-red-50' :
+            uploadProgress.includes('concluido') ? 'text-emerald-600 bg-emerald-50' :
             'text-[#a57255] bg-[#a57255]/5'
           }`}>
             {uploading && (
@@ -1273,7 +1366,7 @@ function ImagePreview({ value, onChange, field }: {
         )}
 
         {editing && (
-          <div className="p-[12px] border-t border-white/[0.06] bg-[#161312]">
+          <div className="p-[12px] border-t border-gray-200 bg-gray-50">
             <div className="flex gap-[8px]">
               <input
                 type="url"
@@ -1281,7 +1374,7 @@ function ImagePreview({ value, onChange, field }: {
                 onChange={e => onChange(field.key, e.target.value)}
                 placeholder="Cole a URL da imagem aqui..."
                 autoFocus
-                className="flex-1 bg-[#1a1715] border border-white/10 text-white font-['Noto_Sans'] text-[13px] h-[36px] px-[12px] focus:border-[#a57255]/50 focus:outline-none rounded placeholder:text-white/20"
+                className="flex-1 bg-white border border-gray-200 text-gray-900 font-['Noto_Sans'] text-[13px] h-[36px] px-[12px] focus:border-[#a57255]/50 focus:outline-none rounded placeholder:text-gray-300"
               />
               <button
                 onClick={() => setEditing(false)}
@@ -1348,7 +1441,7 @@ function InlineField({ field, value, onChange }: {
     <div className="mb-[10px]">
       <div className="flex items-center gap-[8px] mb-[4px]">
         <FieldBadge type={field.type} />
-        <span className="font-['Noto_Sans'] text-[12px] text-white/50 truncate flex-1">
+        <span className="font-['Noto_Sans'] text-[12px] text-gray-500 truncate flex-1">
           {field.label}
         </span>
         {value?.trim() && (
@@ -1364,7 +1457,7 @@ function InlineField({ field, value, onChange }: {
           onChange={e => onChange(field.key, e.target.value)}
           placeholder={field.placeholder || ''}
           rows={field.rows || 3}
-          className={`w-full bg-[#161312] border border-white/[0.06] text-white font-['Noto_Sans'] text-[13px] leading-[20px] px-[12px] py-[10px] rounded-md focus:border-[#a57255]/40 focus:outline-none focus:ring-1 focus:ring-[#a57255]/20 transition-all resize-y placeholder:text-white/15 ${field.type === 'html' ? 'font-mono text-[12px]' : ''}`}
+          className={`w-full bg-white border border-gray-200 text-gray-900 font-['Noto_Sans'] text-[13px] leading-[20px] px-[12px] py-[10px] rounded-md focus:border-[#a57255]/40 focus:outline-none focus:ring-1 focus:ring-[#a57255]/20 transition-all resize-y placeholder:text-gray-300 ${field.type === 'html' ? 'font-mono text-[12px]' : ''}`}
         />
       ) : (
         <div className="flex items-center gap-[8px]">
@@ -1373,7 +1466,7 @@ function InlineField({ field, value, onChange }: {
             value={value}
             onChange={e => onChange(field.key, e.target.value)}
             placeholder={field.placeholder || ''}
-            className="w-full bg-[#161312] border border-white/[0.06] text-white font-['Noto_Sans'] text-[13px] leading-[20px] h-[38px] px-[12px] rounded-md focus:border-[#a57255]/40 focus:outline-none focus:ring-1 focus:ring-[#a57255]/20 transition-all placeholder:text-white/15"
+            className="w-full bg-white border border-gray-200 text-gray-900 font-['Noto_Sans'] text-[13px] leading-[20px] h-[38px] px-[12px] rounded-md focus:border-[#a57255]/40 focus:outline-none focus:ring-1 focus:ring-[#a57255]/20 transition-all placeholder:text-gray-300"
           />
           {field.type === 'url' && value && (
             <a href={value} target="_blank" rel="noopener noreferrer" className="shrink-0 text-blue-400/40 hover:text-blue-400 transition-colors">
@@ -1396,18 +1489,18 @@ function GroupCard({ group, data, onChange }: {
   const imageVal = group.imageField ? (data[group.imageField.key] || '') : '';
   const hasImage = imageVal && !imageVal.startsWith('figma:asset/');
   return (
-    <div className="bg-[#1a1715] border border-white/[0.06] rounded-lg overflow-hidden hover:border-white/[0.1] transition-colors">
+    <div className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:border-gray-300 transition-colors">
       {/* Card header */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="w-full flex items-center gap-[10px] px-[14px] py-[10px] hover:bg-white/[0.02] transition-colors"
+        className="w-full flex items-center gap-[10px] px-[14px] py-[10px] hover:bg-gray-50 transition-colors"
       >
         {/* Mini image preview */}
-        <div className="w-[36px] h-[36px] rounded-md overflow-hidden bg-[#161312] border border-white/[0.06] shrink-0">
+        <div className="w-[36px] h-[36px] rounded-md overflow-hidden bg-gray-100 border border-gray-200 shrink-0">
           {hasImage ? (
             <img src={imageVal} alt="" className="w-full h-full object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-white/10">
+            <div className="w-full h-full flex items-center justify-center text-gray-300">
               <ImageIcon size={16} />
             </div>
           )}
@@ -1415,27 +1508,27 @@ function GroupCard({ group, data, onChange }: {
 
         <div className="flex-1 text-left min-w-0">
           <div className="flex items-center gap-[8px]">
-            <span className="font-['Noto_Sans'] font-medium text-[13px] text-white truncate">
+            <span className="font-['Noto_Sans'] font-medium text-[13px] text-gray-900 truncate">
               {group.groupLabel}
             </span>
-            <span className="text-[10px] text-white/20 font-['Noto_Sans']">#{group.groupNum}</span>
+            <span className="text-[10px] text-gray-400 font-['Noto_Sans']">#{group.groupNum}</span>
           </div>
           {/* Preview of title field */}
           {group.fields[0] && data[group.fields[0].key] && (
-            <p className="font-['Noto_Sans'] text-[11px] text-white/30 truncate mt-[1px]">
+            <p className="font-['Noto_Sans'] text-[11px] text-gray-400 truncate mt-[1px]">
               {data[group.fields[0].key]}
             </p>
           )}
         </div>
 
         <div className="flex items-center gap-[8px] shrink-0">
-          <ChevronRight size={12} className={`text-white/20 transition-transform ${collapsed ? '' : 'rotate-90'}`} />
+          <ChevronRight size={12} className={`text-gray-400 transition-transform ${collapsed ? '' : 'rotate-90'}`} />
         </div>
       </button>
 
       {/* Card content */}
       {!collapsed && (
-        <div className="px-[14px] pb-[12px] border-t border-white/[0.04]">
+        <div className="px-[14px] pb-[12px] border-t border-gray-100">
           {/* Image field at top if present */}
           {group.imageField && (
             <div className="pt-[10px]">
@@ -1479,14 +1572,14 @@ function VisualSectionBlock({ section, data, onChange }: {
   const grouped = useMemo(() => groupFieldsIntoCards(section.fields), [section.fields]);
 
   return (
-    <div className="mb-[6px] rounded-lg overflow-hidden border border-white/[0.06] bg-[#1e1b19] hover:border-white/[0.1] transition-colors">
+    <div className="mb-[6px] rounded-lg overflow-hidden border border-gray-200 bg-white hover:border-gray-300 transition-colors">
       {/* Section header with visual preview */}
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center gap-[12px] px-[16px] py-[10px] hover:bg-white/[0.02] transition-colors text-left"
+        className="w-full flex items-center gap-[12px] px-[16px] py-[10px] hover:bg-gray-50 transition-colors text-left"
       >
         {/* Visual indicator */}
-        <div className="relative w-[38px] h-[38px] rounded-lg overflow-hidden bg-[#161312] border border-white/[0.06] shrink-0">
+        <div className="relative w-[38px] h-[38px] rounded-lg overflow-hidden bg-gray-100 border border-gray-200 shrink-0">
           {firstImageVal ? (
             <img src={firstImageVal} alt="" className="w-full h-full object-cover" />
           ) : (
@@ -1498,7 +1591,7 @@ function VisualSectionBlock({ section, data, onChange }: {
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-[10px]">
-            <span className="font-['Noto_Sans'] font-semibold text-[14px] tracking-[-0.21px] text-white">
+            <span className="font-['Noto_Sans'] font-semibold text-[14px] tracking-[-0.21px] text-gray-900">
               {section.title}
             </span>
             {imageFields.length > 0 && (
@@ -1510,12 +1603,12 @@ function VisualSectionBlock({ section, data, onChange }: {
 
         </div>
 
-        <ChevronRight size={16} className={`text-white/20 transition-transform duration-200 shrink-0 ${open ? 'rotate-90' : ''}`} />
+        <ChevronRight size={16} className={`text-gray-400 transition-transform duration-200 shrink-0 ${open ? 'rotate-90' : ''}`} />
       </button>
 
       {/* Section content */}
       {open && (
-        <div className="px-[20px] pb-[16px] border-t border-white/[0.04]">
+        <div className="px-[20px] pb-[16px] border-t border-gray-100">
           <div className="pt-[14px]">
             {(() => {
               // Separate items into groups and standalone fields
@@ -1640,7 +1733,7 @@ function DraggableSectionBlock({ section, index, data, onChange, moveSection }: 
           className="shrink-0 w-[20px] mt-[16px] flex items-center justify-center cursor-grab active:cursor-grabbing opacity-0 group-hover/dnd:opacity-60 hover:!opacity-100 transition-opacity"
           title="Arrastar para reordenar"
         >
-          <GripVertical size={14} className="text-white/30 hover:text-[#a57255]" />
+          <GripVertical size={14} className="text-gray-300 hover:text-[#a57255]" />
         </div>
         <div className="flex-1 min-w-0">
           <VisualSectionBlock
@@ -1658,9 +1751,9 @@ function DraggableSectionBlock({ section, index, data, onChange, moveSection }: 
 function Toast({ message, visible, type = 'success' }: { message: string; visible: boolean; type?: 'success' | 'info' }) {
   if (!visible) return null;
   return (
-    <div className={`fixed bottom-[24px] right-[24px] z-[999] flex items-center gap-[10px] px-[20px] py-[14px] shadow-2xl rounded-lg ${type === 'success' ? 'bg-emerald-900/90 border border-emerald-500/30' : 'bg-[#452b1e] border border-[#a57255]/30'}`}>
-      <Check size={16} className={type === 'success' ? 'text-emerald-400' : 'text-[#a57255]'} />
-      <span className="font-['Noto_Sans'] text-[14px] text-white">{message}</span>
+    <div className={`fixed bottom-[24px] right-[24px] z-[999] flex items-center gap-[10px] px-[20px] py-[14px] shadow-xl rounded-lg ${type === 'success' ? 'bg-emerald-50 border border-emerald-200' : 'bg-[#fdf5f0] border border-[#a57255]/30'}`}>
+      <Check size={16} className={type === 'success' ? 'text-emerald-600' : 'text-[#a57255]'} />
+      <span className="font-['Noto_Sans'] text-[14px] text-gray-900">{message}</span>
     </div>
   );
 }
@@ -1696,15 +1789,15 @@ function RedirectsPanel({ data, onChange }: {
   return (
     <div className="space-y-[12px]">
       <div>
-        <h2 className="font-['Noto_Sans'] text-[16px] font-semibold text-white tracking-[-0.3px]">Redirecionamentos</h2>
-        <p className="font-['Noto_Sans'] text-[11px] text-white/30 mt-[2px]">Redireciona URLs antigas para novas sem perder o SEO acumulado</p>
+        <h2 className="font-['Noto_Sans'] text-[16px] font-semibold text-gray-900 tracking-[-0.3px]">Redirecionamentos</h2>
+        <p className="font-['Noto_Sans'] text-[11px] text-gray-400 mt-[2px]">Redireciona URLs antigas para novas sem perder o SEO acumulado</p>
       </div>
 
-      <div className="bg-[#1a1816] border border-[#a57255]/15 rounded-xl px-[14px] py-[10px] flex gap-[10px]">
+      <div className="bg-[#a57255]/5 border border-[#a57255]/15 rounded-xl px-[14px] py-[10px] flex gap-[10px]">
         <Info size={13} className="text-[#a57255]/60 mt-[1px] shrink-0" />
         <div className="space-y-[3px]">
-          <p className="font-['Noto_Sans'] text-[11px] text-white/60 font-medium">Como funciona</p>
-          <p className="font-['Noto_Sans'] text-[10px] text-white/30 leading-[15px]">
+          <p className="font-['Noto_Sans'] text-[11px] text-gray-700 font-medium">Como funciona</p>
+          <p className="font-['Noto_Sans'] text-[10px] text-gray-500 leading-[15px]">
             Os redirecionamentos são aplicados em tempo real no navegador do visitante.
             Use para preservar o ranqueamento de páginas que tiveram a URL alterada.
             Máximo de 20 redirecionamentos simultâneos.
@@ -1712,11 +1805,11 @@ function RedirectsPanel({ data, onChange }: {
         </div>
       </div>
 
-      <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
-        <div className="px-[14px] py-[10px] border-b border-white/[0.04] flex items-center justify-between">
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+        <div className="px-[14px] py-[10px] border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-[6px]">
             <ArrowLeftRight size={12} className="text-[#a57255]" />
-            <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-white">
+            <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-gray-900">
               {redirects.length} redirecionamento{redirects.length !== 1 ? 's' : ''} ativo{redirects.length !== 1 ? 's' : ''}
             </h3>
           </div>
@@ -1729,17 +1822,17 @@ function RedirectsPanel({ data, onChange }: {
 
         {redirects.length === 0 ? (
           <div className="px-[14px] py-[32px] flex flex-col items-center text-center">
-            <ArrowLeftRight size={28} className="text-white/10 mb-[10px]" />
-            <p className="font-['Noto_Sans'] text-[12px] text-white/30 font-medium mb-[4px]">Nenhum redirecionamento cadastrado</p>
-            <p className="font-['Noto_Sans'] text-[10px] text-white/20 max-w-[260px] leading-[15px] mb-[12px]">Útil quando você muda o slug de uma página e não quer perder o SEO acumulado.</p>
+            <ArrowLeftRight size={28} className="text-gray-200 mb-[10px]" />
+            <p className="font-['Noto_Sans'] text-[12px] text-gray-500 font-medium mb-[4px]">Nenhum redirecionamento cadastrado</p>
+            <p className="font-['Noto_Sans'] text-[10px] text-gray-400 max-w-[260px] leading-[15px] mb-[12px]">Útil quando você muda o slug de uma página e não quer perder o SEO acumulado.</p>
             <button onClick={addRedirect} className="font-['Noto_Sans'] text-[11px] text-[#a57255] border border-[#a57255]/30 px-[12px] py-[5px] rounded-lg hover:bg-[#a57255]/10 transition-colors">Criar primeiro redirecionamento</button>
           </div>
         ) : (
-          <div className="divide-y divide-white/[0.03]">
+          <div className="divide-y divide-gray-100">
             <div className="grid grid-cols-[1fr_auto_1fr_auto] gap-[8px] px-[14px] py-[6px]">
-              <span className="font-['Noto_Sans'] text-[9px] text-white/20 uppercase tracking-[0.6px]">De (URL antiga)</span>
+              <span className="font-['Noto_Sans'] text-[9px] text-gray-400 uppercase tracking-[0.6px]">De (URL antiga)</span>
               <span className="w-[20px]" />
-              <span className="font-['Noto_Sans'] text-[9px] text-white/20 uppercase tracking-[0.6px]">Para (URL nova)</span>
+              <span className="font-['Noto_Sans'] text-[9px] text-gray-400 uppercase tracking-[0.6px]">Para (URL nova)</span>
               <span className="w-[20px]" />
             </div>
             {redirects.map(r => (
@@ -1749,17 +1842,17 @@ function RedirectsPanel({ data, onChange }: {
                   defaultValue={r.from}
                   onBlur={e => onChange(`redirect.${r.index}.from`, e.target.value.trim())}
                   placeholder="/url-antiga"
-                  className="w-full h-[30px] bg-[#111] border border-white/[0.06] rounded-lg px-[8px] font-mono text-[11px] text-white/70 placeholder:text-white/15 focus:border-[#a57255]/40 focus:outline-none transition-colors"
+                  className="w-full h-[30px] bg-gray-50 border border-gray-200 rounded-lg px-[8px] font-mono text-[11px] text-gray-700 placeholder:text-gray-300 focus:border-[#a57255]/40 focus:outline-none transition-colors"
                 />
-                <ArrowLeftRight size={12} className="text-white/20 shrink-0" />
+                <ArrowLeftRight size={12} className="text-gray-300 shrink-0" />
                 <input
                   type="text"
                   defaultValue={r.to}
                   onBlur={e => onChange(`redirect.${r.index}.to`, e.target.value.trim())}
                   placeholder="/url-nova"
-                  className="w-full h-[30px] bg-[#111] border border-white/[0.06] rounded-lg px-[8px] font-mono text-[11px] text-emerald-400/70 placeholder:text-white/15 focus:border-[#a57255]/40 focus:outline-none transition-colors"
+                  className="w-full h-[30px] bg-gray-50 border border-gray-200 rounded-lg px-[8px] font-mono text-[11px] text-emerald-700 placeholder:text-gray-300 focus:border-[#a57255]/40 focus:outline-none transition-colors"
                 />
-                <button onClick={() => removeRedirect(r.index)} className="p-[4px] text-white/15 hover:text-red-400/60 transition-colors shrink-0 rounded" title="Remover">
+                <button onClick={() => removeRedirect(r.index)} className="p-[4px] text-gray-300 hover:text-red-500 transition-colors shrink-0 rounded" title="Remover">
                   <Trash2 size={12} />
                 </button>
               </div>
@@ -1768,10 +1861,10 @@ function RedirectsPanel({ data, onChange }: {
         )}
       </div>
 
-      <div className="bg-amber-500/5 border border-amber-500/15 rounded-xl px-[14px] py-[10px] flex gap-[8px]">
-        <AlertTriangle size={12} className="text-amber-400/60 mt-[1px] shrink-0" />
-        <p className="font-['Noto_Sans'] text-[10px] text-white/30 leading-[15px]">
-          Lembre de clicar em <strong className="text-white/50">Salvar</strong> após editar os redirecionamentos.
+      <div className="bg-amber-50 border border-amber-200 rounded-xl px-[14px] py-[10px] flex gap-[8px]">
+        <AlertTriangle size={12} className="text-amber-500 mt-[1px] shrink-0" />
+        <p className="font-['Noto_Sans'] text-[10px] text-gray-500 leading-[15px]">
+          Lembre de clicar em <strong className="text-gray-700">Salvar</strong> após editar os redirecionamentos.
           Eles entram em vigor imediatamente após o save, sem precisar republicar o site.
         </p>
       </div>
@@ -1804,11 +1897,30 @@ export function PainelPage() {
   const [toast, setToast] = useState({ visible: false, message: '', type: 'success' as 'success' | 'info' });
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set(['global', 'pages', 'tools']));
   const [showPreview, setShowPreview] = useState(false);
-  const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
+  const [previewDevice, setPreviewDevice] = useState<'desktop' | 'tablet' | 'mobile' | 'split'>('split');
   const [previewZoom, setPreviewZoom] = useState<number>(0); // 0 = auto-fit
   const [previewRotated, setPreviewRotated] = useState(false);
   const [previewBg, setPreviewBg] = useState<'dark' | 'light' | 'grid'>('dark');
+  const [splitDesktopZoom, setSplitDesktopZoom] = useState(150);
+  const [splitMobileZoom, setSplitMobileZoom] = useState(100);
   const baselineDataRef = useRef<Record<string, string>>({});
+
+  /**
+   * Map a frontend route (e.g. "/sobre") to the panel page id (e.g. "sobre").
+   * When the user clicks a link inside the preview, we switch to that page's
+   * edit panel instead of actually navigating.
+   */
+  const handlePreviewNavigate = useCallback((pathname: string) => {
+    const normalised = pathname.replace(/\/+$/, '') || '/';
+    const match = PAGES.find(p => {
+      if (!p.route) return false;
+      const pRoute = p.route.replace(/\/+$/, '') || '/';
+      return pRoute === normalised;
+    });
+    if (match) {
+      setActivePage(match.id);
+    }
+  }, []);
 
   // Section ordering per page — stored as panel data keys (e.g. "home.sectionOrder")
   // so the order is persisted to Supabase and read by public pages via usePanel.
@@ -1864,7 +1976,7 @@ export function PainelPage() {
           if (typeof serverData === 'string') {
             try { serverData = JSON.parse(serverData); } catch { serverData = {}; }
           }
-          const merged = { ...panelDefaults, ...serverData };
+          const merged = { ...getFilteredDefaults(), ...serverData };
           // Merge CTA clicks: server-side persistent store + localStorage pending
           try {
             const serverClicks = await fetchServerCtaClicks();
@@ -1892,7 +2004,7 @@ export function PainelPage() {
       }
     }
     console.error('[Painel] Todas as tentativas falharam. Usando defaults locais.');
-    const fallback = { ...panelDefaults };
+    const fallback = { ...getFilteredDefaults() };
     baselineDataRef.current = { ...fallback };
     setData(fallback);
     updatePanelDataCache(fallback);
@@ -1999,6 +2111,57 @@ export function PainelPage() {
     }
   }, []);
 
+  const handleDeleteDeadData = useCallback(async (keys: string[]) => {
+    if (keys.length === 0) return;
+    
+    const confirmMsg = `Confirmar exclusão de ${keys.length} campo${keys.length !== 1 ? 's' : ''} morto${keys.length !== 1 ? 's' : ''} do Supabase?\n\nEsta ação NÃO pode ser desfeita.`;
+    if (!window.confirm(confirmMsg)) return;
+
+    try {
+      setIsSaving(true);
+      const token = await getToken();
+      console.log('[Bulk Delete] Token obtido:', token ? `${token.substring(0, 20)}...` : 'NULL');
+      if (!token) {
+        showToast('Erro: sessão expirada', 'info');
+        return;
+      }
+
+      // Delete keys from Supabase
+      console.log('[Bulk Delete] Enviando requisição com', keys.length, 'chaves');
+      const response = await fetch(`https://${projectId}.supabase.co/functions/v1/make-server-979eabbc/panel/bulk-delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${publicAnonKey}`,
+          'X-User-Token': token,
+        },
+        body: JSON.stringify({ keys }),
+      });
+
+      console.log('[Bulk Delete] Response status:', response.status);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('[Bulk Delete] Error response:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      // Update local state
+      setData(prev => {
+        const next = { ...prev };
+        keys.forEach(k => delete next[k]);
+        updatePanelDataCache(next);
+        return next;
+      });
+
+      showToast(`${keys.length} campo${keys.length !== 1 ? 's' : ''} deletado${keys.length !== 1 ? 's' : ''} com sucesso!`, 'success');
+    } catch (err) {
+      console.error('Erro ao deletar dados mortos:', err);
+      showToast('Erro ao deletar dados', 'info');
+    } finally {
+      setIsSaving(false);
+    }
+  }, [getToken, showToast]);
+
   // Helper: perform an authenticated fetch — sends anonKey in Authorization + user token in X-User-Token
   const authFetch = useCallback(async (url: string, options: RequestInit): Promise<Response> => {
     const token = await getToken();
@@ -2087,7 +2250,7 @@ export function PainelPage() {
           if (typeof serverData === 'string') {
             try { serverData = JSON.parse(serverData); } catch { serverData = {}; }
           }
-          const merged = { ...panelDefaults, ...serverData };
+          const merged = { ...getFilteredDefaults(), ...serverData };
           baselineDataRef.current = { ...merged };
           previousDataRef.current = { ...merged };
           setData(merged);
@@ -2558,10 +2721,10 @@ export function PainelPage() {
   // ─── Auth loading ───
   if (loadingAuth) {
     return (
-      <div className="fixed inset-0 bg-[#0e0d0c] flex items-center justify-center text-white z-[100]">
+      <div className="fixed inset-0 bg-[#f5f4f2] flex items-center justify-center text-gray-900 z-[100]">
         <div className="flex flex-col items-center gap-[16px]">
           <div className="w-[40px] h-[40px] border-2 border-[#a57255]/30 border-t-[#a57255] rounded-full animate-spin" />
-          <span className="font-['Noto_Sans'] text-[13px] text-white/40">Carregando painel...</span>
+          <span className="font-['Noto_Sans'] text-[13px] text-gray-400">Carregando painel...</span>
         </div>
       </div>
     );
@@ -2570,52 +2733,52 @@ export function PainelPage() {
   // ─── Login screen ───
   if (!session) {
     return (
-      <div className="fixed inset-0 bg-[#0e0d0c] flex items-center justify-center p-4 z-[100]">
-        <div className="bg-[#1a1715] border border-white/[0.08] rounded-xl p-[36px] max-w-[420px] w-full shadow-2xl">
+      <div className="fixed inset-0 bg-[#f5f4f2] flex items-center justify-center p-4 z-[100]">
+        <div className="bg-white border border-gray-200 rounded-xl p-[36px] max-w-[420px] w-full shadow-xl">
           {/* Logo area */}
           <div className="flex items-center gap-[12px] mb-[28px]">
             <div className="w-[10px] h-[10px] bg-[#a57255] rounded-sm" />
-            <span className="font-['Marcellus'] text-[20px] text-white tracking-[-0.4px]">Painel SA</span>
+            <span className="font-['Marcellus'] text-[20px] text-gray-900 tracking-[-0.4px]">Painel SA</span>
           </div>
 
           <div className="mb-[24px]">
-            <h1 className="font-['Noto_Sans'] text-[22px] text-white font-semibold mb-[8px] tracking-[-0.44px]">
+            <h1 className="font-['Noto_Sans'] text-[22px] text-gray-900 font-semibold mb-[8px] tracking-[-0.44px]">
               Acesso ao Painel
             </h1>
-            <p className="font-['Noto_Sans'] text-[13px] text-white/40 leading-[20px]">
+            <p className="font-['Noto_Sans'] text-[13px] text-gray-500 leading-[20px]">
               Entre com suas credenciais para gerenciar o conteudo do site. No primeiro acesso, sua conta sera criada automaticamente.
             </p>
           </div>
 
           <form onSubmit={handleLogin} className="flex flex-col gap-[16px]">
             <div>
-              <label className="block font-['Noto_Sans'] text-[12px] text-white/50 mb-[6px]">Email</label>
+              <label className="block font-['Noto_Sans'] text-[12px] text-gray-500 mb-[6px]">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
-                className="w-full bg-[#161312] border border-white/[0.08] px-[14px] py-[11px] text-white text-[14px] rounded-lg focus:outline-none focus:border-[#a57255]/50 focus:ring-1 focus:ring-[#a57255]/20 transition-all"
+                className="w-full bg-gray-50 border border-gray-200 px-[14px] py-[11px] text-gray-900 text-[14px] rounded-lg focus:outline-none focus:border-[#a57255]/50 focus:ring-1 focus:ring-[#a57255]/20 transition-all"
               />
             </div>
             <div>
-              <label className="block font-['Noto_Sans'] text-[12px] text-white/50 mb-[6px]">Senha</label>
+              <label className="block font-['Noto_Sans'] text-[12px] text-gray-500 mb-[6px]">Senha</label>
               <input
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
-                className="w-full bg-[#161312] border border-white/[0.08] px-[14px] py-[11px] text-white text-[14px] rounded-lg focus:outline-none focus:border-[#a57255]/50 focus:ring-1 focus:ring-[#a57255]/20 transition-all"
+                className="w-full bg-gray-50 border border-gray-200 px-[14px] py-[11px] text-gray-900 text-[14px] rounded-lg focus:outline-none focus:border-[#a57255]/50 focus:ring-1 focus:ring-[#a57255]/20 transition-all"
               />
             </div>
-            {authError && <div className="text-red-400 text-[13px] bg-red-500/10 border border-red-500/20 rounded-lg px-[12px] py-[8px]">{authError}</div>}
+            {authError && <div className="text-red-600 text-[13px] bg-red-50 border border-red-200 rounded-lg px-[12px] py-[8px]">{authError}</div>}
             <button
               type="submit"
               className="mt-[8px] bg-[#a57255] hover:bg-[#b88566] text-white font-['Noto_Sans'] font-medium text-[14px] py-[12px] rounded-lg transition-colors flex justify-center items-center gap-[8px]"
             >
               <LogIn size={16} /> Entrar
             </button>
-            <Link to="/" className="text-center text-[13px] text-white/30 hover:text-white/60 mt-[4px] transition-colors">
+            <Link to="/" className="text-center text-[13px] text-gray-400 hover:text-gray-600 mt-[4px] transition-colors">
               Voltar ao site
             </Link>
           </form>
@@ -2627,19 +2790,19 @@ export function PainelPage() {
   // ─── Main Panel UI ───
   return (
     <DndProvider backend={HTML5Backend}>
-    <div className="painel-scrollbar fixed inset-0 bg-[#0e0d0c] flex z-[100]">
+    <div className="painel-scrollbar fixed inset-0 bg-[#f5f4f2] flex z-[100]">
 
       {/* ── Sidebar ── */}
-      <aside className={`${sidebarOpen ? 'w-[260px]' : 'w-0'} shrink-0 bg-[#151311] border-r border-white/[0.06] flex flex-col transition-all duration-300 overflow-hidden`}>
+      <aside className={`${sidebarOpen ? 'w-[260px]' : 'w-0 overflow-hidden'} shrink-0 bg-white border-r border-gray-200 flex flex-col transition-all duration-300`}>
         {/* Header */}
-        <div className="px-[18px] py-[16px] border-b border-white/[0.06]">
+        <div className="px-[18px] py-[16px] border-b border-gray-200">
           <div className="flex items-center gap-[10px] mb-[14px]">
             <div className="w-[8px] h-[8px] bg-[#a57255] rounded-sm" />
-            <span className="font-['Marcellus'] text-[16px] text-white tracking-[-0.32px]">Painel SA</span>
+            <span className="font-['Marcellus'] text-[16px] text-gray-900 tracking-[-0.32px]">Painel SA</span>
           </div>
           {/* Search */}
-          <div className="relative" ref={searchRef}>
-            <Search size={13} className="absolute left-[10px] top-1/2 -translate-y-1/2 text-white/25 z-[1]" />
+          <div className="relative z-[9999]" ref={searchRef}>
+            <Search size={13} className="absolute left-[10px] top-1/2 -translate-y-1/2 text-gray-400 z-[1]" />
             <input
               type="text"
               value={searchTerm}
@@ -2648,12 +2811,12 @@ export function PainelPage() {
               onBlur={() => setTimeout(() => setSearchFocused(false), 250)}
               onKeyDown={handleSearchKeyDown}
               placeholder="Buscar paginas, secoes, textos..."
-              className="w-full bg-[#0e0d0c] border border-white/[0.06] h-[32px] pl-[30px] pr-[28px] text-[12px] text-white font-['Noto_Sans'] rounded-md focus:border-[#a57255]/30 focus:outline-none placeholder:text-white/15"
+              className="w-full bg-gray-50 border border-gray-200 h-[32px] pl-[30px] pr-[28px] text-[12px] text-gray-900 font-['Noto_Sans'] rounded-md focus:border-[#a57255]/30 focus:outline-none placeholder:text-gray-300"
             />
             {searchTerm && (
               <button
                 onClick={() => { setSearchTerm(''); setSearchFocused(false); }}
-                className="absolute right-[8px] top-1/2 -translate-y-1/2 text-white/20 hover:text-white/50 transition-colors z-[1]"
+                className="absolute right-[8px] top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-500 transition-colors z-[1]"
               >
                 <span className="text-[14px] leading-none">×</span>
               </button>
@@ -2663,23 +2826,23 @@ export function PainelPage() {
             {searchFocused && searchLower.length >= 2 && (
               <div
                 ref={searchListRef}
-                className="absolute top-full left-0 mt-[4px] z-50 bg-[#1a1816] border border-white/[0.1] rounded-xl shadow-2xl max-h-[380px] overflow-y-auto painel-scrollbar"
+                className="absolute top-full left-0 mt-[4px] z-50 bg-white border border-gray-200 rounded-xl shadow-xl max-h-[380px] overflow-y-auto painel-scrollbar"
                 style={{ width: 'max(100%, 320px)', right: 0 }}
               >
                 {searchResults.length === 0 ? (
                   <div className="px-[16px] py-[20px] text-center">
-                    <Search size={20} className="text-white/10 mx-auto mb-[8px]" />
-                    <p className="font-['Noto_Sans'] text-[12px] text-white/25">Nenhum resultado para "{searchTerm}"</p>
-                    <p className="font-['Noto_Sans'] text-[10px] text-white/15 mt-[4px]">Tente buscar por nomes de paginas, secoes ou textos do site</p>
+                    <Search size={20} className="text-gray-200 mx-auto mb-[8px]" />
+                    <p className="font-['Noto_Sans'] text-[12px] text-gray-400">Nenhum resultado para "{searchTerm}"</p>
+                    <p className="font-['Noto_Sans'] text-[10px] text-gray-300 mt-[4px]">Tente buscar por nomes de paginas, secoes ou textos do site</p>
                   </div>
                 ) : (
                   <>
                     {/* Header */}
                     <div className="px-[12px] pt-[8px] pb-[4px] flex items-center justify-between">
-                      <span className="font-['Noto_Sans'] text-[9px] tracking-[0.5px] text-white/20 uppercase">
+                      <span className="font-['Noto_Sans'] text-[9px] tracking-[0.5px] text-gray-400 uppercase">
                         {searchResults.length} resultado{searchResults.length !== 1 ? 's' : ''}
                       </span>
-                      <span className="font-['Noto_Sans'] text-[9px] text-white/10">↑↓ navegar · Enter selecionar</span>
+                      <span className="font-['Noto_Sans'] text-[9px] text-gray-300">↑↓ navegar · Enter selecionar</span>
                     </div>
 
                     {/* Results grouped by page */}
@@ -2695,15 +2858,15 @@ export function PainelPage() {
                         key: 'Chave', value: 'Conteudo', default: 'Default', placeholder: 'Placeholder',
                       };
                       const matchTypeColor: Record<string, string> = {
-                        page: 'text-[#a57255]', section: 'text-blue-400/60', field: 'text-white/40',
-                        key: 'text-purple-400/50', value: 'text-emerald-400/60', default: 'text-amber-400/50', placeholder: 'text-white/20',
+                        page: 'text-[#a57255]', section: 'text-blue-600/60', field: 'text-gray-500',
+                        key: 'text-purple-600/50', value: 'text-emerald-600/60', default: 'text-amber-600/50', placeholder: 'text-gray-400',
                       };
 
                       return Object.entries(grouped).map(([pageId, items]) => (
                         <div key={pageId}>
                           {/* Page group header */}
-                          <div className="px-[12px] pt-[6px] pb-[2px] flex items-center gap-[6px] border-t border-white/[0.04] first:border-t-0">
-                            <span className="font-['Noto_Sans'] text-[9px] font-semibold text-[#a57255]/60 uppercase tracking-[0.4px]">
+                          <div className="px-[12px] pt-[6px] pb-[2px] flex items-center gap-[6px] border-t border-gray-100 first:border-t-0">
+                            <span className="font-['Noto_Sans'] text-[9px] font-semibold text-[#a57255]/70 uppercase tracking-[0.4px]">
                               {items[0].pageLabel}
                             </span>
                           </div>
@@ -2732,18 +2895,18 @@ export function PainelPage() {
                                 onMouseDown={(e) => { e.preventDefault(); navigateToResult(result); }}
                                 onMouseEnter={() => setSearchActiveIdx(thisIdx)}
                                 className={`w-full flex items-start gap-[8px] px-[12px] py-[6px] text-left transition-colors ${
-                                  isActive ? 'bg-[#a57255]/10' : 'hover:bg-white/[0.02]'
+                                  isActive ? 'bg-[#a57255]/10' : 'hover:bg-gray-50'
                                 }`}
                               >
                                 {/* Type icon */}
                                 <div className="shrink-0 mt-[3px]">
-                                  {result.matchType === 'page' && <FileText size={11} className="text-[#a57255]/50" />}
-                                  {result.matchType === 'section' && <Layout size={11} className="text-blue-400/40" />}
-                                  {result.matchType === 'field' && <Type size={11} className="text-white/25" />}
-                                  {result.matchType === 'key' && <Hash size={11} className="text-purple-400/40" />}
-                                  {result.matchType === 'value' && <AlignLeft size={11} className="text-emerald-400/40" />}
-                                  {result.matchType === 'default' && <Pencil size={11} className="text-amber-400/40" />}
-                                  {result.matchType === 'placeholder' && <Type size={11} className="text-white/15" />}
+                                  {result.matchType === 'page' && <FileText size={11} className="text-[#a57255]/60" />}
+                                  {result.matchType === 'section' && <Layout size={11} className="text-blue-500/50" />}
+                                  {result.matchType === 'field' && <Type size={11} className="text-gray-400" />}
+                                  {result.matchType === 'key' && <Hash size={11} className="text-purple-500/50" />}
+                                  {result.matchType === 'value' && <AlignLeft size={11} className="text-emerald-500/50" />}
+                                  {result.matchType === 'default' && <Pencil size={11} className="text-amber-500/50" />}
+                                  {result.matchType === 'placeholder' && <Type size={11} className="text-gray-300" />}
                                 </div>
 
                                 {/* Content */}
@@ -2751,13 +2914,13 @@ export function PainelPage() {
                                   {/* Breadcrumb */}
                                   {result.sectionTitle && (
                                     <div className="flex items-center gap-[3px] mb-[1px]">
-                                      <span className="font-['Noto_Sans'] text-[9px] text-white/25 truncate">
+                                      <span className="font-['Noto_Sans'] text-[9px] text-gray-400 truncate">
                                         {highlightMatch(result.sectionTitle)}
                                       </span>
                                       {result.fieldLabel && (
                                         <>
-                                          <ChevronRight size={7} className="text-white/10 shrink-0" />
-                                          <span className="font-['Noto_Sans'] text-[9px] text-white/25 truncate">
+                                          <ChevronRight size={7} className="text-gray-300 shrink-0" />
+                                          <span className="font-['Noto_Sans'] text-[9px] text-gray-400 truncate">
                                             {highlightMatch(result.fieldLabel)}
                                           </span>
                                         </>
@@ -2767,21 +2930,21 @@ export function PainelPage() {
 
                                   {/* Match type = page: show page name */}
                                   {result.matchType === 'page' && !result.sectionTitle && (
-                                    <span className="font-['Noto_Sans'] text-[11px] text-white/70 block truncate">
+                                    <span className="font-['Noto_Sans'] text-[11px] text-gray-700 block truncate">
                                       {highlightMatch(result.pageLabel)}
                                     </span>
                                   )}
 
                                   {/* Snippet / matched value */}
                                   {result.matchSnippet && (
-                                    <span className="font-['Noto_Sans'] text-[10px] text-white/30 italic block truncate leading-[16px]">
+                                    <span className="font-['Noto_Sans'] text-[10px] text-gray-400 italic block truncate leading-[16px]">
                                       "{highlightMatch(result.matchSnippet)}"
                                     </span>
                                   )}
                                 </div>
 
                                 {/* Badge */}
-                                <span className={`font-['Noto_Sans'] text-[8px] shrink-0 mt-[3px] px-[4px] py-[1px] rounded-sm bg-white/[0.03] ${matchTypeColor[result.matchType] || 'text-white/10'}`}>
+                                <span className={`font-['Noto_Sans'] text-[8px] shrink-0 mt-[3px] px-[4px] py-[1px] rounded-sm bg-gray-100 ${matchTypeColor[result.matchType] || 'text-gray-300'}`}>
                                   {matchTypeLabel[result.matchType] || result.matchType}
                                 </span>
                               </button>
@@ -2801,6 +2964,17 @@ export function PainelPage() {
 
         {/* Nav groups */}
         <nav className="flex-1 overflow-y-auto py-[6px]">
+
+          {/* Ferramentas (Dashboard, SEO, GEO, Auditoria) */}
+          <NavGroup
+            label="Ferramentas"
+            items={toolPages}
+            active={activePage}
+            onSelect={setActivePage}
+            expanded={expandedGroups.has('tools')}
+            onToggle={() => setExpandedGroups(prev => { const next = new Set(prev); next.has('tools') ? next.delete('tools') : next.add('tools'); return next; })}
+            badges={toolBadges}
+          />
 
           {/* Global */}
           <NavGroup
@@ -2831,59 +3005,36 @@ export function PainelPage() {
             expanded={expandedGroups.has('lps')}
             onToggle={() => setExpandedGroups(prev => { const next = new Set(prev); next.has('lps') ? next.delete('lps') : next.add('lps'); return next; })}
           />
-
-          {/* Ferramentas (SEO, GEO, Auditoria) */}
-          <NavGroup
-            label="Ferramentas"
-            items={toolPages}
-            active={activePage}
-            onSelect={setActivePage}
-            expanded={expandedGroups.has('tools')}
-            onToggle={() => setExpandedGroups(prev => { const next = new Set(prev); next.has('tools') ? next.delete('tools') : next.add('tools'); return next; })}
-            badges={toolBadges}
-          />
         </nav>
 
         {/* Sidebar bottom actions */}
-        <div className="px-[10px] py-[10px] border-t border-white/[0.06] space-y-[2px]">
-          <button onClick={handleExport} className="w-full flex items-center gap-[8px] px-[10px] py-[7px] text-[12px] text-white/40 hover:text-white hover:bg-white/[0.03] transition-colors font-['Noto_Sans'] rounded-md">
+        <div className="px-[10px] py-[10px] border-t border-gray-200 space-y-[2px]">
+          <button onClick={handleExport} className="w-full flex items-center gap-[8px] px-[10px] py-[7px] text-[12px] text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors font-['Noto_Sans'] rounded-md">
             <Download size={13} /> Exportar JSON
           </button>
-          <button onClick={handleImport} className="w-full flex items-center gap-[8px] px-[10px] py-[7px] text-[12px] text-white/40 hover:text-white hover:bg-white/[0.03] transition-colors font-['Noto_Sans'] rounded-md">
+          <button onClick={handleImport} className="w-full flex items-center gap-[8px] px-[10px] py-[7px] text-[12px] text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors font-['Noto_Sans'] rounded-md">
             <Upload size={13} /> Importar JSON
           </button>
-          <button onClick={handleSeedDefaults} disabled={isSaving} className={`w-full flex items-center gap-[8px] px-[10px] py-[7px] text-[12px] transition-colors font-['Noto_Sans'] rounded-md ${isSaving ? 'text-[#a57255]/30 cursor-wait' : 'text-[#a57255]/60 hover:text-[#a57255] hover:bg-[#a57255]/5'}`}>
-            <RefreshCw size={13} className={isSaving ? 'animate-spin' : ''} /> {isSaving ? 'Sincronizando...' : 'Sincronizar Defaults'}
-          </button>
-          <button
-            onClick={handleMigrateImages}
-            disabled={isMigrating || isSaving}
-            className={`w-full flex items-center gap-[8px] px-[10px] py-[7px] text-[12px] transition-colors font-['Noto_Sans'] rounded-md ${
-              isMigrating ? 'text-emerald-400/50 cursor-wait' : 'text-emerald-500/60 hover:text-emerald-400 hover:bg-emerald-500/5'
-            } disabled:opacity-40`}
-          >
-            <ImageDown size={13} className={isMigrating ? 'animate-pulse' : ''} />
-            {isMigrating ? migrateProgress || 'Migrando...' : 'Migrar Imagens → Supabase'}
-          </button>
+
         </div>
       </aside>
 
       {/* ── Main Content ── */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <header className="h-[52px] shrink-0 bg-[#151311] border-b border-white/[0.06] flex items-center justify-between px-[16px] gap-[12px]">
+        <header className="h-[52px] shrink-0 bg-white border-b border-gray-200 flex items-center justify-between px-[16px] gap-[12px]">
           <div className="flex items-center gap-[10px]">
-            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-white/30 hover:text-white transition-colors p-[4px] rounded">
+            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-gray-400 hover:text-gray-900 transition-colors p-[4px] rounded">
               <Menu size={18} />
             </button>
-            <div className="h-[20px] w-px bg-white/[0.06]" />
+            <div className="h-[20px] w-px bg-gray-200" />
             <div className="flex items-center gap-[8px]">
               <span className="text-[#a57255]/60">{currentPage?.icon}</span>
-              <h1 className="font-['Noto_Sans'] font-semibold text-[14px] text-white tracking-[-0.21px]">
+              <h1 className="font-['Noto_Sans'] font-semibold text-[14px] text-gray-900 tracking-[-0.21px]">
                 {currentPage?.label || 'Painel'}
               </h1>
               {currentPage?.route && (
-                <span className="font-['Noto_Sans'] text-[11px] text-white/20 ml-[4px]">{currentPage.route}</span>
+                <span className="font-['Noto_Sans'] text-[11px] text-gray-400 ml-[4px]">{currentPage.route}</span>
               )}
             </div>
           </div>
@@ -2895,8 +3046,8 @@ export function PainelPage() {
                 onClick={() => setShowPreview(!showPreview)}
                 className={`flex items-center gap-[5px] h-[30px] px-[12px] rounded-md text-[12px] font-['Noto_Sans'] font-medium transition-all ${
                   showPreview
-                    ? 'bg-[#a57255]/15 text-[#a57255] border border-[#a57255]/30 shadow-sm shadow-[#a57255]/10'
-                    : 'text-white/40 hover:text-white/70 hover:bg-white/[0.04] border border-white/[0.08]'
+                    ? 'bg-[#a57255]/10 text-[#a57255] border border-[#a57255]/30 shadow-sm shadow-[#a57255]/10'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-gray-200'
                 }`}
               >
                 {showPreview ? <EyeOff size={13} /> : <Eye size={13} />}
@@ -2905,18 +3056,18 @@ export function PainelPage() {
               </button>
             )}
 
-            <div className="h-[20px] w-px bg-white/[0.06]" />
+            <div className="h-[20px] w-px bg-gray-200" />
 
             <button
               onClick={() => supabase.auth.signOut()}
-              className="flex items-center gap-[5px] h-[30px] px-[10px] text-white/30 hover:text-white transition-colors font-['Noto_Sans'] text-[12px] rounded-md"
+              className="flex items-center gap-[5px] h-[30px] px-[10px] text-gray-400 hover:text-gray-900 transition-colors font-['Noto_Sans'] text-[12px] rounded-md"
             >
               <LogOut size={13} />
             </button>
             <button
               onClick={handleReset}
               disabled={isSaving}
-              className="flex items-center gap-[5px] h-[30px] px-[10px] border border-white/[0.08] text-white/40 hover:text-white hover:border-white/[0.15] transition-colors font-['Noto_Sans'] text-[12px] rounded-md"
+              className="flex items-center gap-[5px] h-[30px] px-[10px] border border-gray-200 text-gray-500 hover:text-gray-900 hover:border-gray-400 transition-colors font-['Noto_Sans'] text-[12px] rounded-md"
               title="Descartar alteracoes e voltar ao ultimo estado salvo"
             >
               <RotateCcw size={13} />
@@ -2944,16 +3095,16 @@ export function PainelPage() {
               {currentPage && (
                 <div className="mb-[16px] rounded-xl overflow-hidden">
                   {/* Visual page header with gradient */}
-                  <div className="bg-gradient-to-br from-[#a57255]/15 via-[#1e1b19] to-[#1e1b19] border border-white/[0.08] rounded-xl px-[20px] py-[14px]">
+                  <div className="bg-gradient-to-br from-[#a57255]/10 via-white to-white border border-gray-200 rounded-xl px-[20px] py-[14px]">
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="flex items-center gap-[10px] mb-[6px]">
                           <span className="text-[#a57255]">{currentPage.icon}</span>
-                          <h2 className="font-['Marcellus'] text-[20px] text-white tracking-[-0.4px]">
+                          <h2 className="font-['Marcellus'] text-[20px] text-gray-900 tracking-[-0.4px]">
                             {currentPage.label}
                           </h2>
                         </div>
-                        <div className="flex items-center gap-[12px] text-white/30 font-['Noto_Sans'] text-[12px]">
+                        <div className="flex items-center gap-[12px] text-gray-400 font-['Noto_Sans'] text-[12px]">
                           {activePage === 'dashboard' ? (
                             <span>Visao geral — Completude, SEO, Imagens, CTAs</span>
                           ) : activePage === 'seo' ? (
@@ -2967,14 +3118,14 @@ export function PainelPage() {
                           ) : (
                             <>
                               <span>{currentPage.sections.length} secoes</span>
-                              <span className="w-[3px] h-[3px] rounded-full bg-white/15" />
+                              <span className="w-[3px] h-[3px] rounded-full bg-gray-300" />
                               <span>{currentPage.sections.reduce((a, s) => a + s.fields.length, 0)} campos</span>
                             </>
                           )}
                           {currentPage.route && (
                             <>
-                              <span className="w-[3px] h-[3px] rounded-full bg-white/15" />
-                              <span className="text-[#a57255]/50">{currentPage.route}</span>
+                              <span className="w-[3px] h-[3px] rounded-full bg-gray-300" />
+                              <span className="text-[#a57255]/60">{currentPage.route}</span>
                             </>
                           )}
                         </div>
@@ -2985,7 +3136,7 @@ export function PainelPage() {
                             onClick={() => {
                               handleFieldChange(getSectionOrderKey(currentPage.id), '');
                             }}
-                            className="flex items-center gap-[5px] h-[32px] px-[10px] text-white/30 hover:text-white hover:bg-white/[0.04] transition-colors font-['Noto_Sans'] text-[11px] rounded-lg"
+                            className="flex items-center gap-[5px] h-[32px] px-[10px] text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors font-['Noto_Sans'] text-[11px] rounded-lg"
                             title="Restaurar ordem original das secoes"
                           >
                             <RotateCcw size={12} />
@@ -3022,6 +3173,7 @@ export function PainelPage() {
                   panelKeys={PAGES.flatMap(page => page.sections.flatMap(sec => sec.fields.map(f => f.key)))}
                   data={data}
                   onNavigate={setActivePage}
+                  onDeleteDeadData={handleDeleteDeadData}
                 />
               ) : currentPage && (() => {
                 const orderedSections = getOrderedSections(currentPage);
@@ -3049,11 +3201,12 @@ export function PainelPage() {
               desktop: { w: 1920, h: 1080, label: '1920 × 1080' },
               tablet:  { w: 768,  h: 1024, label: '768 × 1024'  },
               mobile:  { w: 375,  h: 812,  label: '375 × 812'   },
+              split:   { w: 1920, h: 1080, label: '1920 + 375'   },
             } as const;
             const spec = DEVICE_SPECS[previewDevice];
-            const deviceW = previewRotated && previewDevice !== 'desktop' ? spec.h : spec.w;
-            const deviceH = previewRotated && previewDevice !== 'desktop' ? spec.w : spec.h;
-            const dimLabel = previewRotated && previewDevice !== 'desktop'
+            const deviceW = previewRotated && (previewDevice === 'tablet' || previewDevice === 'mobile') ? spec.h : spec.w;
+            const deviceH = previewRotated && (previewDevice === 'tablet' || previewDevice === 'mobile') ? spec.w : spec.h;
+            const dimLabel = previewRotated && (previewDevice === 'tablet' || previewDevice === 'mobile')
               ? `${spec.h} × ${spec.w}` : spec.label;
 
             /* Zoom helpers */
@@ -3099,6 +3252,7 @@ export function PainelPage() {
 
                     {/* Device toggles */}
                     {([
+                      { id: 'split' as const, icon: <ArrowLeftRight size={13} />, tip: 'Desktop + Mobile lado a lado' },
                       { id: 'desktop' as const, icon: <Monitor size={13} />, tip: 'Desktop (1920px)' },
                       { id: 'tablet'  as const, icon: <Tablet size={13} />,  tip: 'Tablet (768px)' },
                       { id: 'mobile'  as const, icon: <Smartphone size={13} />, tip: 'Mobile (375px)' },
@@ -3114,7 +3268,7 @@ export function PainelPage() {
                     ))}
 
                     {/* Rotate — tablet & mobile only */}
-                    {previewDevice !== 'desktop' && (
+                    {(previewDevice === 'tablet' || previewDevice === 'mobile') && (
                       <>
                         <div className="h-[16px] w-px bg-white/[0.06] mx-[2px]" />
                         <button
@@ -3129,50 +3283,61 @@ export function PainelPage() {
 
                     <div className="h-[16px] w-px bg-white/[0.06] mx-[2px]" />
 
-                    {/* Zoom controls */}
-                    <button
-                      onClick={() => setPreviewZoom(z => Math.max(25, (z || 100) - 25))}
-                      className="p-[3px] text-white/20 hover:text-white/40 transition-colors cursor-pointer"
-                      title="Zoom out"
-                    >
-                      <Minus size={11} />
-                    </button>
+                    {/* Zoom controls — hidden in split mode */}
+                    {previewDevice !== 'split' && (
+                      <>
+                        <button
+                          onClick={() => setPreviewZoom(z => Math.max(25, (z || 100) - 25))}
+                          className="p-[3px] text-white/20 hover:text-white/40 transition-colors cursor-pointer"
+                          title="Zoom out"
+                        >
+                          <Minus size={11} />
+                        </button>
 
-                    <button
-                      onClick={() => setPreviewZoom(0)}
-                      className={`font-['Noto_Sans'] text-[10px] tabular-nums px-[6px] py-[1px] rounded transition-colors cursor-pointer ${effectiveZoom === 0 ? 'text-[#a57255] bg-[#a57255]/10' : 'text-white/30 hover:text-white/50 bg-white/[0.03]'}`}
-                      title="Responsivo (ajustar ao container)"
-                    >
-                      {effectiveZoom === 0 ? 'Fit' : `${effectiveZoom}%`}
-                    </button>
+                        <button
+                          onClick={() => setPreviewZoom(0)}
+                          className={`font-['Noto_Sans'] text-[10px] tabular-nums px-[6px] py-[1px] rounded transition-colors cursor-pointer ${effectiveZoom === 0 ? 'text-[#a57255] bg-[#a57255]/10' : 'text-white/30 hover:text-white/50 bg-white/[0.03]'}`}
+                          title="Responsivo (ajustar ao container)"
+                        >
+                          {effectiveZoom === 0 ? 'Fit' : `${effectiveZoom}%`}
+                        </button>
 
-                    <button
-                      onClick={() => setPreviewZoom(z => Math.min(200, (z || 100) + 25))}
-                      className="p-[3px] text-white/20 hover:text-white/40 transition-colors cursor-pointer"
-                      title="Zoom in"
-                    >
-                      <Plus size={11} />
-                    </button>
+                        <button
+                          onClick={() => setPreviewZoom(z => Math.min(200, (z || 100) + 25))}
+                          className="p-[3px] text-white/20 hover:text-white/40 transition-colors cursor-pointer"
+                          title="Zoom in"
+                        >
+                          <Plus size={11} />
+                        </button>
 
-                    {/* Quick zoom presets */}
-                    {ZOOM_PRESETS.map(z => (
-                      <button
-                        key={z}
-                        onClick={() => setPreviewZoom(z === 100 && effectiveZoom === 100 ? 0 : z)}
-                        className={`font-['Noto_Sans'] text-[9px] tabular-nums px-[4px] py-[1px] rounded transition-colors cursor-pointer ${effectiveZoom === z ? 'text-[#a57255]' : 'text-white/15 hover:text-white/30'}`}
-                        title={`${z}%`}
-                      >
-                        {z}
-                      </button>
-                    ))}
+                        {/* Quick zoom presets */}
+                        {ZOOM_PRESETS.map(z => (
+                          <button
+                            key={z}
+                            onClick={() => setPreviewZoom(z === 100 && effectiveZoom === 100 ? 0 : z)}
+                            className={`font-['Noto_Sans'] text-[9px] tabular-nums px-[4px] py-[1px] rounded transition-colors cursor-pointer ${effectiveZoom === z ? 'text-[#a57255]' : 'text-white/15 hover:text-white/30'}`}
+                            title={`${z}%`}
+                          >
+                            {z}
+                          </button>
+                        ))}
+                      </>
+                    )}
+
+                    {/* Split mode label */}
+                    {previewDevice === 'split' && (
+                      <span className="font-['Noto_Sans'] text-[10px] text-white/25 select-none">
+                        Desktop + Mobile
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-[4px]">
                     {/* Scroll to top */}
                     <button
                       onClick={() => {
-                        const scrollEl = previewContainerRef.current?.querySelector('.preview-scroll-container');
-                        if (scrollEl) scrollEl.scrollTo({ top: 0, behavior: 'smooth' });
+                        const scrollEls = previewContainerRef.current?.querySelectorAll('.preview-scroll-container');
+                        scrollEls?.forEach(el => el.scrollTo({ top: 0, behavior: 'smooth' }));
                       }}
                       className="p-[3px] text-white/20 hover:text-white/40 transition-colors cursor-pointer"
                       title="Scroll ao topo"
@@ -3213,7 +3378,7 @@ export function PainelPage() {
                       sousaaraujo.adv.br{currentPage?.route || '/'}
                     </span>
                     <span className="font-['Noto_Sans'] text-[9px] text-white/15 tabular-nums shrink-0 bg-white/[0.04] px-[5px] py-[1px] rounded">
-                      {dimLabel}
+                      {previewDevice === 'split' ? '1920×1080 + 375×812' : dimLabel}
                     </span>
                     <span className="font-['Noto_Sans'] text-[9px] text-emerald-500/40 shrink-0">●</span>
                   </div>
@@ -3244,6 +3409,249 @@ export function PainelPage() {
 
                 const cw = previewContainerSize.w;
                 const ch = previewContainerSize.h;
+
+                /* ── Split: Desktop on top, Options (left) + Mobile (right) on bottom ── */
+                if (previewDevice === 'split') {
+                  const BASE_DW = 1920;
+                  const BASE_DH = 1080;
+                  const BASE_MW = 375;
+                  const BASE_MH = 812;
+
+                  // Browser-like zoom: Ctrl+ shrinks viewport → content reflows bigger
+                  const dZ = splitDesktopZoom / 100;
+                  const mZ = splitMobileZoom / 100;
+                  const DESKTOP_W = Math.round(BASE_DW / dZ);
+                  const DESKTOP_H = Math.round(BASE_DH / dZ);
+                  const MOBILE_W = Math.round(BASE_MW / mZ);
+                  const MOBILE_H = Math.round(BASE_MH / mZ);
+
+                  const pad = 12;
+                  const gapV = 10;
+                  const availW = cw - pad * 2;
+
+                  // Desktop row: full width, ~55% of total height
+                  const desktopRowH = (ch - pad * 2 - gapV) * 0.55;
+                  const desktopScale = Math.min(availW / DESKTOP_W, desktopRowH / DESKTOP_H, 1);
+                  const dRW = Math.round(DESKTOP_W * desktopScale);
+                  const dRH = Math.round(DESKTOP_H * desktopScale);
+
+                  // Bottom row: remaining height
+                  const bottomRowH = ch - pad * 2 - gapV - dRH;
+
+                  // Mobile: fit in right side of bottom row
+                  const mobileScale = Math.min((availW * 0.35) / MOBILE_W, bottomRowH / MOBILE_H, 1);
+                  const mRW = Math.round(MOBILE_W * mobileScale);
+                  const mRH = Math.round(MOBILE_H * mobileScale);
+
+                  // Options panel: fills left side of bottom row
+                  const optionsW = availW - mRW - gapV;
+
+                  // Zoom stepper — follows standard browser increments
+                  const Z_STEPS = [50, 67, 75, 80, 90, 100, 110, 125, 150, 175, 200];
+                  const zUp = (c: number) => Z_STEPS.find(s => s > c) || c;
+                  const zDown = (c: number) => [...Z_STEPS].reverse().find(s => s < c) || c;
+
+                  const zoomRow = (label: string, icon: React.ReactNode, zoom: number, setZ: (v: number) => void) => (
+                    <div className="flex items-center justify-between h-[32px] px-[12px] bg-white/[0.03] rounded-md border border-white/[0.04]">
+                      <span className="flex items-center gap-[5px]">
+                        {icon}
+                        <span className="font-['Noto_Sans'] text-[11px] text-white/35">{label}</span>
+                      </span>
+                      <div className="flex items-center gap-[3px]">
+                        <button
+                          onClick={() => setZ(zDown(zoom))}
+                          disabled={zoom <= Z_STEPS[0]}
+                          className="w-[22px] h-[22px] flex items-center justify-center rounded text-white/30 hover:text-white/60 hover:bg-white/[0.06] disabled:opacity-20 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                          title="Zoom out (viewport maior)"
+                        >
+                          <Minus size={10} />
+                        </button>
+                        <button
+                          onClick={() => setZ(100)}
+                          className={`min-w-[38px] h-[22px] flex items-center justify-center rounded text-[10px] font-['Noto_Sans'] tabular-nums transition-colors cursor-pointer ${
+                            zoom === 100
+                              ? 'text-[#a57255] bg-[#a57255]/10 border border-[#a57255]/25'
+                              : 'text-white/45 hover:text-white/60 border border-white/[0.06]'
+                          }`}
+                          title="Resetar zoom para 100%"
+                        >
+                          {zoom}%
+                        </button>
+                        <button
+                          onClick={() => setZ(zUp(zoom))}
+                          disabled={zoom >= Z_STEPS[Z_STEPS.length - 1]}
+                          className="w-[22px] h-[22px] flex items-center justify-center rounded text-white/30 hover:text-white/60 hover:bg-white/[0.06] disabled:opacity-20 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                          title="Zoom in (viewport menor)"
+                        >
+                          <Plus size={10} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+
+                  const optRow = (label: string, value: React.ReactNode, action?: React.ReactNode) => (
+                    <div className="flex items-center justify-between h-[32px] px-[12px] bg-white/[0.03] rounded-md border border-white/[0.04]">
+                      <span className="font-['Noto_Sans'] text-[11px] text-white/35">{label}</span>
+                      <div className="flex items-center gap-[8px]">
+                        <span className="font-['Noto_Sans'] text-[11px] text-white/55 tabular-nums">{value}</span>
+                        {action}
+                      </div>
+                    </div>
+                  );
+
+                  return (
+                    <div
+                      ref={previewContainerRef}
+                      className={`flex-1 overflow-auto ${bgClass} min-h-0`}
+                      style={bgGridStyle}
+                    >
+                      {cw > 0 && ch > 0 && (
+                        <div className="flex flex-col h-full" style={{ padding: pad, gap: gapV }}>
+                          {/* ─── Row 1: Desktop preview (16:9) ─── */}
+                          <div className="flex justify-center shrink-0">
+                            <div
+                              className="rounded-[8px] shadow-2xl overflow-hidden border border-white/[0.08] bg-[#161312]"
+                              style={{ width: dRW, height: dRH }}
+                            >
+                              <div
+                                style={{
+                                  width: DESKTOP_W,
+                                  height: DESKTOP_H,
+                                  transform: `scale(${desktopScale})`,
+                                  transformOrigin: 'top left',
+                                  overflow: 'hidden',
+                                }}
+                              >
+                                <PanelPreview
+                                  key={`${activePage}-split-desktop-${splitDesktopZoom}`}
+                                  pageId={activePage}
+                                  route={rawRoute}
+                                  width={DESKTOP_W}
+                                  height={DESKTOP_H}
+                                  mode="desktop"
+                                  onNavigate={handlePreviewNavigate}
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* ─── Row 2: Options (left) + Mobile (right) ─── */}
+                          <div className="flex gap-[10px] flex-1 min-h-0">
+                            {/* Options panel */}
+                            <div
+                              className="bg-[#1a1816] rounded-[8px] border border-white/[0.06] overflow-auto flex flex-col shrink-0"
+                              style={{ width: optionsW, maxHeight: bottomRowH }}
+                            >
+                              {/* Header */}
+                              <div className="flex items-center gap-[8px] px-[14px] py-[10px] border-b border-white/[0.06]">
+                                <Settings size={13} className="text-[#a57255]" />
+                                <span className="font-['Noto_Sans'] text-[12px] font-semibold text-white/60">Opcoes do Preview</span>
+                              </div>
+
+                              {/* Options list */}
+                              <div className="flex flex-col gap-[6px] p-[10px] flex-1">
+                                {optRow('Pagina', currentPage?.label || activePage)}
+
+                                {optRow('URL', (
+                                  <span className="flex items-center gap-[4px]">
+                                    <Globe size={9} className="text-emerald-500/50" />
+                                    <span className="truncate max-w-[180px]">sousaaraujo.adv.br{currentPage?.route || '/'}</span>
+                                  </span>
+                                ), currentPage?.route ? (
+                                  <Link
+                                    to={currentPage.route}
+                                    target="_blank"
+                                    className="p-[3px] text-white/20 hover:text-white/40 transition-colors rounded"
+                                    title="Abrir em nova aba"
+                                  >
+                                    <ExternalLink size={11} />
+                                  </Link>
+                                ) : undefined)}
+
+                                {/* Desktop zoom — simula Ctrl+/- do navegador */}
+                                {zoomRow('Desktop', <Monitor size={10} className="text-white/25" />, splitDesktopZoom, setSplitDesktopZoom)}
+
+                                {/* Mobile zoom — simula Ctrl+/- do navegador */}
+                                {zoomRow('Mobile', <Smartphone size={10} className="text-white/25" />, splitMobileZoom, setSplitMobileZoom)}
+
+                                {optRow('Fundo', (
+                                  <div className="flex items-center gap-[4px]">
+                                    {(['dark', 'light', 'grid'] as const).map(bg => (
+                                      <button
+                                        key={bg}
+                                        onClick={() => setPreviewBg(bg)}
+                                        className={`flex items-center gap-[3px] px-[6px] py-[2px] rounded text-[10px] font-['Noto_Sans'] transition-colors cursor-pointer ${
+                                          previewBg === bg
+                                            ? 'bg-[#a57255]/15 text-[#a57255] border border-[#a57255]/30'
+                                            : 'text-white/25 hover:text-white/40 border border-white/[0.06]'
+                                        }`}
+                                      >
+                                        {bg === 'dark' ? <Moon size={9} /> : bg === 'light' ? <Sun size={9} /> : <Grid3X3 size={9} />}
+                                        {bg === 'dark' ? 'Escuro' : bg === 'light' ? 'Claro' : 'Grid'}
+                                      </button>
+                                    ))}
+                                  </div>
+                                ))}
+
+                                {optRow('Scroll', (
+                                  <button
+                                    onClick={() => {
+                                      const scrollEls = previewContainerRef.current?.querySelectorAll('.preview-scroll-container');
+                                      scrollEls?.forEach(el => el.scrollTo({ top: 0, behavior: 'smooth' }));
+                                    }}
+                                    className="flex items-center gap-[4px] px-[6px] py-[2px] rounded text-[10px] font-['Noto_Sans'] text-white/25 hover:text-white/40 border border-white/[0.06] transition-colors cursor-pointer"
+                                  >
+                                    <ArrowUp size={9} />
+                                    Voltar ao topo
+                                  </button>
+                                ))}
+
+                                {optRow('Status', (
+                                  <span className="flex items-center gap-[4px]">
+                                    <span className="w-[6px] h-[6px] rounded-full bg-emerald-500 animate-pulse" />
+                                    <span className="text-emerald-500/60">Ao vivo</span>
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Mobile frame */}
+                            <div className="flex flex-col items-center shrink-0">
+                              <div
+                                className="rounded-[22px] shadow-2xl overflow-hidden bg-[#161312]"
+                                style={{
+                                  width: mRW,
+                                  height: mRH,
+                                  border: '2.5px solid #333',
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    width: MOBILE_W,
+                                    height: MOBILE_H,
+                                    transform: `scale(${mobileScale})`,
+                                    transformOrigin: 'top left',
+                                    overflow: 'hidden',
+                                  }}
+                                >
+                                  <PanelPreview
+                                    key={`${activePage}-split-mobile-${splitMobileZoom}`}
+                                    pageId={activePage}
+                                    route={rawRoute}
+                                    width={MOBILE_W}
+                                    height={MOBILE_H}
+                                    mode="mobile"
+                                    onNavigate={handlePreviewNavigate}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
 
                 /* ── Mobile / Tablet: device frame with inline preview ── */
                 if (previewDevice === 'mobile' || previewDevice === 'tablet') {
@@ -3276,6 +3684,8 @@ export function PainelPage() {
                           route={rawRoute}
                           width={frameW}
                           height={deviceH}
+                          mode={previewDevice as 'mobile' | 'tablet'}
+                          onNavigate={handlePreviewNavigate}
                         />
                       </div>
                     </div>
@@ -3314,6 +3724,8 @@ export function PainelPage() {
                             route={rawRoute}
                             width={VIRTUAL_W}
                             height={visibleH}
+                            mode="desktop"
+                            onNavigate={handlePreviewNavigate}
                           />
                         </div>
                       </div>
@@ -3352,11 +3764,11 @@ function NavGroup({ label, items, active, onSelect, expanded, onToggle, badges }
     <div className="mb-[2px]">
       <button
         onClick={onToggle}
-        className="w-full flex items-center gap-[8px] px-[18px] py-[8px] hover:bg-white/[0.02] transition-colors"
+        className="w-full flex items-center gap-[8px] px-[18px] py-[8px] hover:bg-gray-50 transition-colors"
       >
-        <ChevronDown size={10} className={`text-white/20 transition-transform duration-200 ${isOpen ? '' : '-rotate-90'}`} />
-        <span className="font-['Noto_Sans'] text-[10px] tracking-[0.8px] text-white/25 uppercase">{label}</span>
-        <span className="font-['Noto_Sans'] text-[9px] text-white/10 ml-auto">{items.length}</span>
+        <ChevronDown size={10} className={`text-gray-400 transition-transform duration-200 ${isOpen ? '' : '-rotate-90'}`} />
+        <span className="font-['Noto_Sans'] text-[10px] tracking-[0.8px] text-gray-400 uppercase">{label}</span>
+        <span className="font-['Noto_Sans'] text-[9px] text-gray-300 ml-auto">{items.length}</span>
       </button>
       {isOpen && (
         <div className="pb-[4px]">
@@ -3370,13 +3782,13 @@ function NavGroup({ label, items, active, onSelect, expanded, onToggle, badges }
                 className={`w-full flex items-center gap-[8px] px-[18px] pl-[32px] py-[7px] text-left transition-all ${
                   isActive
                     ? 'bg-[#a57255]/10 text-[#a57255] border-r-2 border-[#a57255]'
-                    : 'text-white/45 hover:text-white/70 hover:bg-white/[0.02]'
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
-                <span className={isActive ? 'text-[#a57255]' : 'text-white/25'}>{page.icon}</span>
+                <span className={isActive ? 'text-[#a57255]' : 'text-gray-400'}>{page.icon}</span>
                 <span className="font-['Noto_Sans'] text-[12px] tracking-[-0.18px] truncate flex-1">{page.label}</span>
                 {badge != null && badge > 0 && (
-                  <span className="font-['Noto_Sans'] text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/20 px-[5px] py-[1px] rounded-full min-w-[18px] text-center">
+                  <span className="font-['Noto_Sans'] text-[9px] font-bold bg-amber-50 text-amber-600 border border-amber-200 px-[5px] py-[1px] rounded-full min-w-[18px] text-center">
                     {badge}
                   </span>
                 )}

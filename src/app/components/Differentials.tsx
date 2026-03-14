@@ -6,7 +6,6 @@
  */
 
 import { usePanel, readPanel } from '../hooks/usePanelContent';
-import { motion } from 'motion/react';
 import { siteContent } from '../../data/content';
 import imgDifferentials from 'figma:asset/e131e0fb7fa0de846a06e6f0060eba49c87abac7.png';
 
@@ -65,12 +64,7 @@ export function Differentials(props?: {
       <div className="max-w-[1440px] mx-auto px-[20px] md:px-[40px] lg:px-[110px] py-[80px] lg:py-[100px]">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-[40px] md:gap-[60px] lg:gap-[100px]">
           {/* Left Column — Title */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px', amount: 0.1 }}
-            transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-          >
+          <div>
             <h2 className="font-['Marcellus'] text-[28px] md:text-[36px] lg:text-[48px] leading-[1.2] tracking-[-0.832px] text-white mb-4 md:mb-6">
               {content.title.split(' ').slice(0, 5).join(' ')}{' '}
               <br className="hidden lg:block" />
@@ -90,21 +84,13 @@ export function Differentials(props?: {
                 decoding="async"
               />
             </div>
-          </motion.div>
+          </div>
 
           {/* Right Column — Differentials list */}
           <div className="flex flex-col">
             {content.items.map((item, index) => (
-              <motion.div
+              <div
                 key={item.id}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-60px' }}
-                transition={{
-                  duration: 0.7,
-                  ease: [0.4, 0, 0.2, 1],
-                  delay: index * 0.1,
-                }}
                 className={`py-[20px] md:py-[28px] ${
                   index !== content.items.length - 1
                     ? 'border-b border-[#a57255]/15'
@@ -124,7 +110,7 @@ export function Differentials(props?: {
                   {item.linkText}
                   <ArrowUpRight />
                 </a>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

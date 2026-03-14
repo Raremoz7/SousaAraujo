@@ -214,7 +214,7 @@ function CircularScore({ score, size = 100 }: { score: number; size?: number }) 
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size/2} cy={size/2} r={radius} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={5} />
+        <circle cx={size/2} cy={size/2} r={radius} fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth={5} />
         <circle
           cx={size/2} cy={size/2} r={radius} fill="none"
           stroke={color} strokeWidth={5}
@@ -225,8 +225,8 @@ function CircularScore({ score, size = 100 }: { score: number; size?: number }) 
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-['Noto_Sans'] font-bold text-[22px] text-white" style={{ fontSize: size * 0.22 }}>{score}</span>
-        <span className="font-['Noto_Sans'] text-[9px] text-white/40" style={{ fontSize: size * 0.09 }}>/ 100</span>
+        <span className="font-['Noto_Sans'] font-bold text-[22px] text-gray-900" style={{ fontSize: size * 0.22 }}>{score}</span>
+        <span className="font-['Noto_Sans'] text-[9px] text-gray-400" style={{ fontSize: size * 0.09 }}>/ 100</span>
       </div>
     </div>
   );
@@ -424,15 +424,15 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
     <div className="space-y-[10px]">
 
       {/* Tab navigation — full width */}
-      <div className="flex gap-[3px] bg-white/[0.02] rounded-lg p-[3px] border border-white/[0.06]">
+      <div className="flex gap-[3px] bg-gray-50 rounded-lg p-[3px] border border-gray-200">
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex-1 flex items-center justify-center gap-[5px] px-[10px] py-[7px] rounded-md font-['Noto_Sans'] text-[11px] font-medium transition-all ${
               activeTab === tab.id
-                ? 'bg-[#a57255]/15 text-[#a57255] border border-[#a57255]/20'
-                : 'text-white/40 hover:text-white/60 hover:bg-white/[0.03] border border-transparent'
+                ? 'bg-[#a57255]/10 text-[#a57255] border border-[#a57255]/20'
+                : 'text-gray-400 hover:text-gray-700 hover:bg-gray-100 border border-transparent'
             }`}
           >
             {tab.icon}
@@ -450,13 +450,13 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
           {/* Score overview — horizontal strip */}
           <div className="flex gap-[10px] items-stretch">
             {/* Main score — compact */}
-            <div className="bg-gradient-to-br from-[#a57255]/10 via-[#1e1b19] to-[#1e1b19] border border-white/[0.08] rounded-xl px-[16px] py-[14px] flex items-center gap-[14px] shrink-0">
+            <div className="bg-gradient-to-br from-[#a57255]/10 via-white to-white border border-gray-200 rounded-xl px-[16px] py-[14px] flex items-center gap-[14px] shrink-0">
               <CircularScore score={globalScore} size={72} />
               <div className="flex flex-col">
                 <span className="font-['Noto_Sans'] text-[13px] font-semibold" style={{ color: getScoreColor(globalScore) }}>
                   {getScoreLabel(globalScore)}
                 </span>
-                <span className="font-['Noto_Sans'] text-[10px] text-white/30">Score SEO Geral</span>
+                <span className="font-['Noto_Sans'] text-[10px] text-gray-400">Score SEO Geral</span>
               </div>
             </div>
             {/* Quick stats — fill remaining space */}
@@ -471,13 +471,13 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
           {/* Page scores + Issues — side by side */}
           <div className="flex gap-[10px] items-start">
             {/* Page scores — 2 column grid */}
-            <div className="flex-1 bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden min-w-0">
-              <div className="px-[14px] py-[9px] border-b border-white/[0.06] flex items-center justify-between">
-                <h3 className="font-['Noto_Sans'] text-[12px] font-semibold text-white flex items-center gap-[6px]">
+            <div className="flex-1 bg-white border border-gray-200 rounded-xl overflow-hidden min-w-0">
+              <div className="px-[14px] py-[9px] border-b border-gray-100 flex items-center justify-between">
+                <h3 className="font-['Noto_Sans'] text-[12px] font-semibold text-gray-900 flex items-center gap-[6px]">
                   <TrendingUp size={13} className="text-[#a57255]" />
                   Score por Pagina
                 </h3>
-                <span className="font-['Noto_Sans'] text-[10px] text-white/25">{SEO_PAGES.length} paginas</span>
+                <span className="font-['Noto_Sans'] text-[10px] text-gray-400">{SEO_PAGES.length} paginas</span>
               </div>
               <div className="grid grid-cols-3">
                 {SEO_PAGES.map((page, idx) => {
@@ -491,11 +491,11 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
                     <button
                       key={page.id}
                       onClick={() => { setSelectedPage(page.id); setActiveTab('metatags'); }}
-                      className={`flex items-center gap-[8px] px-[12px] py-[8px] hover:bg-white/[0.02] transition-colors text-left group ${col < 2 ? 'border-r border-white/[0.04]' : ''} ${!isLastRow ? 'border-b border-white/[0.04]' : ''}`}
+                      className={`flex items-center gap-[8px] px-[12px] py-[8px] hover:bg-gray-50 transition-colors text-left group ${col < 2 ? 'border-r border-gray-100' : ''} ${!isLastRow ? 'border-b border-gray-100' : ''}`}
                     >
                       <CircularScore score={score} size={28} />
                       <div className="flex-1 min-w-0">
-                        <span className="font-['Noto_Sans'] text-[11px] text-white font-medium truncate block">{page.label}</span>
+                        <span className="font-['Noto_Sans'] text-[11px] text-gray-900 font-medium truncate block">{page.label}</span>
                         <div className="flex items-center gap-[6px] mt-[1px]">
                           {errors > 0 && <span className="font-['Noto_Sans'] text-[9px] text-red-400">{errors} erro{errors > 1 ? 's' : ''}</span>}
                           {warnings > 0 && <span className="font-['Noto_Sans'] text-[9px] text-yellow-400">{warnings} aviso{warnings > 1 ? 's' : ''}</span>}
@@ -504,7 +504,7 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
                       </div>
                       {/* Score bar — compact */}
                       <div className="w-[50px] shrink-0">
-                        <div className="h-[3px] bg-white/[0.06] rounded-full overflow-hidden">
+                        <div className="h-[3px] bg-gray-100 rounded-full overflow-hidden">
                           <div className="h-full rounded-full transition-all duration-500" style={{ width: `${score}%`, backgroundColor: getScoreColor(score) }} />
                         </div>
                       </div>
@@ -516,9 +516,9 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
 
             {/* Issues panel — right side */}
             {allIssues.length > 0 && (
-              <div className="w-[340px] shrink-0 bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
-                <div className="px-[14px] py-[9px] border-b border-white/[0.06] flex items-center justify-between">
-                  <h3 className="font-['Noto_Sans'] text-[12px] font-semibold text-white flex items-center gap-[6px]">
+              <div className="w-[340px] shrink-0 bg-white border border-gray-200 rounded-xl overflow-hidden">
+                <div className="px-[14px] py-[9px] border-b border-gray-100 flex items-center justify-between">
+                  <h3 className="font-['Noto_Sans'] text-[12px] font-semibold text-gray-900 flex items-center gap-[6px]">
                     <AlertTriangle size={13} className="text-yellow-500" />
                     Problemas ({allIssues.length})
                   </h3>
@@ -526,8 +526,8 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
                     onClick={copyIssuesToClipboard}
                     className={`flex items-center gap-[4px] px-[8px] py-[4px] rounded-md font-['Noto_Sans'] text-[10px] font-medium transition-all ${
                       issuesCopied
-                        ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/20'
-                        : 'bg-white/[0.04] text-white/40 border border-white/[0.06] hover:text-white/70 hover:bg-white/[0.06]'
+                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                        : 'bg-gray-50 text-gray-400 border border-gray-200 hover:text-gray-700 hover:bg-gray-100'
                     }`}
                     title="Copiar relatório completo de problemas"
                   >
@@ -535,13 +535,13 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
                     {issuesCopied ? 'Copiado!' : 'Copiar'}
                   </button>
                 </div>
-                <div className="max-h-[400px] overflow-y-auto divide-y divide-white/[0.04]">
+                <div className="max-h-[400px] overflow-y-auto divide-y divide-gray-100">
                   {allIssues.slice(0, 20).map((issue, i) => (
                     <div key={i} className="flex items-start gap-[8px] px-[12px] py-[7px]">
                       {issue.type === 'error' ? <XCircle size={12} className="text-red-500 shrink-0 mt-[2px]" /> : <AlertTriangle size={12} className="text-yellow-500 shrink-0 mt-[2px]" />}
                       <div className="flex-1 min-w-0">
-                        <span className="font-['Noto_Sans'] text-[10px] text-white/60 leading-[14px] block">{issue.message}</span>
-                        <span className="font-['Noto_Sans'] text-[9px] text-white/25">{issue.page}</span>
+                        <span className="font-['Noto_Sans'] text-[10px] text-gray-600 leading-[14px] block">{issue.message}</span>
+                        <span className="font-['Noto_Sans'] text-[9px] text-gray-400">{issue.page}</span>
                       </div>
                     </div>
                   ))}
@@ -560,12 +560,12 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
 
           {/* Page selector — custom dropdown with scores */}
           <div className="flex items-center gap-[10px]">
-            <span className="font-['Noto_Sans'] text-[11px] text-white/40 shrink-0">Pagina:</span>
+            <span className="font-['Noto_Sans'] text-[11px] text-gray-400 shrink-0">Pagina:</span>
             <div ref={pageDropdownRef} className="relative flex-1">
               <button
                 onClick={() => setPageDropdownOpen(!pageDropdownOpen)}
-                className={`w-full h-[36px] bg-[#1a1816] border rounded-lg px-[12px] font-['Noto_Sans'] text-[12px] text-white flex items-center justify-between transition-colors cursor-pointer ${
-                  pageDropdownOpen ? 'border-[#a57255]/40' : 'border-white/[0.08] hover:border-white/[0.15]'
+                className={`w-full h-[36px] bg-white border rounded-lg px-[12px] font-['Noto_Sans'] text-[12px] text-gray-900 flex items-center justify-between transition-colors cursor-pointer ${
+                  pageDropdownOpen ? 'border-[#a57255]/40' : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
                 <div className="flex items-center gap-[8px] min-w-0">
@@ -576,19 +576,19 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
                       <>
                         <span className="font-['Noto_Sans'] text-[10px] font-bold tabular-nums shrink-0 w-[22px] text-center" style={{ color }}>{score}</span>
                         <span className="truncate">{SEO_PAGES.find(p => p.id === selectedPage)?.label}</span>
-                        <span className="text-white/20 text-[10px] shrink-0">{SEO_PAGES.find(p => p.id === selectedPage)?.route}</span>
+                        <span className="text-gray-400 text-[10px] shrink-0">{SEO_PAGES.find(p => p.id === selectedPage)?.route}</span>
                       </>
                     );
                   })()}
                 </div>
-                <ChevronDown size={13} className={`text-white/30 shrink-0 transition-transform duration-200 ${pageDropdownOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown size={13} className={`text-gray-400 shrink-0 transition-transform duration-200 ${pageDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {pageDropdownOpen && (
-                <div className="absolute top-full left-0 right-0 mt-[4px] z-50 bg-[#1a1816] border border-white/[0.1] rounded-xl shadow-2xl overflow-hidden max-h-[360px] overflow-y-auto painel-scrollbar">
+                <div className="absolute top-full left-0 right-0 mt-[4px] z-50 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden max-h-[360px] overflow-y-auto painel-scrollbar">
                   {/* Group: Paginas */}
                   <div className="px-[10px] pt-[8px] pb-[4px]">
-                    <span className="font-['Noto_Sans'] text-[9px] tracking-[0.6px] text-white/20 uppercase">Paginas</span>
+                    <span className="font-['Noto_Sans'] text-[9px] tracking-[0.6px] text-gray-400 uppercase">Paginas</span>
                   </div>
                   {SEO_PAGES.filter(p => !['homologacao','divorcio','guarda','pensao','inventario','uniao','pmes','inpi'].includes(p.id)).map(page => {
                     const score = pageAnalysis[page.id]?.score || 0;
@@ -600,8 +600,8 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
                         onClick={() => { setSelectedPage(page.id); setPageDropdownOpen(false); }}
                         className={`w-full flex items-center gap-[8px] px-[12px] py-[7px] text-left transition-all ${
                           isSelected
-                            ? 'bg-[#a57255]/10 text-white'
-                            : 'text-white/60 hover:bg-white/[0.03] hover:text-white/80'
+                            ? 'bg-[#a57255]/10 text-gray-900'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                         }`}
                       >
                         {/* Mini score circle */}
@@ -610,7 +610,7 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
                         </div>
                         <div className="flex-1 min-w-0">
                           <span className="font-['Noto_Sans'] text-[11px] block truncate">{page.label}</span>
-                          <span className="font-['Noto_Sans'] text-[9px] text-white/20 block">{page.route}</span>
+                          <span className="font-['Noto_Sans'] text-[9px] text-gray-400 block">{page.route}</span>
                         </div>
                         {/* Status dots */}
                         <div className="flex gap-[2px] shrink-0">
@@ -627,8 +627,8 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
                   })}
 
                   {/* Group: Servicos */}
-                  <div className="px-[10px] pt-[10px] pb-[4px] border-t border-white/[0.04] mt-[2px]">
-                    <span className="font-['Noto_Sans'] text-[9px] tracking-[0.6px] text-white/20 uppercase">Servicos</span>
+                  <div className="px-[10px] pt-[10px] pb-[4px] border-t border-gray-100 mt-[2px]">
+                    <span className="font-['Noto_Sans'] text-[9px] tracking-[0.6px] text-gray-400 uppercase">Servicos</span>
                   </div>
                   {SEO_PAGES.filter(p => ['homologacao','divorcio','guarda','pensao','inventario','uniao','pmes','inpi'].includes(p.id)).map(page => {
                     const score = pageAnalysis[page.id]?.score || 0;
@@ -640,8 +640,8 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
                         onClick={() => { setSelectedPage(page.id); setPageDropdownOpen(false); }}
                         className={`w-full flex items-center gap-[8px] px-[12px] py-[7px] text-left transition-all ${
                           isSelected
-                            ? 'bg-[#a57255]/10 text-white'
-                            : 'text-white/60 hover:bg-white/[0.03] hover:text-white/80'
+                            ? 'bg-[#a57255]/10 text-gray-900'
+                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                         }`}
                       >
                         <div className="w-[24px] h-[24px] rounded-full border-2 flex items-center justify-center shrink-0" style={{ borderColor: `${color}40` }}>
@@ -649,7 +649,7 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
                         </div>
                         <div className="flex-1 min-w-0">
                           <span className="font-['Noto_Sans'] text-[11px] block truncate">{page.label}</span>
-                          <span className="font-['Noto_Sans'] text-[9px] text-white/20 block">{page.route}</span>
+                          <span className="font-['Noto_Sans'] text-[9px] text-gray-400 block">{page.route}</span>
                         </div>
                         <div className="flex gap-[2px] shrink-0">
                           {pageAnalysis[page.id]?.checks.map((check, ci) => (
@@ -668,7 +668,7 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
               )}
             </div>
             {/* Score badge */}
-            <div className="shrink-0 flex items-center gap-[6px] px-[10px] py-[6px] rounded-lg border border-white/[0.06]" style={{ borderColor: `${getScoreColor(pageAnalysis[selectedPage]?.score || 0)}30` }}>
+            <div className="shrink-0 flex items-center gap-[6px] px-[10px] py-[6px] rounded-lg border border-gray-200" style={{ borderColor: `${getScoreColor(pageAnalysis[selectedPage]?.score || 0)}30` }}>
               <CircularScore score={pageAnalysis[selectedPage]?.score || 0} size={28} />
               <span className="font-['Noto_Sans'] text-[10px] font-medium" style={{ color: getScoreColor(pageAnalysis[selectedPage]?.score || 0) }}>
                 {getScoreLabel(pageAnalysis[selectedPage]?.score || 0)}
@@ -726,11 +726,11 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
                       placeholder={`https://sousaaraujo.adv.br${SEO_PAGES.find(p => p.id === selectedPage)?.route || ''}`}
                     />
                     <div>
-                      <label className="font-['Noto_Sans'] text-[11px] text-white/50 mb-[4px] block">Robots (indexacao)</label>
+                      <label className="font-['Noto_Sans'] text-[11px] text-gray-500 mb-[4px] block">Robots (indexacao)</label>
                       <select
                         value={getSeoVal(selectedPage, 'robots') || 'index, follow'}
                         onChange={e => setSeoVal(selectedPage, 'robots', e.target.value)}
-                        className="w-full h-[36px] bg-[#161413] border border-white/[0.08] rounded-lg px-[12px] font-['Noto_Sans'] text-[12px] text-white/80 focus:border-[#a57255]/40 focus:outline-none transition-colors appearance-none cursor-pointer"
+                        className="w-full h-[36px] bg-white border border-gray-200 rounded-lg px-[12px] font-['Noto_Sans'] text-[12px] text-gray-800 focus:border-[#a57255]/40 focus:outline-none transition-colors appearance-none cursor-pointer"
                       >
                         <option value="index, follow">index, follow (padrao)</option>
                         <option value="noindex, follow">noindex, follow</option>
@@ -771,11 +771,11 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
                 <div className="space-y-[10px]">
                   <div className="grid grid-cols-3 gap-[10px]">
                     <div>
-                      <label className="font-['Noto_Sans'] text-[11px] text-white/50 mb-[4px] block">Card Type</label>
+                      <label className="font-['Noto_Sans'] text-[11px] text-gray-500 mb-[4px] block">Card Type</label>
                       <select
                         value={getSeoVal(selectedPage, 'twitterCard') || 'summary_large_image'}
                         onChange={e => setSeoVal(selectedPage, 'twitterCard', e.target.value)}
-                        className="w-full h-[36px] bg-[#161413] border border-white/[0.08] rounded-lg px-[12px] font-['Noto_Sans'] text-[12px] text-white/80 focus:border-[#a57255]/40 focus:outline-none transition-colors appearance-none cursor-pointer"
+                        className="w-full h-[36px] bg-white border border-gray-200 rounded-lg px-[12px] font-['Noto_Sans'] text-[12px] text-gray-800 focus:border-[#a57255]/40 focus:outline-none transition-colors appearance-none cursor-pointer"
                       >
                         <option value="summary_large_image">summary_large_image</option>
                         <option value="summary">summary</option>
@@ -791,8 +791,8 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
             {/* Right — Previews + Diagnostics sticky */}
             <div className="w-[380px] shrink-0 space-y-[8px] sticky top-[20px]">
               {/* SERP Preview with metrics */}
-              <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px]">
-                <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-white/70 mb-[8px] flex items-center gap-[6px]">
+              <div className="bg-white border border-gray-200 rounded-xl p-[14px]">
+                <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-gray-600 mb-[8px] flex items-center gap-[6px]">
                   <Eye size={12} className="text-[#a57255]" />
                   Preview Google (SERP)
                 </h3>
@@ -853,26 +853,26 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
 
                       {/* SERP Metrics */}
                       <div className="grid grid-cols-3 gap-[6px] mt-[8px]">
-                        <div className="bg-white/[0.03] rounded-lg px-[8px] py-[6px] text-center">
-                          <div className="font-['Noto_Sans'] text-[10px] text-white/30 mb-[2px]">Title</div>
+                        <div className="bg-gray-50 rounded-lg px-[8px] py-[6px] text-center">
+                          <div className="font-['Noto_Sans'] text-[10px] text-gray-400 mb-[2px]">Title</div>
                           <div className="font-['Noto_Sans'] text-[13px] font-bold" style={{ color: titleColor }}>
                             {titleLen}/60
                           </div>
-                          <div className="font-['Noto_Sans'] text-[8px] text-white/20">chars</div>
+                          <div className="font-['Noto_Sans'] text-[8px] text-gray-400">chars</div>
                         </div>
-                        <div className="bg-white/[0.03] rounded-lg px-[8px] py-[6px] text-center">
-                          <div className="font-['Noto_Sans'] text-[10px] text-white/30 mb-[2px]">Description</div>
+                        <div className="bg-gray-50 rounded-lg px-[8px] py-[6px] text-center">
+                          <div className="font-['Noto_Sans'] text-[10px] text-gray-400 mb-[2px]">Description</div>
                           <div className="font-['Noto_Sans'] text-[13px] font-bold" style={{ color: descColor }}>
                             {descLen}/160
                           </div>
-                          <div className="font-['Noto_Sans'] text-[8px] text-white/20">chars</div>
+                          <div className="font-['Noto_Sans'] text-[8px] text-gray-400">chars</div>
                         </div>
-                        <div className="bg-white/[0.03] rounded-lg px-[8px] py-[6px] text-center">
-                          <div className="font-['Noto_Sans'] text-[10px] text-white/30 mb-[2px]">Keyword</div>
+                        <div className="bg-gray-50 rounded-lg px-[8px] py-[6px] text-center">
+                          <div className="font-['Noto_Sans'] text-[10px] text-gray-400 mb-[2px]">Keyword</div>
                           <div className="font-['Noto_Sans'] text-[12px] font-bold" style={{ color: !serpKeyword ? '#9ca3af' : keywordInTitle ? '#22c55e' : '#ef4444' }}>
                             {!serpKeyword ? '—' : keywordInTitle ? '✓ Presente' : '✗ Ausente'}
                           </div>
-                          <div className="font-['Noto_Sans'] text-[8px] text-white/20">no title</div>
+                          <div className="font-['Noto_Sans'] text-[8px] text-gray-400">no title</div>
                         </div>
                       </div>
                     </>
@@ -881,8 +881,8 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
               </div>
 
               {/* Social Preview */}
-              <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px]">
-                <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-white/70 mb-[8px] flex items-center gap-[6px]">
+              <div className="bg-white border border-gray-200 rounded-xl p-[14px]">
+                <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-gray-600 mb-[8px] flex items-center gap-[6px]">
                   <Share2 size={12} className="text-[#a57255]" />
                   Preview Redes Sociais (OG)
                 </h3>
@@ -895,17 +895,17 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
               </div>
 
               {/* Diagnostics */}
-              <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px]">
-                <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-white/70 mb-[8px] flex items-center gap-[6px]">
+              <div className="bg-white border border-gray-200 rounded-xl p-[14px]">
+                <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-gray-600 mb-[8px] flex items-center gap-[6px]">
                   <Zap size={12} className="text-[#a57255]" />
                   Diagnostico
                 </h3>
                 <div className="space-y-[3px]">
                   {pageAnalysis[selectedPage]?.checks.map((check, i) => (
-                    <div key={i} className="flex items-center gap-[6px] py-[4px] px-[8px] rounded-lg bg-white/[0.01]">
+                    <div key={i} className="flex items-center gap-[6px] py-[4px] px-[8px] rounded-lg bg-gray-50">
                       <StatusIcon status={check.status} />
-                      <span className="font-['Noto_Sans'] text-[10px] text-white/60 font-medium shrink-0">{check.label}</span>
-                      <span className="font-['Noto_Sans'] text-[10px] text-white/35 flex-1 truncate">{check.detail}</span>
+                      <span className="font-['Noto_Sans'] text-[10px] text-gray-600 font-medium shrink-0">{check.label}</span>
+                      <span className="font-['Noto_Sans'] text-[10px] text-gray-400 flex-1 truncate">{check.detail}</span>
                       <span className="font-['Noto_Sans'] text-[10px] font-semibold shrink-0" style={{ color: getScoreColor(check.score) }}>{check.score}</span>
                     </div>
                   ))}
@@ -969,14 +969,14 @@ export function SeoPanel({ data, onChange }: SeoPanelProps) {
 /* ─── Quick Stat Card ─── */
 function QuickStat({ icon, label, value, sub, color }: { icon: React.ReactNode; label: string; value: string; sub: string; color?: string }) {
   return (
-    <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl px-[12px] py-[10px] flex flex-col justify-center min-w-0">
+    <div className="bg-white border border-gray-200 rounded-xl px-[12px] py-[10px] flex flex-col justify-center min-w-0">
       <div className="flex items-center gap-[6px] mb-[4px]">
         <span className="text-[#a57255]/60 shrink-0">{icon}</span>
-        <span className="font-['Noto_Sans'] text-[10px] text-white/30 truncate">{label}</span>
+        <span className="font-['Noto_Sans'] text-[10px] text-gray-400 truncate">{label}</span>
       </div>
       <div className="flex items-end gap-[4px]">
-        <span className="font-['Noto_Sans'] text-[20px] font-bold leading-none" style={{ color: color || '#fff' }}>{value}</span>
-        <span className="font-['Noto_Sans'] text-[9px] text-white/25 mb-[2px] truncate">{sub}</span>
+        <span className="font-['Noto_Sans'] text-[20px] font-bold leading-none" style={{ color: color || '#111' }}>{value}</span>
+        <span className="font-['Noto_Sans'] text-[9px] text-gray-400 mb-[2px] truncate">{sub}</span>
       </div>
     </div>
   );
@@ -987,11 +987,11 @@ function CollapsibleSection({ id, title, icon, expanded, onToggle, children }: {
   id: string; title: string; icon: React.ReactNode; expanded: boolean; onToggle: () => void; children: React.ReactNode;
 }) {
   return (
-    <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
-      <button onClick={onToggle} className="w-full flex items-center gap-[8px] px-[16px] py-[12px] hover:bg-white/[0.01] transition-colors">
-        {expanded ? <ChevronDown size={13} className="text-white/25" /> : <ChevronRight size={13} className="text-white/25" />}
+    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+      <button onClick={onToggle} className="w-full flex items-center gap-[8px] px-[16px] py-[12px] hover:bg-gray-50 transition-colors">
+        {expanded ? <ChevronDown size={13} className="text-gray-400" /> : <ChevronRight size={13} className="text-gray-400" />}
         <span className="text-[#a57255]/60">{icon}</span>
-        <span className="font-['Noto_Sans'] text-[12px] font-semibold text-white">{title}</span>
+        <span className="font-['Noto_Sans'] text-[12px] font-semibold text-gray-900">{title}</span>
       </button>
       {expanded && <div className="px-[16px] pb-[16px]">{children}</div>}
     </div>
@@ -1010,21 +1010,21 @@ function SeoField({ label, help, value, onChange, placeholder, multiline, maxRec
   return (
     <div>
       <div className="flex items-center justify-between mb-[4px]">
-        <label className="font-['Noto_Sans'] text-[11px] text-white/50">{label}</label>
+        <label className="font-['Noto_Sans'] text-[11px] text-gray-500">{label}</label>
         {maxRecommended && (
-          <span className={`font-['Noto_Sans'] text-[10px] ${isOver ? 'text-red-400' : isOptimal ? 'text-emerald-400' : 'text-white/25'}`}>
+          <span className={`font-['Noto_Sans'] text-[10px] ${isOver ? 'text-red-500' : isOptimal ? 'text-emerald-500' : 'text-gray-400'}`}>
             {len} / {maxRecommended}
           </span>
         )}
       </div>
-      {help && <p className="font-['Noto_Sans'] text-[10px] text-white/25 mb-[6px]">{help}</p>}
+      {help && <p className="font-['Noto_Sans'] text-[10px] text-gray-400 mb-[6px]">{help}</p>}
       {multiline ? (
         <textarea
           value={value}
           onChange={e => onChange(e.target.value)}
           placeholder={placeholder}
           rows={3}
-          className="w-full bg-[#161413] border border-white/[0.08] rounded-lg px-[12px] py-[8px] font-['Noto_Sans'] text-[12px] text-white/80 placeholder:text-white/15 focus:border-[#a57255]/40 focus:outline-none resize-none transition-colors"
+          className="w-full bg-white border border-gray-200 rounded-lg px-[12px] py-[8px] font-['Noto_Sans'] text-[12px] text-gray-800 placeholder:text-gray-300 focus:border-[#a57255]/40 focus:outline-none resize-none transition-colors"
         />
       ) : (
         <input
@@ -1032,12 +1032,12 @@ function SeoField({ label, help, value, onChange, placeholder, multiline, maxRec
           value={value}
           onChange={e => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full h-[36px] bg-[#161413] border border-white/[0.08] rounded-lg px-[12px] font-['Noto_Sans'] text-[12px] text-white/80 placeholder:text-white/15 focus:border-[#a57255]/40 focus:outline-none transition-colors"
+          className="w-full h-[36px] bg-white border border-gray-200 rounded-lg px-[12px] font-['Noto_Sans'] text-[12px] text-gray-800 placeholder:text-gray-300 focus:border-[#a57255]/40 focus:outline-none transition-colors"
         />
       )}
       {/* Character bar */}
       {maxRecommended && len > 0 && (
-        <div className="mt-[4px] h-[2px] bg-white/[0.04] rounded-full overflow-hidden">
+        <div className="mt-[4px] h-[2px] bg-gray-100 rounded-full overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-300"
             style={{
@@ -1172,44 +1172,44 @@ function ContentAnalysisTab({ data, getSeoVal, pageAnalysis }: { data: Record<st
   return (
     <div className="space-y-[10px]">
       {/* Table + header combined */}
-      <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
-        <div className="px-[14px] py-[10px] border-b border-white/[0.06] flex items-center justify-between">
-          <h3 className="font-['Noto_Sans'] text-[12px] font-semibold text-white flex items-center gap-[6px]">
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+        <div className="px-[14px] py-[10px] border-b border-gray-200 flex items-center justify-between">
+          <h3 className="font-['Noto_Sans'] text-[12px] font-semibold text-gray-900 flex items-center gap-[6px]">
             <Search size={13} className="text-[#a57255]" />
             Analise de Conteudo por Pagina
           </h3>
-          <span className="font-['Noto_Sans'] text-[10px] text-white/25">Conteudo detectado via painel</span>
+          <span className="font-['Noto_Sans'] text-[10px] text-gray-400">Conteudo detectado via painel</span>
         </div>
         {/* Table header */}
-        <div className="grid grid-cols-[2fr_1fr_80px_1.5fr_60px] gap-[8px] px-[14px] py-[7px] border-b border-white/[0.04] text-white/30 font-['Noto_Sans'] text-[9px] font-semibold uppercase tracking-wider">
+        <div className="grid grid-cols-[2fr_1fr_80px_1.5fr_60px] gap-[8px] px-[14px] py-[7px] border-b border-gray-100 text-gray-400 font-['Noto_Sans'] text-[9px] font-semibold uppercase tracking-wider">
           <span>Pagina</span>
           <span>Conteudo</span>
           <span>Imagens</span>
           <span>Keyword</span>
           <span className="text-right">Score</span>
         </div>
-        <div className="divide-y divide-white/[0.03]">
+        <div className="divide-y divide-gray-100">
           {contentAudit.map(item => {
             const score = pageAnalysis[item.pageId]?.score || 0;
             const contentStatus = item.textLength > 500 ? 'pass' : item.textLength > 100 ? 'warning' : 'fail';
             return (
-              <div key={item.pageId} className="grid grid-cols-[2fr_1fr_80px_1.5fr_60px] gap-[8px] px-[14px] py-[7px] items-center hover:bg-white/[0.01] transition-colors">
-                <span className="font-['Noto_Sans'] text-[11px] text-white font-medium truncate">{item.label}</span>
+              <div key={item.pageId} className="grid grid-cols-[2fr_1fr_80px_1.5fr_60px] gap-[8px] px-[14px] py-[7px] items-center hover:bg-gray-50 transition-colors">
+                <span className="font-['Noto_Sans'] text-[11px] text-gray-900 font-medium truncate">{item.label}</span>
                 <div className="flex items-center gap-[4px]">
                   <StatusIcon status={contentStatus} />
-                  <span className="font-['Noto_Sans'] text-[10px] text-white/50">{item.textLength > 0 ? `${item.textLength}` : '—'}</span>
+                  <span className="font-['Noto_Sans'] text-[10px] text-gray-500">{item.textLength > 0 ? `${item.textLength}` : '—'}</span>
                 </div>
-                <span className="font-['Noto_Sans'] text-[10px] text-white/50">{item.images}</span>
+                <span className="font-['Noto_Sans'] text-[10px] text-gray-500">{item.images}</span>
                 <div className="flex items-center gap-[3px] min-w-0">
                   {item.keyword ? (
                     <>
                       <span className={`font-['Noto_Sans'] text-[10px] shrink-0 ${item.keywordCount > 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                         {item.keywordCount}x
                       </span>
-                      <span className="font-['Noto_Sans'] text-[9px] text-white/20 truncate">{item.keyword}</span>
+                      <span className="font-['Noto_Sans'] text-[9px] text-gray-400 truncate">{item.keyword}</span>
                     </>
                   ) : (
-                    <span className="font-['Noto_Sans'] text-[10px] text-white/20">—</span>
+                    <span className="font-['Noto_Sans'] text-[10px] text-gray-300">—</span>
                   )}
                 </div>
                 <span className="font-['Noto_Sans'] text-[11px] font-semibold text-right" style={{ color: getScoreColor(score) }}>{score}</span>
@@ -1220,8 +1220,8 @@ function ContentAnalysisTab({ data, getSeoVal, pageAnalysis }: { data: Record<st
       </div>
 
       {/* Tips — 2 column grid */}
-      <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px]">
-        <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-white mb-[8px] flex items-center gap-[6px]">
+      <div className="bg-white border border-gray-200 rounded-xl p-[14px]">
+        <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-gray-900 mb-[8px] flex items-center gap-[6px]">
           <Info size={12} className="text-[#a57255]" />
           Dicas de Otimizacao
         </h3>
@@ -1236,37 +1236,37 @@ function ContentAnalysisTab({ data, getSeoVal, pageAnalysis }: { data: Record<st
           ].map((tip, i) => (
             <div key={i} className="flex items-start gap-[6px] py-[3px]">
               <span className="text-[#a57255]/50 mt-[1px] shrink-0">{tip.icon}</span>
-              <span className="font-['Noto_Sans'] text-[10px] text-white/40 leading-[14px]">{tip.text}</span>
+              <span className="font-['Noto_Sans'] text-[10px] text-gray-400 leading-[14px]">{tip.text}</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* ── Análise de Legibilidade ── */}
-      <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
-        <div className="px-[14px] py-[10px] border-b border-white/[0.04] flex items-center gap-[6px]">
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+        <div className="px-[14px] py-[10px] border-b border-gray-100 flex items-center gap-[6px]">
           <BookOpen size={12} className="text-[#a57255]" />
-          <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-white">Legibilidade por Página</h3>
-          <span className="font-['Noto_Sans'] text-[10px] text-white/25 ml-auto">Calculado sobre textos editados no painel</span>
+          <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-gray-900">Legibilidade por Página</h3>
+          <span className="font-['Noto_Sans'] text-[10px] text-gray-400 ml-auto">Calculado sobre textos editados no painel</span>
         </div>
-        <div className="divide-y divide-white/[0.03]">
+        <div className="divide-y divide-gray-100">
           {contentAudit.map(page => {
             const r = page.readability;
             const levelColor = { facil: '#22c55e', medio: '#eab308', dificil: '#ef4444' }[r.level];
             const levelLabel = { facil: 'Fácil', medio: 'Médio', dificil: 'Difícil' }[r.level];
             return (
               <details key={page.pageId} className="group">
-                <summary className="flex items-center gap-[10px] px-[14px] py-[8px] cursor-pointer hover:bg-white/[0.01] transition-colors list-none">
+                <summary className="flex items-center gap-[10px] px-[14px] py-[8px] cursor-pointer hover:bg-gray-50 transition-colors list-none">
                   <span className="font-['Noto_Sans'] text-[11px] font-bold w-[28px] text-right tabular-nums shrink-0" style={{ color: levelColor }}>{r.score}</span>
-                  <div className="w-[40px] h-[3px] bg-white/[0.06] rounded-full shrink-0">
+                  <div className="w-[40px] h-[3px] bg-gray-100 rounded-full shrink-0">
                     <div className="h-[3px] rounded-full" style={{ width: `${r.score}%`, background: levelColor }} />
                   </div>
-                  <span className="font-['Noto_Sans'] text-[11px] text-white/70 flex-1 truncate">{page.label}</span>
+                  <span className="font-['Noto_Sans'] text-[11px] text-gray-600 flex-1 truncate">{page.label}</span>
                   <div className="flex items-center gap-[8px] shrink-0">
-                    <span className="font-['Noto_Sans'] text-[9px] text-white/25 tabular-nums">{r.totalWords} palavras</span>
-                    <span className="font-['Noto_Sans'] text-[9px] text-white/25 tabular-nums">~{r.estimatedReadTime}min leitura</span>
+                    <span className="font-['Noto_Sans'] text-[9px] text-gray-400 tabular-nums">{r.totalWords} palavras</span>
+                    <span className="font-['Noto_Sans'] text-[9px] text-gray-400 tabular-nums">~{r.estimatedReadTime}min leitura</span>
                     <span className="font-['Noto_Sans'] text-[9px] font-medium px-[5px] py-[1px] rounded" style={{ background: `${levelColor}20`, color: levelColor }}>{levelLabel}</span>
-                    <ChevronRight size={11} className="text-white/20 group-open:rotate-90 transition-transform" />
+                    <ChevronRight size={11} className="text-gray-300 group-open:rotate-90 transition-transform" />
                   </div>
                 </summary>
                 <div className="px-[14px] pb-[10px] space-y-[4px]">
@@ -1276,13 +1276,13 @@ function ContentAnalysisTab({ data, getSeoVal, pageAnalysis }: { data: Record<st
                         : check.status === 'warning' ? <CircleMinus size={11} className="text-yellow-400 mt-[1px] shrink-0" />
                         : <CircleX size={11} className="text-red-400 mt-[1px] shrink-0" />}
                       <div>
-                        <span className="font-['Noto_Sans'] text-[10px] text-white/60 font-medium">{check.label}</span>
-                        <span className="font-['Noto_Sans'] text-[10px] text-white/30 ml-[6px]">{check.detail}</span>
+                        <span className="font-['Noto_Sans'] text-[10px] text-gray-600 font-medium">{check.label}</span>
+                        <span className="font-['Noto_Sans'] text-[10px] text-gray-400 ml-[6px]">{check.detail}</span>
                       </div>
                     </div>
                   ))}
                   {r.totalWords < 50 && (
-                    <p className="font-['Noto_Sans'] text-[10px] text-white/20 italic mt-[4px]">
+                    <p className="font-['Noto_Sans'] text-[10px] text-gray-400 italic mt-[4px]">
                       Adicione mais conteúdo nos campos de texto desta página para análise completa.
                     </p>
                   )}
@@ -1428,15 +1428,15 @@ function TechnicalChecklist({ data, getSeoVal, globalScore }: { data: Record<str
   return (
     <div className="space-y-[10px]">
       {/* Header — compact strip */}
-      <div className="bg-gradient-to-r from-[#a57255]/10 via-[#1e1b19] to-[#1e1b19] border border-white/[0.08] rounded-xl px-[16px] py-[10px] flex items-center justify-between">
+      <div className="bg-gradient-to-r from-[#a57255]/10 via-white to-white border border-gray-200 rounded-xl px-[16px] py-[10px] flex items-center justify-between">
         <div className="flex items-center gap-[10px]">
           <CircularScore score={Math.round((passedChecks / totalChecks) * 100)} size={44} />
           <div>
-            <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-white flex items-center gap-[6px]">
+            <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-gray-900 flex items-center gap-[6px]">
               <ListChecks size={14} className="text-[#a57255]" />
               Checklist Tecnico SEO
             </h3>
-            <p className="font-['Noto_Sans'] text-[10px] text-white/35">{passedChecks}/{totalChecks} verificacoes aprovadas</p>
+            <p className="font-['Noto_Sans'] text-[10px] text-gray-400">{passedChecks}/{totalChecks} verificacoes aprovadas</p>
           </div>
         </div>
       </div>
@@ -1444,20 +1444,20 @@ function TechnicalChecklist({ data, getSeoVal, globalScore }: { data: Record<str
       {/* Categories — responsive grid */}
       <div className="grid grid-cols-3 gap-[10px]">
         {checks.map((cat, ci) => (
-          <div key={ci} className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
-            <div className="px-[14px] py-[8px] border-b border-white/[0.06] flex items-center justify-between">
-              <h4 className="font-['Noto_Sans'] text-[11px] font-semibold text-white">{cat.category}</h4>
-              <span className="font-['Noto_Sans'] text-[10px] text-white/25">
+          <div key={ci} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+            <div className="px-[14px] py-[8px] border-b border-gray-200 flex items-center justify-between">
+              <h4 className="font-['Noto_Sans'] text-[11px] font-semibold text-gray-900">{cat.category}</h4>
+              <span className="font-['Noto_Sans'] text-[10px] text-gray-400">
                 {cat.checks.filter(c => c.status === 'pass').length}/{cat.checks.length}
               </span>
             </div>
-            <div className="divide-y divide-white/[0.03]">
+            <div className="divide-y divide-gray-100">
               {cat.checks.map((check, i) => (
                 <div key={i} className="flex items-start gap-[8px] px-[12px] py-[7px]">
                   <StatusIcon status={check.status} />
                   <div className="flex-1 min-w-0">
-                    <span className="font-['Noto_Sans'] text-[11px] text-white/70 font-medium">{check.label}</span>
-                    <p className="font-['Noto_Sans'] text-[10px] text-white/30 mt-[1px] leading-[13px]">{check.detail}</p>
+                    <span className="font-['Noto_Sans'] text-[11px] text-gray-600 font-medium">{check.label}</span>
+                    <p className="font-['Noto_Sans'] text-[10px] text-gray-400 mt-[1px] leading-[13px]">{check.detail}</p>
                   </div>
                 </div>
               ))}
@@ -1467,13 +1467,13 @@ function TechnicalChecklist({ data, getSeoVal, globalScore }: { data: Record<str
       </div>
 
       {/* Sitemap Dinâmico card */}
-      <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px]">
+      <div className="bg-white border border-gray-200 rounded-xl p-[14px]">
         <div className="flex items-center gap-[6px] mb-[8px]">
           <Globe size={13} className="text-[#a57255]" />
-          <h4 className="font-['Noto_Sans'] text-[12px] font-semibold text-white">Sitemap Dinâmico</h4>
+          <h4 className="font-['Noto_Sans'] text-[12px] font-semibold text-gray-900">Sitemap Dinâmico</h4>
           <span className="font-['Noto_Sans'] text-[9px] bg-emerald-500/15 text-emerald-400 px-[5px] py-[1px] rounded ml-auto">Automático</span>
         </div>
-        <p className="font-['Noto_Sans'] text-[10px] text-white/35 leading-[15px] mb-[10px]">
+        <p className="font-['Noto_Sans'] text-[10px] text-gray-400 leading-[15px] mb-[10px]">
           O sitemap é gerado automaticamente pela Edge Function do Supabase, incluindo todos os artigos de blog publicados pelo painel. Novos artigos entram no sitemap imediatamente após publicação.
         </p>
         <div className="flex gap-[6px]">
@@ -1489,7 +1489,7 @@ function TechnicalChecklist({ data, getSeoVal, globalScore }: { data: Record<str
             href="https://search.google.com/search-console/sitemaps"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-[4px] font-['Noto_Sans'] text-[10px] text-white/30 border border-white/[0.06] px-[8px] py-[3px] rounded-lg hover:text-white/50 transition-colors"
+            className="flex items-center gap-[4px] font-['Noto_Sans'] text-[10px] text-gray-400 border border-gray-200 px-[8px] py-[3px] rounded-lg hover:text-gray-600 transition-colors"
           >
             <ExternalLink size={10} /> Submeter ao GSC
           </a>
@@ -1497,13 +1497,13 @@ function TechnicalChecklist({ data, getSeoVal, globalScore }: { data: Record<str
       </div>
 
       {/* Google Search Console card */}
-      <div className="bg-[#1a1816] border border-[#a57255]/20 rounded-xl p-[14px]">
+      <div className="bg-white border border-[#a57255]/20 rounded-xl p-[14px]">
         <div className="flex items-center gap-[8px] mb-[8px]">
           <ExternalLink size={13} className="text-[#a57255]" />
-          <h4 className="font-['Noto_Sans'] text-[13px] font-semibold text-white">Google Search Console</h4>
+          <h4 className="font-['Noto_Sans'] text-[13px] font-semibold text-gray-900">Google Search Console</h4>
           <span className="bg-emerald-500/15 text-emerald-400 text-[9px] font-['Noto_Sans'] font-medium px-[6px] py-[1px] rounded-full">Gratuito</span>
         </div>
-        <p className="font-['Noto_Sans'] text-[11px] text-white/50 leading-[16px] mb-[10px]">
+        <p className="font-['Noto_Sans'] text-[11px] text-gray-500 leading-[16px] mb-[10px]">
           Ferramenta gratuita do Google que mostra quais palavras-chave trazem visitantes, posicao media nos resultados, cliques e impressoes reais — dados que nenhum painel local consegue simular.
         </p>
         <div className="space-y-[5px] mb-[12px]">
@@ -1515,7 +1515,7 @@ function TechnicalChecklist({ data, getSeoVal, globalScore }: { data: Record<str
           ].map((item, i) => (
             <div key={i} className="flex items-start gap-[6px]">
               <CircleCheck size={12} className="text-emerald-400/60 mt-[2px] shrink-0" />
-              <span className="font-['Noto_Sans'] text-[10px] text-white/45">{item}</span>
+              <span className="font-['Noto_Sans'] text-[10px] text-gray-500">{item}</span>
             </div>
           ))}
         </div>
@@ -1527,7 +1527,7 @@ function TechnicalChecklist({ data, getSeoVal, globalScore }: { data: Record<str
           ].map((step) => (
             <div key={step.n} className="flex items-start gap-[6px]">
               <span className="font-['Noto_Sans'] text-[9px] text-[#a57255] font-bold shrink-0 w-[14px]">{step.n}.</span>
-              <span className="font-['Noto_Sans'] text-[10px] text-white/30">{step.t}</span>
+              <span className="font-['Noto_Sans'] text-[10px] text-gray-400">{step.t}</span>
             </div>
           ))}
         </div>
@@ -1652,11 +1652,11 @@ function JsonLdTab({ data, getSeoVal, onChange }: { data: Record<string, string>
 
       {/* Separator */}
       <div className="flex items-center gap-[10px]">
-        <div className="flex-1 h-px bg-white/[0.06]" />
-        <span className="font-['Noto_Sans'] text-[9px] text-white/20 uppercase tracking-[1px] shrink-0">
+        <div className="flex-1 h-px bg-gray-200" />
+        <span className="font-['Noto_Sans'] text-[9px] text-gray-400 uppercase tracking-[1px] shrink-0">
           Schemas gerados automaticamente
         </span>
-        <div className="flex-1 h-px bg-white/[0.06]" />
+        <div className="flex-1 h-px bg-gray-200" />
       </div>
 
       {/* Schema blocks — grid layout */}
@@ -1694,26 +1694,26 @@ function JsonLdTab({ data, getSeoVal, onChange }: { data: Record<string, string>
         )}
 
         {/* Custom JSON-LD */}
-        <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px]">
-          <h4 className="font-['Noto_Sans'] text-[11px] font-semibold text-white mb-[3px] flex items-center gap-[5px]">
+        <div className="bg-white border border-gray-200 rounded-xl p-[14px]">
+          <h4 className="font-['Noto_Sans'] text-[11px] font-semibold text-gray-900 mb-[3px] flex items-center gap-[5px]">
             <Code2 size={12} className="text-[#a57255]" />
             JSON-LD Customizado
           </h4>
-          <p className="font-['Noto_Sans'] text-[9px] text-white/30 mb-[6px]">Cole JSON-LD adicional aqui.</p>
+          <p className="font-['Noto_Sans'] text-[9px] text-gray-400 mb-[6px]">Cole JSON-LD adicional aqui.</p>
           <textarea
             value={data['seo.global.jsonld.custom'] || ''}
             onChange={e => onChange('seo.global.jsonld.custom', e.target.value)}
             rows={6}
             placeholder='{"@context": "https://schema.org", ...}'
-            className="w-full bg-[#111] border border-white/[0.08] rounded-lg p-[10px] font-mono text-[10px] text-emerald-400/70 placeholder:text-white/10 focus:border-[#a57255]/40 focus:outline-none resize-none"
+            className="w-full bg-gray-50 border border-gray-200 rounded-lg p-[10px] font-mono text-[10px] text-emerald-600 placeholder:text-gray-300 focus:border-[#a57255]/40 focus:outline-none resize-none"
           />
         </div>
       </div>
 
       {/* Validation tip — compact */}
-      <div className="bg-[#1a1816] border border-[#a57255]/15 rounded-xl px-[14px] py-[10px] flex items-center gap-[8px]">
+      <div className="bg-white border border-[#a57255]/15 rounded-xl px-[14px] py-[10px] flex items-center gap-[8px]">
         <Info size={13} className="text-[#a57255] shrink-0" />
-        <p className="font-['Noto_Sans'] text-[10px] text-white/50">
+        <p className="font-['Noto_Sans'] text-[10px] text-gray-500">
           Valide em{' '}
           <a href="https://search.google.com/test/rich-results" target="_blank" rel="noopener noreferrer" className="text-[#a57255] hover:underline">Rich Results Test</a>
           {' '}e{' '}
@@ -1731,11 +1731,11 @@ function JsonLdBlock({ title, description, code, id, copiedId, onCopy }: {
 }) {
   const [expanded, setExpanded] = useState(false);
   return (
-    <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
+    <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
       <div className="px-[16px] py-[12px] flex items-center justify-between">
         <div className="flex-1">
-          <h4 className="font-['Noto_Sans'] text-[12px] font-semibold text-white">{title}</h4>
-          <p className="font-['Noto_Sans'] text-[10px] text-white/30 mt-[1px]">{description}</p>
+          <h4 className="font-['Noto_Sans'] text-[12px] font-semibold text-gray-900">{title}</h4>
+          <p className="font-['Noto_Sans'] text-[10px] text-gray-400 mt-[1px]">{description}</p>
         </div>
         <div className="flex items-center gap-[6px]">
           <button
@@ -1750,15 +1750,15 @@ function JsonLdBlock({ title, description, code, id, copiedId, onCopy }: {
           </button>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="px-[8px] py-[5px] rounded-md text-white/30 hover:text-white/60 hover:bg-white/[0.03] transition-colors"
+            className="px-[8px] py-[5px] rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors"
           >
             {expanded ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
           </button>
         </div>
       </div>
       {expanded && (
-        <div className="border-t border-white/[0.04]">
-          <pre className="p-[14px] bg-[#111] text-[11px] font-mono text-emerald-400/60 overflow-x-auto max-h-[300px] overflow-y-auto leading-[18px]">
+        <div className="border-t border-gray-100">
+          <pre className="p-[14px] bg-gray-50 text-[11px] font-mono text-emerald-600 overflow-x-auto max-h-[300px] overflow-y-auto leading-[18px]">
             {code}
           </pre>
         </div>
@@ -1797,13 +1797,13 @@ function SeoHistoryTab({ data, onChange }: { data: Record<string, string>; onCha
   return (
     <div className="space-y-[10px]">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#a57255]/10 via-[#1e1b19] to-[#1e1b19] border border-white/[0.08] rounded-xl px-[16px] py-[10px] flex items-center justify-between">
+      <div className="bg-gradient-to-r from-[#a57255]/10 via-white to-white border border-gray-200 rounded-xl px-[16px] py-[10px] flex items-center justify-between">
         <div>
-          <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-white flex items-center gap-[6px]">
+          <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-gray-900 flex items-center gap-[6px]">
             <History size={14} className="text-[#a57255]" />
             Historico de Alteracoes SEO
           </h3>
-          <p className="font-['Noto_Sans'] text-[10px] text-white/35 mt-[2px]">
+          <p className="font-['Noto_Sans'] text-[10px] text-gray-400 mt-[2px]">
             {history.length} registro{history.length !== 1 ? 's' : ''} salvo{history.length !== 1 ? 's' : ''} localmente — ate {SEO_HISTORY_MAX} entradas no navegador
           </p>
         </div>
@@ -1813,7 +1813,7 @@ function SeoHistoryTab({ data, onChange }: { data: Record<string, string>; onCha
               <button onClick={clearHistory} className="font-['Noto_Sans'] text-[10px] text-red-400 bg-red-500/10 border border-red-500/20 px-[10px] py-[4px] rounded-lg hover:bg-red-500/20 transition-colors">
                 Confirmar
               </button>
-              <button onClick={() => setConfirmClear(false)} className="font-['Noto_Sans'] text-[10px] text-white/30 px-[8px] py-[4px] rounded-lg hover:text-white/50 transition-colors">
+              <button onClick={() => setConfirmClear(false)} className="font-['Noto_Sans'] text-[10px] text-gray-400 px-[8px] py-[4px] rounded-lg hover:text-gray-600 transition-colors">
                 Cancelar
               </button>
             </div>
@@ -1835,10 +1835,10 @@ function SeoHistoryTab({ data, onChange }: { data: Record<string, string>; onCha
 
       {/* Empty state */}
       {history.length === 0 && (
-        <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl px-[20px] py-[40px] text-center">
-          <History size={32} className="text-white/10 mx-auto mb-[12px]" />
-          <p className="font-['Noto_Sans'] text-[13px] text-white/30">Nenhuma alteracao registrada ainda.</p>
-          <p className="font-['Noto_Sans'] text-[10px] text-white/15 mt-[4px]">O historico e gravado automaticamente quando voce salva alteracoes nos campos de SEO.</p>
+        <div className="bg-white border border-gray-200 rounded-xl px-[20px] py-[40px] text-center">
+          <History size={32} className="text-gray-200 mx-auto mb-[12px]" />
+          <p className="font-['Noto_Sans'] text-[13px] text-gray-400">Nenhuma alteracao registrada ainda.</p>
+          <p className="font-['Noto_Sans'] text-[10px] text-gray-300 mt-[4px]">O historico e gravado automaticamente quando voce salva alteracoes nos campos de SEO.</p>
         </div>
       )}
 
@@ -1846,36 +1846,36 @@ function SeoHistoryTab({ data, onChange }: { data: Record<string, string>; onCha
       {history.map((entry) => {
         const isExpanded = expandedId === entry.timestamp;
         return (
-          <div key={entry.timestamp} className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
+          <div key={entry.timestamp} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
             {/* Header */}
             <button
               onClick={() => setExpandedId(isExpanded ? null : entry.timestamp)}
-              className="w-full flex items-center gap-[10px] px-[14px] py-[10px] text-left hover:bg-white/[0.02] transition-colors"
+              className="w-full flex items-center gap-[10px] px-[14px] py-[10px] text-left hover:bg-gray-50 transition-colors"
             >
-              <Clock size={12} className="text-white/20 shrink-0" />
-              <span className="font-['Noto_Sans'] text-[11px] text-white/60">{formatHistoryTimestamp(entry.timestamp)}</span>
+              <Clock size={12} className="text-gray-300 shrink-0" />
+              <span className="font-['Noto_Sans'] text-[11px] text-gray-600">{formatHistoryTimestamp(entry.timestamp)}</span>
               <span className="font-['Noto_Sans'] text-[11px] text-[#a57255]/70">{entry.label}</span>
-              <span className="font-['Noto_Sans'] text-[9px] text-white/20 bg-white/[0.03] px-[6px] py-[1px] rounded-full">
+              <span className="font-['Noto_Sans'] text-[9px] text-gray-400 bg-gray-50 px-[6px] py-[1px] rounded-full">
                 {entry.changes.length} campo{entry.changes.length !== 1 ? 's' : ''}
               </span>
               <div className="flex-1" />
-              <ChevronRight size={13} className={`text-white/15 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`} />
+              <ChevronRight size={13} className={`text-gray-300 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`} />
             </button>
 
             {/* Expanded content */}
             {isExpanded && (
-              <div className="border-t border-white/[0.04] px-[14px] py-[10px]">
+              <div className="border-t border-gray-100 px-[14px] py-[10px]">
                 {/* Changes table */}
                 <div className="space-y-[4px] mb-[10px]">
                   {entry.changes.map((ch, i) => (
                     <div key={i} className="flex items-center gap-[8px] py-[3px]">
-                      <span className="font-mono text-[10px] text-white/25 w-[160px] shrink-0 truncate">{formatKey(ch.key)}</span>
-                      <span className="font-['Noto_Sans'] text-[10px] text-red-400/50 truncate max-w-[120px]">
-                        {ch.from ? ch.from.slice(0, 40) : <span className="italic text-white/15">(vazio)</span>}
+                      <span className="font-mono text-[10px] text-gray-400 w-[160px] shrink-0 truncate">{formatKey(ch.key)}</span>
+                      <span className="font-['Noto_Sans'] text-[10px] text-red-500/60 truncate max-w-[120px]">
+                        {ch.from ? ch.from.slice(0, 40) : <span className="italic text-gray-300">(vazio)</span>}
                       </span>
-                      <ArrowRight size={10} className="text-white/15 shrink-0" />
-                      <span className="font-['Noto_Sans'] text-[10px] text-emerald-400/60 truncate max-w-[120px]">
-                        {ch.to ? ch.to.slice(0, 40) : <span className="italic text-white/15">(vazio)</span>}
+                      <ArrowRight size={10} className="text-gray-300 shrink-0" />
+                      <span className="font-['Noto_Sans'] text-[10px] text-emerald-600/60 truncate max-w-[120px]">
+                        {ch.to ? ch.to.slice(0, 40) : <span className="italic text-gray-300">(vazio)</span>}
                       </span>
                     </div>
                   ))}
@@ -1887,12 +1887,12 @@ function SeoHistoryTab({ data, onChange }: { data: Record<string, string>; onCha
                     <button onClick={() => restoreEntry(entry)} className="font-['Noto_Sans'] text-[10px] text-red-400 bg-red-500/10 border border-red-500/20 px-[10px] py-[5px] rounded-lg hover:bg-red-500/20 transition-colors flex items-center gap-[4px]">
                       Confirmar restauracao
                     </button>
-                    <button onClick={() => setConfirmRestore(null)} className="font-['Noto_Sans'] text-[10px] text-white/30 px-[8px] py-[5px] rounded-lg hover:text-white/50 transition-colors">
+                    <button onClick={() => setConfirmRestore(null)} className="font-['Noto_Sans'] text-[10px] text-gray-400 px-[8px] py-[5px] rounded-lg hover:text-gray-600 transition-colors">
                       Cancelar
                     </button>
                   </div>
                 ) : (
-                  <button onClick={() => setConfirmRestore(entry.timestamp)} className="font-['Noto_Sans'] text-[10px] text-white/40 hover:text-white/70 px-[8px] py-[5px] rounded-lg border border-white/[0.06] hover:border-white/[0.12] transition-colors flex items-center gap-[4px]">
+                  <button onClick={() => setConfirmRestore(entry.timestamp)} className="font-['Noto_Sans'] text-[10px] text-gray-400 hover:text-gray-700 px-[8px] py-[5px] rounded-lg border border-gray-200 hover:border-gray-300 transition-colors flex items-center gap-[4px]">
                     <RotateCcw size={10} /> Restaurar este estado
                   </button>
                 )}
@@ -2062,12 +2062,12 @@ Retorne exatamente este JSON, preenchendo todos os campos:
   return (
     <div className="space-y-[10px]">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#a57255]/10 via-[#1e1b19] to-[#1e1b19] border border-white/[0.08] rounded-xl px-[16px] py-[10px]">
-        <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-white flex items-center gap-[6px]">
+      <div className="bg-gradient-to-r from-[#a57255]/10 via-white to-white border border-gray-200 rounded-xl px-[16px] py-[10px]">
+        <h3 className="font-['Noto_Sans'] text-[13px] font-semibold text-gray-900 flex items-center gap-[6px]">
           <Sparkles size={14} className="text-[#a57255]" />
           Analise SEO com Inteligencia Artificial
         </h3>
-        <p className="font-['Noto_Sans'] text-[10px] text-white/35 mt-[2px]">
+        <p className="font-['Noto_Sans'] text-[10px] text-gray-400 mt-[2px]">
           Avaliacao automatica de title, description e keywords usando provedores de IA configurados no modulo GEO
         </p>
       </div>
@@ -2078,7 +2078,7 @@ Retorne exatamente este JSON, preenchendo todos os campos:
           <AlertTriangle size={16} className="text-yellow-500 shrink-0 mt-[1px]" />
           <div>
             <p className="font-['Noto_Sans'] text-[12px] text-yellow-400">Configure provedores na secao GEO do painel para usar analise por IA</p>
-            <p className="font-['Noto_Sans'] text-[10px] text-white/30 mt-[2px]">Va ate Configuracoes → GEO e insira a chave de API de pelo menos um provedor.</p>
+            <p className="font-['Noto_Sans'] text-[10px] text-gray-400 mt-[2px]">Va ate Configuracoes → GEO e insira a chave de API de pelo menos um provedor.</p>
           </div>
         </div>
       )}
@@ -2088,11 +2088,11 @@ Retorne exatamente este JSON, preenchendo todos os campos:
         <div className="flex items-center gap-[10px] flex-wrap">
           {/* Page selector */}
           <div className="flex items-center gap-[6px]">
-            <span className="font-['Noto_Sans'] text-[11px] text-white/40">Pagina:</span>
+            <span className="font-['Noto_Sans'] text-[11px] text-gray-400">Pagina:</span>
             <select
               value={selectedPage}
               onChange={e => { setSelectedPage(e.target.value); setResult(null); setRawError(null); }}
-              className="bg-[#1a1816] border border-white/[0.08] rounded-lg px-[10px] py-[5px] font-['Noto_Sans'] text-[11px] text-white/70 focus:outline-none focus:border-[#a57255]/40"
+              className="bg-white border border-gray-200 rounded-lg px-[10px] py-[5px] font-['Noto_Sans'] text-[11px] text-gray-700 focus:outline-none focus:border-[#a57255]/40"
             >
               {SEO_PAGES.map(p => (
                 <option key={p.id} value={p.id}>{p.label}</option>
@@ -2102,7 +2102,7 @@ Retorne exatamente este JSON, preenchendo todos os campos:
 
           {/* Provider selector */}
           <div className="flex items-center gap-[4px]">
-            <span className="font-['Noto_Sans'] text-[11px] text-white/40">Provedor:</span>
+            <span className="font-['Noto_Sans'] text-[11px] text-gray-400">Provedor:</span>
             {availableProviders.map(p => (
               <button
                 key={p.id}
@@ -2110,7 +2110,7 @@ Retorne exatamente este JSON, preenchendo todos os campos:
                 className={`font-['Noto_Sans'] text-[10px] px-[8px] py-[4px] rounded-lg border transition-colors ${
                   iaProvider === p.id
                     ? 'border-[#a57255]/40 text-[#a57255] bg-[#a57255]/10'
-                    : 'border-white/[0.06] text-white/30 hover:text-white/50 hover:border-white/[0.1]'
+                    : 'border-gray-200 text-gray-400 hover:text-gray-600 hover:border-gray-300'
                 }`}
               >
                 {p.label}
@@ -2155,11 +2155,11 @@ Retorne exatamente este JSON, preenchendo todos os campos:
       {result && (
         <div className="space-y-[8px]">
           {/* Score card */}
-          <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[16px] flex items-center gap-[16px]">
+          <div className="bg-white border border-gray-200 rounded-xl p-[16px] flex items-center gap-[16px]">
             <CircularScore score={result.score} size={60} />
             <div>
-              <p className="font-['Noto_Sans'] text-[14px] text-white font-semibold">Score IA: {result.score}/100</p>
-              <p className="font-['Noto_Sans'] text-[11px] text-white/50 mt-[2px]">{result.resumo}</p>
+              <p className="font-['Noto_Sans'] text-[14px] text-gray-900 font-semibold">Score IA: {result.score}/100</p>
+              <p className="font-['Noto_Sans'] text-[11px] text-gray-500 mt-[2px]">{result.resumo}</p>
               {result.prioridade && result.prioridade !== 'nenhuma' && (
                 <p className="font-['Noto_Sans'] text-[10px] text-[#a57255] mt-[2px]">Prioridade: {result.prioridade}</p>
               )}
@@ -2167,15 +2167,15 @@ Retorne exatamente este JSON, preenchendo todos os campos:
           </div>
 
           {/* Title card */}
-          <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px]">
+          <div className="bg-white border border-gray-200 rounded-xl p-[14px]">
             <div className="flex items-center gap-[8px] mb-[6px]">
-              <span className="font-['Noto_Sans'] text-[12px] text-white font-semibold">Title</span>
+              <span className="font-['Noto_Sans'] text-[12px] text-gray-900 font-semibold">Title</span>
               <span className={`font-['Noto_Sans'] text-[9px] px-[6px] py-[1px] rounded-full ${avaliacaoBg[result.title.avaliacao] || 'bg-white/10'}`} style={{ color: avaliacaoColor[result.title.avaliacao] || '#fff' }}>
                 {result.title.avaliacao}
               </span>
             </div>
-            <p className="font-['Noto_Sans'] text-[10px] text-white/30 mb-[4px]">Atual: {getSeoVal(selectedPage, 'title') || '(vazio)'}</p>
-            <p className="font-['Noto_Sans'] text-[11px] text-white/60">{result.title.detalhe}</p>
+            <p className="font-['Noto_Sans'] text-[10px] text-gray-400 mb-[4px]">Atual: {getSeoVal(selectedPage, 'title') || '(vazio)'}</p>
+            <p className="font-['Noto_Sans'] text-[11px] text-gray-600">{result.title.detalhe}</p>
             {result.title.sugestao && (
               <div className="mt-[8px] bg-[#a57255]/5 border border-[#a57255]/20 rounded-lg px-[12px] py-[8px] flex items-start justify-between gap-[8px]">
                 <div>
@@ -2193,15 +2193,15 @@ Retorne exatamente este JSON, preenchendo todos os campos:
           </div>
 
           {/* Description card */}
-          <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px]">
+          <div className="bg-white border border-gray-200 rounded-xl p-[14px]">
             <div className="flex items-center gap-[8px] mb-[6px]">
-              <span className="font-['Noto_Sans'] text-[12px] text-white font-semibold">Description</span>
+              <span className="font-['Noto_Sans'] text-[12px] text-gray-900 font-semibold">Description</span>
               <span className={`font-['Noto_Sans'] text-[9px] px-[6px] py-[1px] rounded-full ${avaliacaoBg[result.description.avaliacao] || 'bg-white/10'}`} style={{ color: avaliacaoColor[result.description.avaliacao] || '#fff' }}>
                 {result.description.avaliacao}
               </span>
             </div>
-            <p className="font-['Noto_Sans'] text-[10px] text-white/30 mb-[4px]">Atual: {getSeoVal(selectedPage, 'description')?.slice(0, 60) || '(vazio)'}...</p>
-            <p className="font-['Noto_Sans'] text-[11px] text-white/60">{result.description.detalhe}</p>
+            <p className="font-['Noto_Sans'] text-[10px] text-gray-400 mb-[4px]">Atual: {getSeoVal(selectedPage, 'description')?.slice(0, 60) || '(vazio)'}...</p>
+            <p className="font-['Noto_Sans'] text-[11px] text-gray-600">{result.description.detalhe}</p>
             {result.description.sugestao && (
               <div className="mt-[8px] bg-[#a57255]/5 border border-[#a57255]/20 rounded-lg px-[12px] py-[8px] flex items-start justify-between gap-[8px]">
                 <div>
@@ -2219,20 +2219,20 @@ Retorne exatamente este JSON, preenchendo todos os campos:
           </div>
 
           {/* Keyword card */}
-          <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px]">
+          <div className="bg-white border border-gray-200 rounded-xl p-[14px]">
             <div className="flex items-center gap-[8px] mb-[6px]">
-              <span className="font-['Noto_Sans'] text-[12px] text-white font-semibold">Palavra-chave</span>
+              <span className="font-['Noto_Sans'] text-[12px] text-gray-900 font-semibold">Palavra-chave</span>
               <span className={`font-['Noto_Sans'] text-[9px] px-[6px] py-[1px] rounded-full ${avaliacaoBg[result.keyword.avaliacao] || 'bg-white/10'}`} style={{ color: avaliacaoColor[result.keyword.avaliacao] || '#fff' }}>
                 {result.keyword.avaliacao}
               </span>
             </div>
-            <p className="font-['Noto_Sans'] text-[11px] text-white/60">{result.keyword.detalhe}</p>
+            <p className="font-['Noto_Sans'] text-[11px] text-gray-600">{result.keyword.detalhe}</p>
           </div>
 
           {/* Quick Wins card */}
           {result.quick_wins && result.quick_wins.length > 0 && (
-            <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px]">
-              <h4 className="font-['Noto_Sans'] text-[12px] text-white font-semibold flex items-center gap-[6px] mb-[8px]">
+            <div className="bg-white border border-gray-200 rounded-xl p-[14px]">
+              <h4 className="font-['Noto_Sans'] text-[12px] text-gray-900 font-semibold flex items-center gap-[6px] mb-[8px]">
                 <Zap size={13} className="text-[#a57255]" />
                 Proximos passos recomendados
               </h4>
@@ -2240,7 +2240,7 @@ Retorne exatamente este JSON, preenchendo todos os campos:
                 {result.quick_wins.map((win, i) => (
                   <div key={i} className="flex items-start gap-[8px]">
                     <Zap size={11} className="text-[#a57255] mt-[2px] shrink-0" />
-                    <span className="font-['Noto_Sans'] text-[11px] text-white/50">{win}</span>
+                    <span className="font-['Noto_Sans'] text-[11px] text-gray-500">{win}</span>
                   </div>
                 ))}
               </div>
@@ -2254,7 +2254,7 @@ Retorne exatamente este JSON, preenchendo todos os campos:
         <button
           onClick={handleBatchAnalyze}
           disabled={loading}
-          className="flex items-center gap-[6px] border border-white/[0.08] text-white/50 hover:text-white/70 hover:border-white/[0.15] font-['Noto_Sans'] text-[11px] px-[14px] py-[7px] rounded-lg transition-colors disabled:opacity-50"
+          className="flex items-center gap-[6px] border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 font-['Noto_Sans'] text-[11px] px-[14px] py-[7px] rounded-lg transition-colors disabled:opacity-50"
         >
           <BarChart3 size={13} />
           Analisar todas as paginas ({SEO_PAGES.length})
@@ -2263,12 +2263,12 @@ Retorne exatamente este JSON, preenchendo todos os campos:
 
       {/* Batch progress */}
       {batchRunning && (
-        <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl p-[14px]">
+        <div className="bg-white border border-gray-200 rounded-xl p-[14px]">
           <div className="flex items-center gap-[8px] mb-[6px]">
             <Loader2 size={14} className="animate-spin text-[#a57255]" />
-            <span className="font-['Noto_Sans'] text-[11px] text-white/60">Analisando {batchProgress}/{SEO_PAGES.length} paginas...</span>
+            <span className="font-['Noto_Sans'] text-[11px] text-gray-600">Analisando {batchProgress}/{SEO_PAGES.length} paginas...</span>
           </div>
-          <div className="h-[4px] bg-white/[0.04] rounded-full overflow-hidden">
+          <div className="h-[4px] bg-gray-100 rounded-full overflow-hidden">
             <div className="h-full bg-[#a57255] rounded-full transition-all duration-300" style={{ width: `${(batchProgress / SEO_PAGES.length) * 100}%` }} />
           </div>
         </div>
@@ -2276,26 +2276,26 @@ Retorne exatamente este JSON, preenchendo todos os campos:
 
       {/* Batch results table */}
       {batchResults.length > 0 && !batchRunning && (
-        <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
-          <div className="px-[14px] py-[8px] border-b border-white/[0.06] flex items-center gap-[8px]">
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <div className="px-[14px] py-[8px] border-b border-gray-200 flex items-center gap-[8px]">
             <BarChart3 size={13} className="text-[#a57255]" />
-            <h4 className="font-['Noto_Sans'] text-[12px] font-semibold text-white">Resultado Geral — {batchResults.length} paginas</h4>
+            <h4 className="font-['Noto_Sans'] text-[12px] font-semibold text-gray-900">Resultado Geral — {batchResults.length} paginas</h4>
           </div>
-          <div className="divide-y divide-white/[0.03]">
+          <div className="divide-y divide-gray-100">
             {/* Table header */}
-            <div className="grid grid-cols-[1fr_60px_80px_80px] gap-[8px] px-[14px] py-[5px] bg-white/[0.02]">
-              <span className="font-['Noto_Sans'] text-[9px] text-white/25 uppercase">Pagina</span>
-              <span className="font-['Noto_Sans'] text-[9px] text-white/25 uppercase text-center">Score</span>
-              <span className="font-['Noto_Sans'] text-[9px] text-white/25 uppercase text-center">Title</span>
-              <span className="font-['Noto_Sans'] text-[9px] text-white/25 uppercase text-center">Description</span>
+            <div className="grid grid-cols-[1fr_60px_80px_80px] gap-[8px] px-[14px] py-[5px] bg-gray-50">
+              <span className="font-['Noto_Sans'] text-[9px] text-gray-400 uppercase">Pagina</span>
+              <span className="font-['Noto_Sans'] text-[9px] text-gray-400 uppercase text-center">Score</span>
+              <span className="font-['Noto_Sans'] text-[9px] text-gray-400 uppercase text-center">Title</span>
+              <span className="font-['Noto_Sans'] text-[9px] text-gray-400 uppercase text-center">Description</span>
             </div>
             {batchResults.map((br) => (
               <button
                 key={br.pageId}
                 onClick={() => { setSelectedPage(br.pageId); if (br.result) setResult(br.result); }}
-                className="w-full grid grid-cols-[1fr_60px_80px_80px] gap-[8px] px-[14px] py-[6px] hover:bg-white/[0.02] transition-colors text-left"
+                className="w-full grid grid-cols-[1fr_60px_80px_80px] gap-[8px] px-[14px] py-[6px] hover:bg-gray-50 transition-colors text-left"
               >
-                <span className="font-['Noto_Sans'] text-[11px] text-white/60 truncate">{br.pageLabel}</span>
+                <span className="font-['Noto_Sans'] text-[11px] text-gray-600 truncate">{br.pageLabel}</span>
                 <span className="font-['Noto_Sans'] text-[11px] font-bold text-center" style={{ color: br.result ? getScoreColor(br.result.score) : '#ef4444' }}>
                   {br.result ? br.result.score : 'Err'}
                 </span>

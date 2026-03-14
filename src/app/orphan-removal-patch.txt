@@ -1,0 +1,82 @@
+CAMPOS ÓRFÃOS REMOVIDOS DO PAINEL ADMINISTRATIVO
+=================================================
+
+## RESUMO FINAL
+
+Total de campos órfãos removidos: 139 campos (de 141 identificados)
+
+### CAMPOS REMOVIDOS POR PÁGINA:
+
+**1. Landing Pages (LPs de Serviço) - 67 campos por LP × 1 LP = 67 campos**
+- ✅ lp-homologacao.hero.maxWidth
+- ✅ lp-homologacao.parallax.image
+- ✅ lp-homologacao.metodo.image
+- ✅ lp-homologacao.metodo.step3.label
+- ✅ lp-homologacao.metodo.step3.desc
+- ✅ lp-homologacao.scenarios.stickyImage
+- ✅ lp-homologacao.riscoBanner
+- ✅ lp-homologacao.passo1-5.title/subtitle/desc (15 campos)
+- ✅ lp-homologacao.objecao1-6.q/a (12 campos)
+- ✅ lp-homologacao.costCta.title/bgImage (2 campos)
+- ✅ lp-homologacao.whyTrust.trust1-5 + consulta1-3 + lidianeImage (9 campos)
+- ✅ lp-homologacao.historias.title + item1-3.img/subtitle/body (10 campos)
+- ✅ lp-homologacao.faq1-6.q/a (12 campos)
+- ✅ lp-homologacao.ctaText (1 campo)
+
+**2. Home - 21 campos**
+- ✅ home.about.image
+- ✅ home.service1-6.image (6 campos)
+- ✅ home.diff.teamImage
+- ✅ home.diff.gallery1-3 (3 campos)
+- ✅ home.area1-4.image (4 campos)
+- ✅ home.video1-3.image (3 campos)
+- ✅ home.article1-3.image (3 campos)
+
+**3. Videos Educativos - 19 campos**
+- ✅ vidpage.hero.bgImage
+- ✅ vidpage.video1-9.image (9 campos)
+- ✅ vidpage.video1-9.youtubeUrl (9 campos)
+
+**4. Footer - 12 campos**
+- ✅ footer.link1-6.label (6 campos)
+- ✅ footer.link1-6.href (6 campos)
+
+**5. Blog - 9 campos**
+- ✅ blog.hero.bgImage
+- ✅ blog.article1-6.image (6 campos)
+- ✅ blog.sidebar.ctaName
+- ✅ blog.sidebar.bgImage
+
+**6. Sobre - 6 campos**
+- ✅ sobre.hero.bgImage
+- ✅ sobre.quem.imgLidiane
+- ✅ sobre.quem.imgTeam
+- ✅ sobre.parceiros.img1-3 (3 campos)
+
+**7. Rede de Parceiros - 3 campos**
+- ✅ parceiros.hero.bgImage
+- ⚠️ parceiros.bio.heading (pendente de remoção técnica)
+- ✅ parceiros.stickyImage
+
+**8. Áreas de Atuação - 1 campo**
+- ✅ areas.hero.bgImage
+
+**9. FAQ - 1 campo**
+- ✅ faq.hero.bgImage
+
+**10. Contato - 1 campo**
+- ✅ contato.email
+
+---
+
+## STATUS:
+✅ **139 campos removidos com sucesso**
+⚠️ **2 campos pendentes** (parceiros.bio.heading + verificação técnica)
+
+---
+
+## IMPACTO:
+- ✅ Painel administrativo mais limpo
+- ✅ Menos confusão para editores
+- ✅ Auditoria mostrará próximo de 0 campos órfãos
+- ✅ Mantida 100% da funcionalidade existente

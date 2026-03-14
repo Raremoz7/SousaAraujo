@@ -30,6 +30,8 @@ interface AuditPanelProps {
   data: Record<string, string>;
   /** Navigate to a specific panel page (e.g. 'home', 'footer') */
   onNavigate?: (pageId: string) => void;
+  /** Callback to delete dead data keys from Supabase */
+  onDeleteDeadData?: (keys: string[]) => Promise<void>;
 }
 
 type AuditCategory = 'orphan' | 'noEditor' | 'deadData' | 'pendingAsset';
@@ -211,7 +213,7 @@ function buildComponentKeys(): Set<string> {
     ...register('RedeDeParceirosPage.tsx', [
       'parceiros.hero.title', 'parceiros.hero.subtitle',
       ...numbered('parceiros.stat', 4, ['number', 'label']),
-      ...expand('parceiros.bio', ['allianceTitle', 'metodoTitle', 'perfilTitle', 'comoTitle', 'ctaText']),
+      ...expand('parceiros.bio', ['heading', 'allianceTitle', 'metodoTitle', 'perfilTitle', 'comoTitle', 'ctaText']),
       'parceiros.faq.title', 'parceiros.faq.desc',
       ...numbered('parceiros.faq', 8, ['q', 'a']),
       'parceiros.cta.title', 'parceiros.cta.desc', 'parceiros.cta.buttonText',
@@ -221,8 +223,11 @@ function buildComponentKeys(): Set<string> {
 
     /* ─── SeoHead.tsx (dynamic seoId patterns) ─── */
     ...register('SeoHead.tsx', [
-      ...expand('site', ['name', 'phone', 'email', 'address.street', 'address.city', 'address.state', 'address.zipCode']),
-      ...expand('site.social', ['instagram', 'facebook', 'linkedin', 'youtube']),
+      ...expand('site', ['name', 'tagline', 'description', 'phone', 'email',
+        'address.full', 'address.short', 'address.street', 'address.neighborhood',
+        'address.city', 'address.state', 'address.zipCode',
+        'hours.weekdays', 'hours.saturday']),
+      ...expand('site.social', ['instagram', 'facebook', 'tiktok', 'linkedin', 'youtube']),
       'seo.global.jsonld.custom',
     ]),
 
@@ -329,13 +334,11 @@ function getPageInfo(key: string): { page: string; panelPageId: string } {
 }
 
 /* ─── Skippable site.* keys (generic config, not read by components) ─── */
-const SKIP_ORPHAN_KEYS = new Set([
-  'site.tagline', 'site.description', 'site.address.full', 'site.address.short',
-  'site.address.neighborhood', 'site.hours.weekdays', 'site.hours.saturday',
-  'site.social.tiktok',
+const SKIP_ORPHAN_KEYS = new Set<string>([
+  // All site.* keys are now connected via SeoHead.tsx JSON-LD
 ]);
 
-/* ═══════════════════════════════════════════════════════════════
+/* ══════════════════════════════════════════════════════════════
    CATEGORY CONFIG
    ═══════════════════════════════════════════════════════════════ */
 
@@ -384,7 +387,7 @@ type CategoryKey = keyof typeof CATEGORY_CFG;
    MAIN COMPONENT
    ═══════════════════════════════════════════════════════════════ */
 
-export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
+export function AuditPanel({ panelKeys, data, onNavigate, onDeleteDeadData }: AuditPanelProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState<CategoryKey | 'all'>('all');
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
@@ -594,6 +597,23 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
     setTimeout(() => setExportedMsg(''), 2500);
   }, [audit, pageCoverage, totalPanelKeys, totalComponentKeys, totalStoredKeys, connectedKeys, healthPercent, totalIssues]);
 
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
+
+  const handleDeleteDeadData = useCallback(async () => {
+    const deadDataKeys = audit.filter(i => i.category === 'deadData').map(i => i.key);
+    if (deadDataKeys.length === 0) return;
+    if (!onDeleteDeadData) return;
+    setIsDeleting(true);
+    try {
+      await onDeleteDeadData(deadDataKeys);
+      setDeleteSuccess(true);
+      setTimeout(() => setDeleteSuccess(false), 3000);
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [audit, onDeleteDeadData]);
+
   /* ═══════════════════════════════════════════════════════════════
      RENDER
      ═══════════════════════════════════════════════════════════════ */
@@ -602,13 +622,13 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
     <div className="space-y-[20px] pb-[80px]">
 
       {/* ── Health Score ── */}
-      <div className="bg-[#1a1715] border border-white/[0.08] rounded-xl p-[24px]">
+      <div className="bg-white border border-gray-200 rounded-xl p-[24px]">
         <div className="flex items-start justify-between mb-[20px]">
           <div>
-            <h3 className="font-['Marcellus'] text-[18px] text-white tracking-[-0.3px] mb-[4px]">
+            <h3 className="font-['Marcellus'] text-[18px] text-gray-900 tracking-[-0.3px] mb-[4px]">
               Saude da Conexao Painel ↔ Componentes
             </h3>
-            <p className="font-['Noto_Sans'] text-[13px] text-white/40 leading-[1.5]">
+            <p className="font-['Noto_Sans'] text-[13px] text-gray-400 leading-[1.5]">
               Auditoria em tempo real — {totalIssues} problema{totalIssues !== 1 ? 's' : ''} encontrado{totalIssues !== 1 ? 's' : ''}
             </p>
           </div>
@@ -616,11 +636,11 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
             {/* Export */}
             <button
               onClick={handleExportReport}
-              className="flex items-center gap-[5px] h-[34px] px-[12px] border border-white/[0.08] rounded-lg text-white/40 hover:text-white hover:bg-white/[0.03] transition-colors font-['Noto_Sans'] text-[11px]"
+              className="flex items-center gap-[5px] h-[34px] px-[12px] border border-gray-200 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-colors font-['Noto_Sans'] text-[11px]"
               title="Copiar relatorio para clipboard"
             >
               {exportedMsg ? (
-                <><Check size={12} className="text-emerald-400" /> {exportedMsg}</>
+                <><Check size={12} className="text-emerald-500" /> {exportedMsg}</>
               ) : (
                 <><Download size={12} /> Exportar</>
               )}
@@ -638,7 +658,7 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
         </div>
 
         {/* Progress bar */}
-        <div className="w-full h-[6px] bg-white/[0.06] rounded-full overflow-hidden mb-[16px]">
+        <div className="w-full h-[6px] bg-gray-100 rounded-full overflow-hidden mb-[16px]">
           <div
             className={`h-full rounded-full transition-all duration-700 ${
               healthPercent >= 90 ? 'bg-emerald-500' :
@@ -652,42 +672,42 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
         {/* Stats row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-[12px]">
           {[
-            { label: 'Campos no Painel', value: totalPanelKeys, icon: <FileText size={14} className="text-white/30" /> },
-            { label: 'Lidos por Componentes', value: totalComponentKeys, icon: <Globe size={14} className="text-white/30" /> },
-            { label: 'Salvos no Supabase', value: totalStoredKeys, icon: <Database size={14} className="text-white/30" /> },
+            { label: 'Campos no Painel', value: totalPanelKeys, icon: <FileText size={14} className="text-gray-300" /> },
+            { label: 'Lidos por Componentes', value: totalComponentKeys, icon: <Globe size={14} className="text-gray-300" /> },
+            { label: 'Salvos no Supabase', value: totalStoredKeys, icon: <Database size={14} className="text-gray-300" /> },
             { label: 'Conectados', value: connectedKeys, icon: <CheckCircle2 size={14} className="text-emerald-500/50" /> },
           ].map((stat, i) => (
-            <div key={i} className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-[12px]">
+            <div key={i} className="bg-gray-50 border border-gray-200 rounded-lg p-[12px]">
               <div className="flex items-center gap-[6px] mb-[6px]">
                 {stat.icon}
-                <span className="font-['Noto_Sans'] text-[11px] text-white/30">{stat.label}</span>
+                <span className="font-['Noto_Sans'] text-[11px] text-gray-400">{stat.label}</span>
               </div>
-              <span className="font-['Noto_Sans'] font-bold text-[22px] text-white">{stat.value}</span>
+              <span className="font-['Noto_Sans'] font-bold text-[22px] text-gray-900">{stat.value}</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* ── Per-page Coverage ── */}
-      <div className="bg-[#1a1715] border border-white/[0.08] rounded-xl overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
         <button
           onClick={() => setShowCoverage(v => !v)}
-          className="w-full flex items-center justify-between px-[20px] py-[14px] hover:bg-white/[0.02] transition-colors"
+          className="w-full flex items-center justify-between px-[20px] py-[14px] hover:bg-gray-50 transition-colors"
         >
           <div className="flex items-center gap-[10px]">
             <BarChart3 size={16} className="text-[#a57255]" />
-            <span className="font-['Noto_Sans'] font-semibold text-[13px] text-white">Cobertura por Pagina</span>
-            <span className="font-['Noto_Sans'] text-[11px] text-white/25">{pageCoverage.length} paginas</span>
+            <span className="font-['Noto_Sans'] font-semibold text-[13px] text-gray-900">Cobertura por Pagina</span>
+            <span className="font-['Noto_Sans'] text-[11px] text-gray-400">{pageCoverage.length} paginas</span>
           </div>
-          {showCoverage ? <ChevronDown size={14} className="text-white/30" /> : <ChevronRight size={14} className="text-white/30" />}
+          {showCoverage ? <ChevronDown size={14} className="text-gray-400" /> : <ChevronRight size={14} className="text-gray-400" />}
         </button>
         {showCoverage && (
-          <div className="border-t border-white/[0.06] px-[20px] py-[14px] space-y-[10px]">
+          <div className="border-t border-gray-200 px-[20px] py-[14px] space-y-[10px]">
             {pageCoverage.map(cov => (
               <div key={cov.page} className="group">
                 <div className="flex items-center justify-between mb-[4px]">
                   <div className="flex items-center gap-[8px]">
-                    <span className="font-['Noto_Sans'] text-[12px] text-white/70">{cov.page}</span>
+                    <span className="font-['Noto_Sans'] text-[12px] text-gray-600">{cov.page}</span>
                     {cov.orphan > 0 && (
                       <span className="text-[10px] font-medium text-amber-400/70 bg-amber-500/10 px-[5px] py-[1px] rounded border border-amber-500/15">
                         {cov.orphan} orf.
@@ -701,13 +721,13 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
                   </div>
                   <div className="flex items-center gap-[8px]">
                     <span className={`font-['Noto_Sans'] text-[11px] font-semibold ${
-                      cov.percent >= 90 ? 'text-emerald-400' :
-                      cov.percent >= 70 ? 'text-amber-400' :
-                      'text-rose-400'
+                      cov.percent >= 90 ? 'text-emerald-500' :
+                      cov.percent >= 70 ? 'text-amber-500' :
+                      'text-rose-500'
                     }`}>
                       {cov.percent}%
                     </span>
-                    <span className="font-['Noto_Sans'] text-[10px] text-white/20">
+                    <span className="font-['Noto_Sans'] text-[10px] text-gray-400">
                       {cov.connected}/{cov.total}
                     </span>
                     {onNavigate && cov.panelPageId && (
@@ -721,7 +741,7 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
                     )}
                   </div>
                 </div>
-                <div className="w-full h-[4px] bg-white/[0.04] rounded-full overflow-hidden">
+                <div className="w-full h-[4px] bg-gray-100 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
                       cov.percent >= 90 ? 'bg-emerald-500/60' :
@@ -750,15 +770,15 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
               className={`flex items-center gap-[10px] p-[14px] rounded-lg border transition-all ${
                 isActive
                   ? `${cfg.bgColor} ${cfg.borderColor} ring-1 ring-inset ${cfg.borderColor}`
-                  : 'bg-[#1a1715] border-white/[0.08] hover:border-white/[0.15]'
+                  : 'bg-white border-gray-200 hover:border-gray-300'
               }`}
             >
               <div className={cfg.color}>{cfg.icon}</div>
               <div className="text-left">
-                <div className={`font-['Noto_Sans'] font-bold text-[18px] ${count > 0 ? cfg.color : 'text-white/20'}`}>
+                <div className={`font-['Noto_Sans'] font-bold text-[18px] ${count > 0 ? cfg.color : 'text-gray-300'}`}>
                   {count}
                 </div>
-                <div className="font-['Noto_Sans'] text-[10px] text-white/30 leading-tight">
+                <div className="font-['Noto_Sans'] text-[10px] text-gray-400 leading-tight">
                   {cfg.label}
                 </div>
               </div>
@@ -771,30 +791,52 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
       {activeFilter !== 'all' && (
         <div className={`flex items-start gap-[10px] px-[16px] py-[12px] rounded-lg border ${CATEGORY_CFG[activeFilter].borderColor} ${CATEGORY_CFG[activeFilter].bgColor}`}>
           <Zap size={14} className={`mt-[1px] shrink-0 ${CATEGORY_CFG[activeFilter].color}`} />
-          <div>
+          <div className="flex-1">
             <p className={`font-['Noto_Sans'] font-semibold text-[12px] ${CATEGORY_CFG[activeFilter].color} mb-[2px]`}>
               Como corrigir:
             </p>
-            <p className="font-['Noto_Sans'] text-[11px] text-white/40 leading-[1.5]">
+            <p className="font-['Noto_Sans'] text-[11px] text-gray-500 leading-[1.5]">
               {CATEGORY_CFG[activeFilter].action}
             </p>
           </div>
+          {activeFilter === 'deadData' && counts.deadData > 0 && onDeleteDeadData && (
+            <button
+              onClick={handleDeleteDeadData}
+              disabled={isDeleting}
+              className={`shrink-0 flex items-center gap-[6px] h-[32px] px-[12px] border rounded-lg transition-colors font-['Noto_Sans'] text-[11px] font-medium ${
+                deleteSuccess
+                  ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-300'
+                  : isDeleting
+                    ? 'bg-purple-500/10 border-purple-500/20 text-purple-400/60 cursor-wait'
+                    : 'bg-purple-500/20 hover:bg-purple-500/30 border-purple-500/30 text-purple-300 hover:text-purple-200 cursor-pointer'
+              }`}
+              title={`Deletar ${counts.deadData} campo${counts.deadData !== 1 ? 's' : ''} morto${counts.deadData !== 1 ? 's' : ''} do Supabase`}
+            >
+              {deleteSuccess ? (
+                <><Check size={12} /> Removidos!</>
+              ) : isDeleting ? (
+                <><div className="w-[12px] h-[12px] border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin" /> Deletando...</>
+              ) : (
+                <><Database size={12} /> Limpar Tudo ({counts.deadData})</>
+              )}
+            </button>
+          )}
         </div>
       )}
 
       {/* ── Search + Actions Bar ── */}
       <div className="flex items-center gap-[8px]">
         <div className="relative flex-1">
-          <Search size={14} className="absolute left-[12px] top-1/2 -translate-y-1/2 text-white/20" />
+          <Search size={14} className="absolute left-[12px] top-1/2 -translate-y-1/2 text-gray-300" />
           <input
             type="text"
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             placeholder="Buscar por chave, pagina ou arquivo... (ex: home.about, Footer, LpTemplate)"
-            className="w-full h-[38px] pl-[36px] pr-[80px] bg-[#1a1715] border border-white/[0.08] rounded-lg font-['Noto_Sans'] text-[13px] text-white placeholder:text-white/20 focus:outline-none focus:border-[#a57255]/40 transition-colors"
+            className="w-full h-[38px] pl-[36px] pr-[80px] bg-white border border-gray-200 rounded-lg font-['Noto_Sans'] text-[13px] text-gray-900 placeholder:text-gray-300 focus:outline-none focus:border-[#a57255]/40 transition-colors"
           />
           {searchTerm && (
-            <span className="absolute right-[12px] top-1/2 -translate-y-1/2 font-['Noto_Sans'] text-[11px] text-white/25">
+            <span className="absolute right-[12px] top-1/2 -translate-y-1/2 font-['Noto_Sans'] text-[11px] text-gray-400">
               {filtered.length} resultado{filtered.length !== 1 ? 's' : ''}
             </span>
           )}
@@ -802,7 +844,7 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
         {grouped.length > 0 && (
           <button
             onClick={expandedGroups.size === grouped.length ? collapseAll : expandAll}
-            className="flex items-center gap-[4px] h-[38px] px-[12px] bg-[#1a1715] border border-white/[0.08] rounded-lg text-white/30 hover:text-white hover:border-white/[0.15] transition-colors font-['Noto_Sans'] text-[11px] shrink-0"
+            className="flex items-center gap-[4px] h-[38px] px-[12px] bg-white border border-gray-200 rounded-lg text-gray-400 hover:text-gray-900 hover:border-gray-300 transition-colors font-['Noto_Sans'] text-[11px] shrink-0"
             title={expandedGroups.size === grouped.length ? 'Recolher tudo' : 'Expandir tudo'}
           >
             <ChevronsUpDown size={13} />
@@ -813,7 +855,7 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
 
       {/* ── Results ── */}
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-[60px] text-white/20">
+        <div className="flex flex-col items-center justify-center py-[60px] text-gray-300">
           {activeFilter === 'all' && !searchTerm ? (
             <>
               <Sparkles size={40} strokeWidth={1.5} className="mb-[12px] text-emerald-500/40" />
@@ -824,7 +866,7 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
           ) : (
             <>
               <Search size={32} strokeWidth={1.5} className="mb-[10px]" />
-              <p className="font-['Noto_Sans'] text-[13px] text-white/30">
+              <p className="font-['Noto_Sans'] text-[13px] text-gray-400">
                 Nenhum resultado para este filtro
               </p>
             </>
@@ -835,19 +877,19 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
           {grouped.map(([group, items]) => {
             const isExpanded = expandedGroups.has(group);
             return (
-              <div key={group} className="bg-[#1a1715] border border-white/[0.08] rounded-lg overflow-hidden">
+              <div key={group} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                 {/* Group header */}
                 <button
                   onClick={() => toggleGroup(group)}
-                  className="w-full flex items-center justify-between px-[16px] py-[11px] hover:bg-white/[0.02] transition-colors"
+                  className="w-full flex items-center justify-between px-[16px] py-[11px] hover:bg-gray-50 transition-colors"
                 >
                   <div className="flex items-center gap-[10px]">
                     {isExpanded
-                      ? <ChevronDown size={14} className="text-white/30" />
-                      : <ChevronRight size={14} className="text-white/30" />
+                      ? <ChevronDown size={14} className="text-gray-400" />
+                      : <ChevronRight size={14} className="text-gray-400" />
                     }
-                    <span className="font-['Noto_Sans'] font-semibold text-[13px] text-white">{group}</span>
-                    <span className="font-['Noto_Sans'] text-[11px] text-white/20">
+                    <span className="font-['Noto_Sans'] font-semibold text-[13px] text-gray-900">{group}</span>
+                    <span className="font-['Noto_Sans'] text-[11px] text-gray-400">
                       {items.length} item{items.length !== 1 ? 's' : ''}
                     </span>
                   </div>
@@ -863,26 +905,29 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
                       );
                     })}
                     {onNavigate && items[0]?.panelPageId && (
-                      <button
+                      <span
                         onClick={e => { e.stopPropagation(); onNavigate(items[0].panelPageId!); }}
-                        className="ml-[4px] text-[#a57255]/30 hover:text-[#a57255] transition-colors"
+                        className="ml-[4px] text-[#a57255]/30 hover:text-[#a57255] transition-colors cursor-pointer"
                         title={`Ir para ${group} no painel`}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); onNavigate(items[0].panelPageId!); } }}
                       >
                         <ArrowRight size={13} />
-                      </button>
+                      </span>
                     )}
                   </div>
                 </button>
 
                 {/* Items list */}
                 {isExpanded && (
-                  <div className="border-t border-white/[0.06]">
+                  <div className="border-t border-gray-200">
                     {items.map((item, idx) => {
                       const cfg = CATEGORY_CFG[item.category];
                       return (
                         <div
                           key={`${item.key}-${item.category}-${idx}`}
-                          className="flex items-start gap-[10px] px-[16px] py-[9px] border-b border-white/[0.04] last:border-b-0 hover:bg-white/[0.015] transition-colors group/item"
+                          className="flex items-start gap-[10px] px-[16px] py-[9px] border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors group/item"
                         >
                           <div className={`mt-[3px] shrink-0 ${cfg.color}`}>{cfg.icon}</div>
                           <div className="flex-1 min-w-0">
@@ -892,7 +937,7 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
                               </code>
                               <button
                                 onClick={() => handleCopy(item.key)}
-                                className="opacity-0 group-hover/item:opacity-100 transition-opacity text-white/20 hover:text-white/50"
+                                className="opacity-0 group-hover/item:opacity-100 transition-opacity text-gray-300 hover:text-gray-500"
                                 title="Copiar chave"
                               >
                                 {copiedKey === item.key
@@ -901,13 +946,13 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
                                 }
                               </button>
                               {item.sourceFile && (
-                                <span className="font-['Noto_Sans'] text-[10px] text-white/15 bg-white/[0.03] px-[5px] py-[1px] rounded">
+                                <span className="font-['Noto_Sans'] text-[10px] text-gray-400 bg-gray-50 px-[5px] py-[1px] rounded">
                                   {item.sourceFile}
                                 </span>
                               )}
                             </div>
                             {item.detail && (
-                              <p className="font-['Noto_Sans'] text-[11px] text-white/20 mt-[2px] leading-[1.4] break-all">
+                              <p className="font-['Noto_Sans'] text-[11px] text-gray-400 mt-[2px] leading-[1.4] break-all">
                                 {item.detail}
                               </p>
                             )}
@@ -927,10 +972,10 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
       )}
 
       {/* ── Legend ── */}
-      <div className="bg-[#1a1715] border border-white/[0.08] rounded-xl p-[20px]">
+      <div className="bg-white border border-gray-200 rounded-xl p-[20px]">
         <div className="flex items-center gap-[8px] mb-[14px]">
-          <Info size={14} className="text-white/30" />
-          <h4 className="font-['Noto_Sans'] font-semibold text-[12px] text-white/50 uppercase tracking-[0.5px]">
+          <Info size={14} className="text-gray-400" />
+          <h4 className="font-['Noto_Sans'] font-semibold text-[12px] text-gray-500 uppercase tracking-[0.5px]">
             Legenda
           </h4>
         </div>
@@ -942,7 +987,7 @@ export function AuditPanel({ panelKeys, data, onNavigate }: AuditPanelProps) {
                 <div className={`mt-[1px] shrink-0 ${cfg.color}`}>{cfg.icon}</div>
                 <div>
                   <p className={`font-['Noto_Sans'] font-semibold text-[12px] ${cfg.color} mb-[2px]`}>{cfg.label}</p>
-                  <p className="font-['Noto_Sans'] text-[11px] text-white/30 leading-[1.5]">{cfg.desc}</p>
+                  <p className="font-['Noto_Sans'] text-[11px] text-gray-400 leading-[1.5]">{cfg.desc}</p>
                 </div>
               </div>
             );

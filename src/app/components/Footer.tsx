@@ -12,6 +12,7 @@ import svgLogoPaths from '../../imports/svg-r0rdaxikom';
 import svgArrow from '../../imports/svg-od596xq1d5';
 import VectorFooter from '../../imports/Vector-6-829';
 import { usePanel } from '../hooks/usePanelContent';
+import { usePreviewMode } from '../hooks/usePreviewMode';
 
 /* ─── Arrow icon ─── */
 function ArrowIcon({ className = '' }: { className?: string }) {
@@ -68,6 +69,9 @@ function YouTubeIcon() {
 }
 
 export function Footer() {
+  const previewMode = usePreviewMode();
+  const forceMobile = previewMode === 'mobile' || previewMode === 'tablet';
+
   const footerDesc = usePanel('footer.description', 'Escritório de advocacia especializada em Brasília, fundado pela Dra. Lidiane Sousa Araújo, OAB/DF 34.876. Estrutura presencial no Distrito Federal e atendimento online para todo o Brasil e brasileiros no exterior, com apoio de uma rede de parceiros qualificados. Atuação estratégica em Direito de Família, Regularização de Imóveis, Homologação de Sentença Estrangeira e Consultoria Empresarial.');
   const footerEmail = usePanel('footer.contact.email', 'contato@sousaaraujo.adv.br');
   const footerPhone = usePanel('footer.contact.phone', '+55 61 99599-1322');
@@ -100,9 +104,9 @@ export function Footer() {
   return (
     <footer className="bg-[#452b1e]">
       {/* ── Row 1: Logo + Description ── */}
-      <div className="max-w-[1440px] mx-auto px-[20px] md:px-[40px] lg:px-[80px] pt-[40px] md:pt-[50px] lg:pt-[60px] pb-[30px] md:pb-[35px] lg:pb-[45px]">
-        <div className="flex flex-col lg:flex-row gap-[20px] md:gap-[30px] lg:gap-[80px] items-start">
-          <div className="w-[200px] md:w-[280px] lg:w-[370px] h-[38px] md:h-[53px] lg:h-[70px] shrink-0">
+      <div className="max-w-[1440px] mx-auto px-[20px] md:px-[40px] lg:px-[80px] pt-[40px] md:pt-[50px] lg:pt-[60px] pb-[30px] md:pb-[35px] lg:pb-[45px]" style={forceMobile ? { padding: '40px 20px 30px' } : undefined}>
+        <div className="flex flex-col lg:flex-row gap-[20px] md:gap-[30px] lg:gap-[106px] items-start" style={forceMobile ? { flexDirection: 'column', gap: 20 } : undefined}>
+          <div className="w-[200px] md:w-[280px] lg:w-[370px] h-[38px] md:h-[53px] lg:h-[70px] shrink-0" style={forceMobile ? { width: 200, height: 38 } : undefined}>
             <VectorFooter />
           </div>
           <p className="font-['Noto_Sans'] text-[13px] md:text-[15px] leading-[20px] md:leading-[20px] tracking-[-0.525px] text-white max-w-[716px]">
@@ -112,8 +116,11 @@ export function Footer() {
       </div>
 
       {/* ── Row 2: Newsletter + Info Columns ── */}
-      <div className="max-w-[1440px] mx-auto px-[20px] md:px-[40px] lg:px-[80px] pb-[30px] md:pb-[35px] lg:pb-[50px]">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[370px_1fr_1fr_auto] gap-x-[24px] lg:gap-x-[0px] gap-y-[28px] md:gap-y-[36px] items-start">
+      <div className="max-w-[1440px] mx-auto px-[20px] md:px-[40px] lg:px-[80px] pb-[30px] md:pb-[35px] lg:pb-[50px]" style={forceMobile ? { padding: '0 20px 30px' } : undefined}>
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[37%_22%_23%_18%] gap-x-[24px] lg:gap-x-[0px] gap-y-[28px] md:gap-y-[36px] items-start"
+          style={forceMobile ? { gridTemplateColumns: '1fr', gap: '28px 0' } : undefined}
+        >
 
           {/* Newsletter */}
           <div className="flex flex-col justify-end h-full lg:pr-[80px]">

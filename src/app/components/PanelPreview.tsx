@@ -4,9 +4,14 @@
  * Substitui o iframe por renderizacao direta dos componentes React.
  * Como os componentes usam usePanel/usePanelBatch (que leem do cache global),
  * editar campos no painel atualiza o preview automaticamente — sem postMessage.
+ *
+ * Click interception: We attach a NATIVE capture-phase listener so that clicks
+ * on React Router <Link>/<NavLink> are intercepted before React's synthetic
+ * event system (and therefore before Router can call navigate()).
  */
 
-import React, { Suspense, lazy, useMemo } from 'react';
+import React, { Suspense, lazy, useRef, useEffect, useCallback } from 'react';
+import { PreviewModeContext } from '../hooks/usePreviewMode';
 
 /* ── Lazy-loaded page components ── */
 const PAGE_COMPONENTS: Record<string, React.LazyExoticComponent<React.ComponentType>> = {
@@ -38,6 +43,9 @@ interface PanelPreviewProps {
   route: string;
   width: number;
   height: number;
+  mode?: 'desktop' | 'tablet' | 'mobile';
+  /** Called when user clicks a link inside the preview — receives the pathname */
+  onNavigate?: (pathname: string) => void;
 }
 
 function PreviewLoading() {
@@ -59,31 +67,82 @@ function PreviewError({ pageId }: { pageId: string }) {
   );
 }
 
-export function PanelPreview({ pageId, route, width, height }: PanelPreviewProps) {
+export function PanelPreview({ pageId, route, width, height, mode, onNavigate }: PanelPreviewProps) {
   const PageComponent = PAGE_COMPONENTS[pageId];
+  const containerRef = useRef<HTMLDivElement>(null);
+  const onNavigateRef = useRef(onNavigate);
+  onNavigateRef.current = onNavigate;
+
+  // Determine mode from width if not explicitly provided
+  const resolvedMode = mode || (width <= 480 ? 'mobile' : width <= 1024 ? 'tablet' : 'desktop');
+
+  /**
+   * Native capture-phase click listener.
+   * Fires BEFORE React's synthetic event system, so React Router's <Link>
+   * onClick handler never sees the event (we stopImmediatePropagation).
+   */
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    function handleClick(e: MouseEvent) {
+      const anchor = (e.target as HTMLElement).closest('a');
+      if (!anchor) return;
+
+      const href = anchor.getAttribute('href');
+      if (!href) return;
+
+      // Block ALL navigation inside preview
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation(); // prevents React Router's handler too
+
+      // Ignore mailto, tel, external, hash-only
+      if (
+        href.startsWith('mailto:') ||
+        href.startsWith('tel:') ||
+        href.startsWith('http') ||
+        href.startsWith('#')
+      ) {
+        return;
+      }
+
+      if (onNavigateRef.current && href.startsWith('/')) {
+        const pathname = href.split('#')[0] || '/';
+        onNavigateRef.current(pathname);
+      }
+    }
+
+    // capture: true → fires before bubble phase (where React Router listens)
+    el.addEventListener('click', handleClick, true);
+    return () => el.removeEventListener('click', handleClick, true);
+  }, []);
 
   if (!PageComponent) {
     return <PreviewError pageId={pageId} />;
   }
 
   return (
-    <div
-      style={{ width, height, overflow: 'auto', background: '#161312' }}
-      className="preview-scroll-container"
-    >
-      <Suspense fallback={<PreviewLoading />}>
-        <div className="min-h-screen bg-[#161312]">
-          <Suspense fallback={null}>
-            <LazyNavbar />
-          </Suspense>
-          <main>
-            <PageComponent />
-          </main>
-          <Suspense fallback={null}>
-            <LazyFooter />
-          </Suspense>
-        </div>
-      </Suspense>
-    </div>
+    <PreviewModeContext.Provider value={resolvedMode}>
+      <div
+        ref={containerRef}
+        style={{ width, height, overflow: 'auto', background: '#161312' }}
+        className="preview-scroll-container"
+      >
+        <Suspense fallback={<PreviewLoading />}>
+          <div className="min-h-screen bg-[#161312]">
+            <Suspense fallback={null}>
+              <LazyNavbar />
+            </Suspense>
+            <main>
+              <PageComponent />
+            </main>
+            <Suspense fallback={null}>
+              <LazyFooter />
+            </Suspense>
+          </div>
+        </Suspense>
+      </div>
+    </PreviewModeContext.Provider>
   );
 }

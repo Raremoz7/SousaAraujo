@@ -73,14 +73,22 @@ function SeoHelmet({ seoId, pathname }: { seoId: string; pathname: string }) {
 
   // Site-level data for JSON-LD
   const siteName = usePanel('site.name', 'Sousa Araújo Advocacia');
+  const siteTagline = usePanel('site.tagline', 'Advocacia Especializada em Família, Imóveis e Empresas');
+  const siteDescription = usePanel('site.description', 'Escritório de advocacia em Brasília com atuação nacional e para brasileiros no exterior.');
   const sitePhone = usePanel('site.phone', '+55 61 99599-1322');
   const siteEmail = usePanel('site.email', 'contato@sousaaraujo.adv.br');
+  const siteAddressFull = usePanel('site.address.full', '');
+  const siteAddressShort = usePanel('site.address.short', '');
   const siteStreet = usePanel('site.address.street', '');
+  const siteNeighborhood = usePanel('site.address.neighborhood', '');
   const siteCity = usePanel('site.address.city', 'Brasília');
   const siteState = usePanel('site.address.state', 'DF');
   const siteZip = usePanel('site.address.zipCode', '');
+  const siteHoursWeekdays = usePanel('site.hours.weekdays', 'Seg-Sex 09:00-18:00');
+  const siteHoursSaturday = usePanel('site.hours.saturday', 'Sáb 09:00-13:00');
   const socialInstagram = usePanel('site.social.instagram', '');
   const socialFacebook = usePanel('site.social.facebook', '');
+  const socialTiktok = usePanel('site.social.tiktok', '');
   const socialLinkedin = usePanel('site.social.linkedin', '');
   const socialYoutube = usePanel('site.social.youtube', '');
 
@@ -97,27 +105,54 @@ function SeoHelmet({ seoId, pathname }: { seoId: string; pathname: string }) {
   // LocalBusiness JSON-LD (homepage only)
   const localBusinessJsonLd = useMemo(() => {
     if (seoId !== 'home') return null;
+
+    // Parse weekday and saturday hours into openingHoursSpecification
+    const openingHours: any[] = [];
+    if (siteHoursWeekdays) {
+      openingHours.push({
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "09:00",
+        "closes": "18:00",
+        "description": siteHoursWeekdays,
+      });
+    }
+    if (siteHoursSaturday) {
+      openingHours.push({
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": "Saturday",
+        "opens": "09:00",
+        "closes": "13:00",
+        "description": siteHoursSaturday,
+      });
+    }
+
     return JSON.stringify({
       "@context": "https://schema.org",
       "@type": "LegalService",
       "name": siteName,
-      "description": description || "Escritório de advocacia em Brasília com atuação nacional e para brasileiros no exterior.",
+      ...(siteTagline ? { "alternateName": siteTagline } : {}),
+      "description": description || siteDescription,
       "url": SITE_URL,
       "telephone": sitePhone,
       "email": siteEmail,
       "address": {
         "@type": "PostalAddress",
         "streetAddress": siteStreet,
+        ...(siteNeighborhood ? { "addressNeighborhood": siteNeighborhood } : {}),
         "addressLocality": siteCity,
         "addressRegion": siteState,
         "postalCode": siteZip,
-        "addressCountry": "BR"
+        "addressCountry": "BR",
+        ...(siteAddressFull ? { "description": siteAddressFull } : {}),
       },
+      ...(siteAddressShort ? { "slogan": siteAddressShort } : {}),
       "priceRange": "$$",
       "areaServed": { "@type": "Country", "name": "Brazil" },
-      "sameAs": [socialInstagram, socialFacebook, socialLinkedin, socialYoutube].filter(Boolean),
+      ...(openingHours.length > 0 ? { "openingHoursSpecification": openingHours } : {}),
+      "sameAs": [socialInstagram, socialFacebook, socialTiktok, socialLinkedin, socialYoutube].filter(Boolean),
     });
-  }, [seoId, siteName, description, sitePhone, siteEmail, siteStreet, siteCity, siteState, siteZip, socialInstagram, socialFacebook, socialLinkedin, socialYoutube]);
+  }, [seoId, siteName, siteTagline, description, siteDescription, sitePhone, siteEmail, siteStreet, siteNeighborhood, siteCity, siteState, siteZip, siteAddressFull, siteAddressShort, siteHoursWeekdays, siteHoursSaturday, socialInstagram, socialFacebook, socialTiktok, socialLinkedin, socialYoutube]);
 
   // BreadcrumbList JSON-LD (all pages except home)
   const breadcrumbJsonLd = useMemo(() => {

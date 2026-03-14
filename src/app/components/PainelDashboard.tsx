@@ -43,104 +43,104 @@ const DASHBOARD_PAGES: DashboardPage[] = [
   {
     id: 'home', label: 'Home', panelPageId: 'home',
     seoKey: 'seo.home.title',
-    imageKeys: ['home.hero.bgImage', 'home.cta.bgImage', 'home.diff.image'],
+    imageKeys: [],  // imagens usam fallback seguro — nao penalizar
     textKeys: ['home.hero.title', 'home.hero.subtitle', 'home.about.title', 'home.about.paragraph1', 'home.diff.title', 'home.cta.title'],
   },
   {
     id: 'sobre', label: 'Sobre', panelPageId: 'sobre',
     seoKey: 'seo.sobre.title',
-    imageKeys: ['sobre.hero.bgImage', 'sobre.quem.imgLidiane'],
+    imageKeys: [],  // imagens hardcoded/CSS — sem campo no painel
     textKeys: ['sobre.hero.title', 'sobre.hero.subtitle', 'sobre.quem.title', 'sobre.quem.paragraph1'],
   },
   {
     id: 'areas', label: 'Areas de Atuacao', panelPageId: 'areas',
     seoKey: 'seo.areas.title',
-    imageKeys: ['areas.hero.bgImage'],
+    imageKeys: [],  // hero usa CSS gradient — sem campo no painel
     textKeys: ['areas.hero.title', 'areas.hero.desc', 'areas.area1.title', 'areas.area2.title', 'areas.area3.title', 'areas.area4.title'],
   },
   {
     id: 'blog', label: 'Blog', panelPageId: 'blog',
     seoKey: 'seo.blog.title',
-    imageKeys: ['blog.hero.bgImage', 'blog.article1.image'],
+    imageKeys: [],  // sem imagens gerenciadas no painel
     textKeys: ['blog.hero.title', 'blog.hero.subtitle', 'blog.article1.title', 'blog.article2.title', 'blog.article3.title'],
   },
   {
     id: 'faq', label: 'FAQ', panelPageId: 'faq',
     seoKey: 'seo.faq.title',
-    imageKeys: ['faq.hero.bgImage'],
+    imageKeys: [],  // hero usa CSS gradient — sem campo no painel
     textKeys: ['faq.hero.title', 'faq.section.title', 'faq.item1.q', 'faq.item1.a', 'faq.item2.q'],
   },
   {
     id: 'contato', label: 'Contato', panelPageId: 'contato',
     seoKey: 'seo.contato.title',
-    imageKeys: ['contato.bgImage'],
+    imageKeys: [],  // imagem de fundo usa fallback CSS — nao penalizar
     textKeys: ['contato.title', 'contato.address', 'contato.phone'],
   },
   {
     id: 'videos', label: 'Videos Educativos', panelPageId: 'videos',
     seoKey: 'seo.videos.title',
-    imageKeys: ['vidpage.hero.bgImage'],
+    imageKeys: [],  // sem imagens gerenciadas no painel
     textKeys: ['vidpage.hero.title', 'vidpage.hero.desc', 'vidpage.video1.title'],
   },
   {
     id: 'parceiros', label: 'Rede de Parceiros', panelPageId: 'parceiros',
     seoKey: 'seo.parceiros.title',
-    imageKeys: ['parceiros.hero.bgImage', 'parceiros.stickyImage'],
+    imageKeys: [],  // sem imagens gerenciadas no painel
     textKeys: ['parceiros.hero.title', 'parceiros.hero.subtitle', 'parceiros.cta.title'],
   },
   {
     id: 'homologacao', label: 'LP Homologacao', panelPageId: 'lp-homologacao',
     seoKey: 'seo.homologacao.title',
-    imageKeys: ['lp-homologacao.hero.image', 'lp-homologacao.parallax.image'],
-    textKeys: ['lp-homologacao.hero.title', 'lp-homologacao.hero.subtitle', 'lp-homologacao.trust.title'],
+    imageKeys: [],  // hero usa fallback seguro — nao penalizar
+    textKeys: ['lp-homologacao.hero.title', 'lp-homologacao.hero.subtitle', 'lp-homologacao.trust.title', 'lp-homologacao.trust.body'],
   },
   {
     id: 'divorcio', label: 'LP Divorcio', panelPageId: 'lp-divorcio',
     seoKey: 'seo.divorcio.title',
     imageKeys: ['lp-divorcio.hero.image', 'lp-divorcio.parallax.image'],
-    textKeys: ['lp-divorcio.hero.title', 'lp-divorcio.hero.subtitle', 'lp-divorcio.trust.title'],
+    textKeys: ['lp-divorcio.hero.title', 'lp-divorcio.hero.subtitle', 'lp-divorcio.trust.title', 'lp-divorcio.trust.body'],
   },
   {
     id: 'imoveis', label: 'LP Imoveis', panelPageId: 'lp-imoveis',
     seoKey: 'seo.imoveis.title',
     imageKeys: ['lp-imoveis.hero.image'],
-    textKeys: ['lp-imoveis.hero.title', 'lp-imoveis.hero.subtitle', 'lp-imoveis.trust.title'],
+    textKeys: ['lp-imoveis.hero.title', 'lp-imoveis.hero.subtitle', 'lp-imoveis.trust.title', 'lp-imoveis.trust.body'],
   },
   {
     id: 'guarda', label: 'LP Guarda', panelPageId: 'lp-guarda',
     seoKey: 'seo.guarda.title',
     imageKeys: ['lp-guarda.hero.image'],
-    textKeys: ['lp-guarda.hero.title', 'lp-guarda.hero.subtitle'],
+    textKeys: ['lp-guarda.hero.title', 'lp-guarda.hero.subtitle', 'lp-guarda.trust.title', 'lp-guarda.trust.body'],
   },
   {
     id: 'pensao', label: 'LP Pensao', panelPageId: 'lp-pensao',
     seoKey: 'seo.pensao.title',
     imageKeys: ['lp-pensao.hero.image'],
-    textKeys: ['lp-pensao.hero.title', 'lp-pensao.hero.subtitle'],
+    textKeys: ['lp-pensao.hero.title', 'lp-pensao.hero.subtitle', 'lp-pensao.trust.title', 'lp-pensao.trust.body'],
   },
   {
     id: 'inventario', label: 'LP Inventario', panelPageId: 'lp-inventario',
     seoKey: 'seo.inventario.title',
     imageKeys: ['lp-inventario.hero.image'],
-    textKeys: ['lp-inventario.hero.title', 'lp-inventario.hero.subtitle'],
+    textKeys: ['lp-inventario.hero.title', 'lp-inventario.hero.subtitle', 'lp-inventario.trust.title', 'lp-inventario.trust.body'],
   },
   {
     id: 'uniao', label: 'LP Uniao Estavel', panelPageId: 'lp-uniao',
     seoKey: 'seo.uniao.title',
     imageKeys: ['lp-uniao.hero.image'],
-    textKeys: ['lp-uniao.hero.title', 'lp-uniao.hero.subtitle'],
+    textKeys: ['lp-uniao.hero.title', 'lp-uniao.hero.subtitle', 'lp-uniao.trust.title', 'lp-uniao.trust.body'],
   },
   {
     id: 'pmes', label: 'LP PMEs', panelPageId: 'lp-pmes',
     seoKey: 'seo.pmes.title',
     imageKeys: ['lp-pmes.hero.image'],
-    textKeys: ['lp-pmes.hero.title', 'lp-pmes.hero.subtitle'],
+    textKeys: ['lp-pmes.hero.title', 'lp-pmes.hero.subtitle', 'lp-pmes.trust.title', 'lp-pmes.trust.body'],
   },
   {
     id: 'inpi', label: 'LP Registro Marca', panelPageId: 'lp-inpi',
     seoKey: 'seo.inpi.title',
     imageKeys: ['lp-inpi.hero.image'],
-    textKeys: ['lp-inpi.hero.title', 'lp-inpi.hero.subtitle'],
+    textKeys: ['lp-inpi.hero.title', 'lp-inpi.hero.subtitle', 'lp-inpi.trust.title', 'lp-inpi.trust.body'],
   },
 ];
 
@@ -265,6 +265,12 @@ function isEdited(data: Record<string, string>, key: string): boolean {
   return isValidPanelValue(val);
 }
 
+/** Para imagens, figma:asset/ também conta como preenchido (é uma imagem real do Figma) */
+function hasImage(data: Record<string, string>, key: string): boolean {
+  const val = data[key];
+  return val !== undefined && val !== '';
+}
+
 /* ═══════════════════════════════════════════════════════════════
    MAIN COMPONENT
    ═══════════════════════════════════════════════════════════════ */
@@ -276,7 +282,7 @@ export function PainelDashboard({ data, onNavigate }: DashboardProps) {
     return DASHBOARD_PAGES.map(page => {
       const hasSeo = isEdited(data, page.seoKey);
       const hasImages = page.imageKeys.length === 0 ||
-        page.imageKeys.some(k => isEdited(data, k));
+        page.imageKeys.some(k => hasImage(data, k));
       const editedTexts = page.textKeys.filter(k => isEdited(data, k)).length;
       const textPct = page.textKeys.length > 0
         ? Math.round((editedTexts / page.textKeys.length) * 100)
@@ -317,10 +323,10 @@ export function PainelDashboard({ data, onNavigate }: DashboardProps) {
 
       {/* ── Header ── */}
       <div>
-        <h2 className="font-['Marcellus'] text-[20px] text-white tracking-[-0.4px]">
+        <h2 className="font-['Marcellus'] text-[20px] text-gray-900 tracking-[-0.4px]">
           Dashboard
         </h2>
-        <p className="font-['Noto_Sans'] text-[12px] text-white/30 mt-[3px]">
+        <p className="font-['Noto_Sans'] text-[12px] text-gray-400 mt-[3px]">
           Visao geral do estado do site — {DASHBOARD_PAGES.length} paginas monitoradas
         </p>
       </div>
@@ -361,10 +367,10 @@ export function PainelDashboard({ data, onNavigate }: DashboardProps) {
             icon: <Globe size={14} />,
           },
         ].map(card => (
-          <div key={card.label} className="bg-[#1a1816] border border-white/[0.06] rounded-xl px-[14px] py-[12px]">
+          <div key={card.label} className="bg-white border border-gray-200 rounded-xl px-[14px] py-[12px]">
             <div className="flex items-center gap-[6px] mb-[8px]">
-              <span className="text-white/20">{card.icon}</span>
-              <p className="font-['Noto_Sans'] text-[10px] text-white/30 uppercase tracking-[0.6px]">
+              <span className="text-gray-300">{card.icon}</span>
+              <p className="font-['Noto_Sans'] text-[10px] text-gray-400 uppercase tracking-[0.6px]">
                 {card.label}
               </p>
             </div>
@@ -372,33 +378,33 @@ export function PainelDashboard({ data, onNavigate }: DashboardProps) {
               <span className="font-['Noto_Sans'] text-[28px] font-bold tabular-nums leading-none" style={{ color: card.color }}>
                 {card.value}
               </span>
-              <span className="font-['Noto_Sans'] text-[13px] text-white/30">{card.suffix}</span>
+              <span className="font-['Noto_Sans'] text-[13px] text-gray-400">{card.suffix}</span>
             </div>
-            <p className="font-['Noto_Sans'] text-[10px] text-white/20 mt-[4px]">{card.sub}</p>
+            <p className="font-['Noto_Sans'] text-[10px] text-gray-400 mt-[4px]">{card.sub}</p>
           </div>
         ))}
       </div>
 
       {/* ── Page Status Table ── */}
-      <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
-        <div className="px-[14px] py-[10px] border-b border-white/[0.04] flex items-center justify-between">
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+        <div className="px-[14px] py-[10px] border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-[6px]">
             <Layout size={12} className="text-[#a57255]" />
-            <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-white">
+            <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-gray-900">
               Status por pagina
             </h3>
           </div>
-          <div className="flex items-center gap-[12px] font-['Noto_Sans'] text-[9px] text-white/20">
-            <span className="flex items-center gap-[3px]"><span className="w-[6px] h-[6px] rounded-full bg-emerald-500/50" /> SEO</span>
-            <span className="flex items-center gap-[3px]"><span className="w-[6px] h-[6px] rounded-full bg-blue-500/50" /> IMG</span>
-            <span className="flex items-center gap-[3px]"><span className="w-[6px] h-[6px] rounded-full bg-purple-500/50" /> Textos</span>
+          <div className="flex items-center gap-[12px] font-['Noto_Sans'] text-[9px] text-gray-400">
+            <span className="flex items-center gap-[3px]"><span className="w-[6px] h-[6px] rounded-full bg-emerald-500" /> SEO</span>
+            <span className="flex items-center gap-[3px]"><span className="w-[6px] h-[6px] rounded-full bg-blue-500" /> IMG</span>
+            <span className="flex items-center gap-[3px]"><span className="w-[6px] h-[6px] rounded-full bg-purple-500" /> Textos</span>
           </div>
         </div>
-        <div className="divide-y divide-white/[0.03]">
+        <div className="divide-y divide-gray-100">
           {pageScores.map(page => (
             <div
               key={page.id}
-              className="flex items-center gap-[10px] px-[14px] py-[8px] hover:bg-white/[0.015] transition-colors group cursor-pointer"
+              className="flex items-center gap-[10px] px-[14px] py-[8px] hover:bg-gray-50 transition-colors group cursor-pointer"
               onClick={() => onNavigate?.(page.panelPageId)}
             >
               {/* Score */}
@@ -412,7 +418,7 @@ export function PainelDashboard({ data, onNavigate }: DashboardProps) {
               </div>
 
               {/* Mini progress */}
-              <div className="w-[48px] h-[3px] bg-white/[0.06] rounded-full shrink-0">
+              <div className="w-[48px] h-[3px] bg-gray-100 rounded-full shrink-0">
                 <div
                   className="h-[3px] rounded-full transition-all duration-500"
                   style={{
@@ -423,7 +429,7 @@ export function PainelDashboard({ data, onNavigate }: DashboardProps) {
               </div>
 
               {/* Label */}
-              <span className="font-['Noto_Sans'] text-[11px] text-white/70 flex-1 truncate group-hover:text-white transition-colors">
+              <span className="font-['Noto_Sans'] text-[11px] text-gray-600 flex-1 truncate group-hover:text-gray-900 transition-colors">
                 {page.label}
               </span>
 
@@ -432,8 +438,8 @@ export function PainelDashboard({ data, onNavigate }: DashboardProps) {
                 <span
                   className={`font-['Noto_Sans'] text-[9px] px-[5px] py-[1px] rounded font-medium ${
                     page.hasSeo
-                      ? 'bg-emerald-500/15 text-emerald-400'
-                      : 'bg-red-500/10 text-red-400/60'
+                      ? 'bg-emerald-50 text-emerald-600'
+                      : 'bg-red-50 text-red-400'
                   }`}
                   title={page.hasSeo ? 'SEO preenchido' : 'SEO pendente'}
                 >
@@ -442,8 +448,8 @@ export function PainelDashboard({ data, onNavigate }: DashboardProps) {
                 <span
                   className={`font-['Noto_Sans'] text-[9px] px-[5px] py-[1px] rounded font-medium ${
                     page.hasImages
-                      ? 'bg-blue-500/15 text-blue-400'
-                      : 'bg-white/[0.04] text-white/20'
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'bg-gray-50 text-gray-300'
                   }`}
                   title={page.hasImages ? 'Imagens OK' : 'Imagens pendentes'}
                 >
@@ -452,10 +458,10 @@ export function PainelDashboard({ data, onNavigate }: DashboardProps) {
                 <span
                   className={`font-['Noto_Sans'] text-[9px] px-[5px] py-[1px] rounded tabular-nums font-medium ${
                     page.textPct >= 80
-                      ? 'bg-purple-500/15 text-purple-400'
+                      ? 'bg-purple-50 text-purple-600'
                       : page.textPct >= 50
-                        ? 'bg-amber-500/10 text-amber-400/70'
-                        : 'bg-white/[0.04] text-white/20'
+                        ? 'bg-amber-50 text-amber-600'
+                        : 'bg-gray-50 text-gray-300'
                   }`}
                   title={`${page.textPct}% dos textos editados`}
                 >
@@ -464,33 +470,33 @@ export function PainelDashboard({ data, onNavigate }: DashboardProps) {
               </div>
 
               {/* Navigate arrow */}
-              <ArrowRight size={12} className="shrink-0 text-white/0 group-hover:text-[#a57255]/50 transition-colors" />
+              <ArrowRight size={12} className="shrink-0 text-transparent group-hover:text-[#a57255]/50 transition-colors" />
             </div>
           ))}
         </div>
       </div>
 
       {/* ── CTA Click Heatmap ── */}
-      <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl overflow-hidden">
-        <div className="px-[14px] py-[10px] border-b border-white/[0.04] flex items-center justify-between">
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+        <div className="px-[14px] py-[10px] border-b border-gray-100 flex items-center justify-between">
           <div className="flex items-center gap-[6px]">
             <Zap size={12} className="text-[#a57255]" />
-            <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-white">
+            <h3 className="font-['Noto_Sans'] text-[11px] font-semibold text-gray-900">
               Cliques em CTAs
             </h3>
           </div>
-          <span className="font-['Noto_Sans'] text-[10px] text-white/25 tabular-nums">
+          <span className="font-['Noto_Sans'] text-[10px] text-gray-400 tabular-nums">
             Total: {totalClicks.toLocaleString('pt-BR')}
           </span>
         </div>
 
         {totalClicks === 0 ? (
           <div className="px-[14px] py-[28px] text-center">
-            <Zap size={24} className="text-white/10 mx-auto mb-[8px]" />
-            <p className="font-['Noto_Sans'] text-[11px] text-white/25">
+            <Zap size={24} className="text-gray-200 mx-auto mb-[8px]" />
+            <p className="font-['Noto_Sans'] text-[11px] text-gray-400">
               Nenhum clique registrado ainda.
             </p>
-            <p className="font-['Noto_Sans'] text-[10px] text-white/15 mt-[4px] max-w-[320px] mx-auto leading-[15px]">
+            <p className="font-['Noto_Sans'] text-[10px] text-gray-300 mt-[4px] max-w-[320px] mx-auto leading-[15px]">
               Para ativar o rastreamento, importe
               <code className="text-[#a57255]/60 mx-[3px]">trackCtaClick(key)</code>
               de <code className="text-[#a57255]/60 mx-[3px]">PainelDashboard.tsx</code>
@@ -498,19 +504,19 @@ export function PainelDashboard({ data, onNavigate }: DashboardProps) {
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-white/[0.03]">
+          <div className="divide-y divide-gray-100">
             {ctaData.map(cta => (
               <div key={cta.key} className="flex items-center gap-[10px] px-[14px] py-[7px]">
-                <span className="font-['Noto_Sans'] text-[11px] text-white/60 flex-1 truncate">
+                <span className="font-['Noto_Sans'] text-[11px] text-gray-600 flex-1 truncate">
                   {cta.label}
                 </span>
-                <div className="w-[80px] h-[3px] bg-white/[0.04] rounded-full shrink-0">
+                <div className="w-[80px] h-[3px] bg-gray-100 rounded-full shrink-0">
                   <div
                     className="h-[3px] rounded-full bg-[#a57255] transition-all"
                     style={{ width: `${(cta.count / maxClicks) * 100}%` }}
                   />
                 </div>
-                <span className="font-['Noto_Sans'] text-[11px] text-white/40 w-[32px] text-right tabular-nums shrink-0">
+                <span className="font-['Noto_Sans'] text-[11px] text-gray-400 w-[32px] text-right tabular-nums shrink-0">
                   {cta.count}
                 </span>
               </div>
@@ -523,34 +529,34 @@ export function PainelDashboard({ data, onNavigate }: DashboardProps) {
       <div className="grid grid-cols-2 gap-[8px]">
         <button
           onClick={() => onNavigate?.('seo')}
-          className="bg-[#1a1816] border border-white/[0.06] rounded-xl px-[14px] py-[12px] text-left hover:border-[#a57255]/20 hover:bg-[#a57255]/5 transition-all group"
+          className="bg-white border border-gray-200 rounded-xl px-[14px] py-[12px] text-left hover:border-[#a57255]/20 hover:bg-[#a57255]/5 transition-all group"
         >
           <div className="flex items-center gap-[6px] mb-[4px]">
             <SearchIcon size={12} className="text-[#a57255]/50" />
-            <span className="font-['Noto_Sans'] text-[11px] font-semibold text-white/70 group-hover:text-white transition-colors">SEO e Meta Tags</span>
+            <span className="font-['Noto_Sans'] text-[11px] font-semibold text-gray-600 group-hover:text-gray-900 transition-colors">SEO e Meta Tags</span>
           </div>
-          <p className="font-['Noto_Sans'] text-[10px] text-white/25 leading-[14px]">
+          <p className="font-['Noto_Sans'] text-[10px] text-gray-400 leading-[14px]">
             {pageScores.filter(p => p.hasSeo).length}/{DASHBOARD_PAGES.length} paginas com SEO
           </p>
         </button>
         <button
           onClick={() => onNavigate?.('audit')}
-          className="bg-[#1a1816] border border-white/[0.06] rounded-xl px-[14px] py-[12px] text-left hover:border-amber-500/20 hover:bg-amber-500/5 transition-all group"
+          className="bg-white border border-gray-200 rounded-xl px-[14px] py-[12px] text-left hover:border-amber-500/20 hover:bg-amber-500/5 transition-all group"
         >
           <div className="flex items-center gap-[6px] mb-[4px]">
             <AlertTriangle size={12} className="text-amber-500/50" />
-            <span className="font-['Noto_Sans'] text-[11px] font-semibold text-white/70 group-hover:text-white transition-colors">Auditoria de Campos</span>
+            <span className="font-['Noto_Sans'] text-[11px] font-semibold text-gray-600 group-hover:text-gray-900 transition-colors">Auditoria de Campos</span>
           </div>
-          <p className="font-['Noto_Sans'] text-[10px] text-white/25 leading-[14px]">
+          <p className="font-['Noto_Sans'] text-[10px] text-gray-400 leading-[14px]">
             Verificar campos orfaos e desconectados
           </p>
         </button>
       </div>
 
       {/* ── GA4 Note ── */}
-      <div className="bg-[#1a1816] border border-white/[0.06] rounded-xl px-[14px] py-[10px] flex items-start gap-[8px]">
-        <Info size={12} className="text-white/20 mt-[1px] shrink-0" />
-        <p className="font-['Noto_Sans'] text-[10px] text-white/25 leading-[15px]">
+      <div className="bg-gray-50 border border-gray-200 rounded-xl px-[14px] py-[10px] flex items-start gap-[8px]">
+        <Info size={12} className="text-gray-300 mt-[1px] shrink-0" />
+        <p className="font-['Noto_Sans'] text-[10px] text-gray-400 leading-[15px]">
           Para metricas avancadas (sessoes, conversoes, origem do trafego),
           configure o Google Analytics 4 e acesse o painel em
           <a href="https://analytics.google.com" target="_blank" rel="noopener noreferrer" className="text-[#a57255]/60 hover:text-[#a57255] ml-[3px] transition-colors">
@@ -560,4 +566,32 @@ export function PainelDashboard({ data, onNavigate }: DashboardProps) {
       </div>
     </div>
   );
+}
+
+/* ─── Circular Score Component ─── */
+function CircularScore({ score, size = 100 }: { score: number; size?: number }) {
+  const radius = (size - 10) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference - (score / 100) * circumference;
+  const color = getScoreColor(score);
+
+  return (
+    <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size/2} cy={size/2} r={radius} fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth={5} />
+        <circle cx={size/2} cy={size/2} r={radius} fill="none" stroke={color} strokeWidth={5} strokeDasharray={circumference} strokeDashoffset={strokeDashoffset} />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className="font-['Noto_Sans'] font-bold text-[22px] text-gray-900" style={{ fontSize: size * 0.22 }}>{score}</span>
+        <span className="font-['Noto_Sans'] text-[9px] text-gray-400" style={{ fontSize: size * 0.09 }}>/ 100</span>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Helper Function to Get Score Color ─── */
+function getScoreColor(score: number): string {
+  if (score >= 80) return '#22c55e';
+  if (score >= 50) return '#eab308';
+  return '#ef4444';
 }

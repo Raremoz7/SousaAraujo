@@ -18,7 +18,9 @@ const KV_KEY = 'sa-painel-data';
 // Helper: extract user token from X-User-Token header and validate
 async function authenticateUser(c: any): Promise<{ userId: string } | Response> {
   const userToken = c.req.header('X-User-Token');
+  console.log('[Auth] X-User-Token header:', userToken ? `${userToken.substring(0, 20)}...` : 'MISSING');
   if (!userToken) {
+    console.log('[Auth] Missing X-User-Token header');
     return c.json({ error: 'Unauthorized: missing X-User-Token header' }, 401);
   }
 
@@ -29,10 +31,11 @@ async function authenticateUser(c: any): Promise<{ userId: string } | Response> 
 
   const { data: { user }, error: authError } = await supabase.auth.getUser(userToken);
   if (authError || !user?.id) {
-    console.log('Auth validation failed:', authError?.message || 'no user');
+    console.log('[Auth] Validation failed:', authError?.message || 'no user', 'userId:', user?.id || 'null');
     return c.json({ error: `Unauthorized: ${authError?.message || 'no user'}` }, 401);
   }
 
+  console.log('[Auth] User authenticated:', user.id);
   return { userId: user.id };
 }
 
@@ -148,6 +151,67 @@ app.post('/panel/seed', async (c) => {
   } catch (error: any) {
     console.log("Seed error:", error?.message || error);
     return c.json({ error: `Error seeding defaults: ${error?.message || 'unknown error'}` }, 500);
+  }
+});
+
+// Route for bulk DELETE dead data keys
+// Requires auth
+app.post('/panel/bulk-delete', async (c) => {
+  try {
+    const auth = await authenticateUser(c);
+    if (auth instanceof Response) return auth;
+
+    let body: any;
+    try {
+      body = await c.req.json();
+    } catch (parseErr: any) {
+      console.log("Bulk delete body parse error:", parseErr);
+      return c.json({ error: `Invalid JSON body: ${parseErr.message}` }, 400);
+    }
+
+    const keys: string[] = body.keys || [];
+    if (!Array.isArray(keys) || keys.length === 0) {
+      return c.json({ error: 'No keys provided' }, 400);
+    }
+
+    console.log(`Bulk delete request: ${keys.length} keys to delete by user ${auth.userId}`);
+
+    // Get current data
+    let current: Record<string, any> = {};
+    try {
+      const raw = await kv.get(KV_KEY);
+      if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+        current = raw;
+      } else if (typeof raw === 'string') {
+        try { current = JSON.parse(raw); } catch { current = {}; }
+      }
+    } catch (kvGetErr: any) {
+      console.log("KV get error during bulk delete:", kvGetErr.message);
+      return c.json({ error: 'Failed to read current data' }, 500);
+    }
+
+    // Delete specified keys
+    let deleted = 0;
+    for (const key of keys) {
+      if (key in current) {
+        delete current[key];
+        deleted++;
+      }
+    }
+
+    // Save back to KV
+    try {
+      await kv.set(KV_KEY, current);
+    } catch (kvSetErr: any) {
+      console.log("KV set error during bulk delete:", kvSetErr);
+      return c.json({ error: `Failed to save after deletion: ${kvSetErr.message}` }, 500);
+    }
+
+    console.log(`Bulk delete complete: ${deleted} keys deleted from ${keys.length} requested`);
+    return c.json({ success: true, deleted, requested: keys.length });
+  } catch (error: any) {
+    console.log("Bulk delete error:", error?.message || error);
+    return c.json({ error: `Error deleting keys: ${error?.message || 'unknown error'}` }, 500);
   }
 });
 
