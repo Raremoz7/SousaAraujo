@@ -35,11 +35,11 @@ export function About(props?: {
   const forceMobile = previewMode === 'mobile' || previewMode === 'tablet';
 
   return (
-    <section id="quem-somos" className="bg-[#161312] w-full px-0 -my-px">
+    <section id="quem-somos" className="bg-[#161312] w-full px-0 pt-[40px] md:pt-[60px] lg:pt-[80px] pb-[0px] -mt-px">
       <div className="max-w-[1440px] mx-auto px-[20px] md:px-[40px] lg:px-[110px]" style={forceMobile ? { padding: '0 20px' } : undefined}>
         <div
-          className="grid grid-cols-1 lg:grid-cols-2 gap-[60px] lg:gap-[110px] mb-[60px] lg:mb-[80px]"
-          style={forceMobile ? { gridTemplateColumns: '1fr', gap: 60, marginBottom: 60 } : undefined}
+          className="grid grid-cols-1 lg:grid-cols-2 gap-[40px] md:gap-[60px] lg:gap-[110px] mb-[60px] lg:mb-[80px]"
+          style={forceMobile ? { gridTemplateColumns: '1fr', gap: 40, marginBottom: 60 } : undefined}
         >
           {/* Left Column - Title and Text */}
           <div>

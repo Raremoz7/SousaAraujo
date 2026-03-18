@@ -14,12 +14,12 @@ export function Testimonials() {
 
   return (
     <section className="bg-[#161312] py-[80px] border-t border-[#a57255]/20">
-      <div className="max-w-[1440px] mx-auto px-[80px]">
-        <h2 className="font-['Marcellus'] text-[36px] leading-[44px] tracking-[-0.632px] text-white mb-12 text-center">
+      <div className="max-w-[1440px] mx-auto px-[20px] md:px-[40px] lg:px-[80px]">
+        <h2 className="font-['Marcellus'] text-[28px] md:text-[36px] leading-[44px] tracking-[-0.632px] text-white mb-12 text-center">
           Quem já confiou no trabalho
         </h2>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 items-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 items-center">
           {logos.map((logo, index) => (
             <div key={index} className="flex items-center justify-center grayscale hover:grayscale-0 transition-all opacity-60 hover:opacity-100">
               <img 

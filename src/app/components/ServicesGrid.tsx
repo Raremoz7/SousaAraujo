@@ -191,10 +191,10 @@ export function ServicesGrid() {
 
               {/* Content */}
               <div className="absolute bottom-0 left-0 right-0 p-[24px] md:p-[35px]">
-                <h3 className="font-['Noto_Sans'] font-medium text-[15px] leading-[25px] tracking-[-0.225px] text-white mb-[10px]">
+                <h3 className="font-['Noto_Sans'] font-medium text-[14px] md:text-[15px] leading-[22px] md:leading-[25px] tracking-[-0.225px] text-white mb-[8px] md:mb-[10px]">
                   {service.title}
                 </h3>
-                <p className="font-['Noto_Sans'] text-[13px] leading-[18px] tracking-[-0.195px] text-white">
+                <p className="font-['Noto_Sans'] text-[12px] md:text-[13px] leading-[17px] md:leading-[18px] tracking-[-0.195px] text-white line-clamp-3">
                   {service.description}
                 </p>
               </div>

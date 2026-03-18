@@ -1,15 +1,15 @@
-import { useEffect, useRef } from 'react';
-import { imgRectangle4 } from '../../imports/images';
-import { PlayButton } from './ui/PlayButton';
-import { usePanel } from '../hooks/usePanelContent';
-import { trackCtaClick } from './PainelDashboard';
-import svgArrow from '../../imports/svg-od596xq1d5';
-import LidianeSousaAraujo from '../../imports/LidianeSousaAraujo';
-import { usePreviewMode } from '../hooks/usePreviewMode';
+import { useEffect, useRef } from "react";
+import { imgRectangle4 } from "../../imports/images";
+import { PlayButton } from "./ui/PlayButton";
+import { usePanel } from "../hooks/usePanelContent";
+import { trackCtaClick } from "./PainelDashboard";
+import svgArrow from "../../imports/svg-od596xq1d5";
+import LidianeSousaAraujo from "../../imports/LidianeSousaAraujo";
+import { usePreviewMode } from "../hooks/usePreviewMode";
 
-declare module 'react' {
+declare module "react" {
   interface ImgHTMLAttributes<T> {
-    fetchpriority?: 'high' | 'low' | 'auto';
+    fetchpriority?: "high" | "low" | "auto";
   }
 }
 
@@ -29,20 +29,48 @@ export function Hero(props?: {
   ctaHref?: string;
 }) {
   const content = {
-    backgroundImage: props?.backgroundImage || usePanel('home.hero.bgImage', imgRectangle4),
-    subtitle: usePanel('home.hero.subtitle', props?.subtitle || 'A solução mais inteligente começa antes do processo'),
-    title: usePanel('home.hero.title', props?.title || 'Escritório de advocacia em Brasília com atuação nacional e para brasileiros no exterior'),
-    signature: usePanel('home.hero.signature', props?.signature || 'Lidiane Sousa Araújo'),
-    videoUrl: usePanel('home.hero.videoUrl', props?.videoUrl || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'),
-    ctaText: usePanel('home.hero.ctaText', props?.ctaText || 'Agendar Consulta'),
-    ctaHref: usePanel('home.hero.ctaHref', props?.ctaHref || '#contato'),
+    backgroundImage:
+      props?.backgroundImage ||
+      usePanel("home.hero.bgImage", imgRectangle4),
+    subtitle: usePanel(
+      "home.hero.subtitle",
+      props?.subtitle ||
+        "A solução mais inteligente começa antes do processo",
+    ),
+    title: usePanel(
+      "home.hero.title",
+      props?.title ||
+        "Escritório de advocacia em Brasília com atuação nacional e para brasileiros no exterior",
+    ),
+    signature: usePanel(
+      "home.hero.signature",
+      props?.signature || "Lidiane Sousa Araújo",
+    ),
+    videoUrl: usePanel(
+      "home.hero.videoUrl",
+      props?.videoUrl ||
+        "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    ),
+    ctaText: usePanel(
+      "home.hero.ctaText",
+      props?.ctaText || "Agendar Consulta",
+    ),
+    ctaHref: usePanel(
+      "home.hero.ctaHref",
+      props?.ctaHref || "#contato",
+    ),
   };
 
   const previewMode = usePreviewMode();
-  const forceMobile = previewMode === 'mobile' || previewMode === 'tablet';
+  const forceMobile =
+    previewMode === "mobile" || previewMode === "tablet";
 
   // Safety: if panel returned a raw 'figma:asset/...' string (not a valid URL), fall back to imported image
-  const bgImage = content.backgroundImage.startsWith('figma:asset/') ? imgRectangle4 : content.backgroundImage;
+  const bgImage = content.backgroundImage.startsWith(
+    "figma:asset/",
+  )
+    ? imgRectangle4
+    : content.backgroundImage;
 
   /* ─── Parallax effect ─── */
   const parallaxRef = useRef<HTMLImageElement>(null);
@@ -61,7 +89,8 @@ export function Hero(props?: {
       if (!ticking) {
         ticking = true;
         requestAnimationFrame(() => {
-          const rect = img.parentElement?.parentElement?.getBoundingClientRect();
+          const rect =
+            img.parentElement?.parentElement?.getBoundingClientRect();
           if (rect) {
             // Move image at 40% of scroll speed for parallax
             const offset = -rect.top * 0.4;
@@ -72,12 +101,17 @@ export function Hero(props?: {
       }
     };
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener("scroll", onScroll, {
+      passive: true,
+    });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
-    <section id="home" className="relative w-full min-h-[520px] h-screen max-h-[850px] overflow-hidden">
+    <section
+      id="home"
+      className="relative w-full min-h-[520px] h-screen max-h-[850px] overflow-hidden"
+    >
       {/* Background Image with Parallax + Gradient */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <img
@@ -92,25 +126,48 @@ export function Hero(props?: {
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: "linear-gradient(210.536deg, rgba(22, 19, 18, 0) 33.101%, rgba(22, 19, 18, 0.7) 82.021%), linear-gradient(182.823deg, rgba(22, 19, 18, 0) 49.957%, rgb(22, 19, 18) 86.803%)"
+            backgroundImage:
+              "linear-gradient(210.536deg, rgba(22, 19, 18, 0) 33.101%, rgba(22, 19, 18, 0.7) 82.021%), linear-gradient(182.823deg, rgba(22, 19, 18, 0) 49.957%, rgb(22, 19, 18) 86.803%)",
           }}
         />
       </div>
 
       {/* Content Container — mobile-first com flexbox */}
       <div
-        className="relative max-w-[1440px] mx-auto h-full flex flex-col justify-end px-[20px] md:px-[40px] lg:px-0 pb-[60px] md:pb-[80px] lg:pb-0 lg:block"
-        style={forceMobile ? { display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '0 20px 60px', position: 'relative' } : undefined}
+        className="relative w-full h-full flex flex-col justify-end px-[20px] md:px-[40px] lg:px-0 pb-[60px] md:pb-[80px] lg:pb-0 lg:block"
+        style={
+          forceMobile
+            ? {
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "flex-end",
+                padding: "0 20px 60px",
+                position: "relative",
+              }
+            : undefined
+        }
       >
-
         {/* Subtitle */}
         <div
           className="lg:absolute lg:left-[81px] lg:top-[384px] mb-[16px] lg:mb-0"
-          style={forceMobile ? { position: 'relative', left: 'auto', top: 'auto', marginBottom: 16 } : undefined}
+          style={
+            forceMobile
+              ? {
+                  position: "relative",
+                  left: "auto",
+                  top: "auto",
+                  marginBottom: 16,
+                }
+              : undefined
+          }
         >
           <p
             className="font-['Roboto'] font-normal text-[16px] md:text-[18px] lg:text-[20px] leading-[22px] md:leading-[24px] lg:leading-[26px] tracking-[-0.95px] text-white max-w-[257px]"
-            style={forceMobile ? { fontSize: 16, lineHeight: '22px' } : undefined}
+            style={
+              forceMobile
+                ? { fontSize: 16, lineHeight: "22px" }
+                : undefined
+            }
           >
             {content.subtitle}
           </p>
@@ -119,11 +176,24 @@ export function Hero(props?: {
         {/* Main Title */}
         <div
           className="lg:absolute lg:left-[80px] lg:top-[437px] mb-[20px] lg:mb-0"
-          style={forceMobile ? { position: 'relative', left: 'auto', top: 'auto', marginBottom: 20 } : undefined}
+          style={
+            forceMobile
+              ? {
+                  position: "relative",
+                  left: "auto",
+                  top: "auto",
+                  marginBottom: 20,
+                }
+              : undefined
+          }
         >
           <h1
             className="font-['Marcellus'] text-[28px] sm:text-[36px] md:text-[44px] lg:text-[54px] leading-[34px] sm:leading-[42px] md:leading-[52px] lg:leading-[62px] tracking-[-0.87px] text-white max-w-[900px]"
-            style={forceMobile ? { fontSize: 28, lineHeight: '34px' } : undefined}
+            style={
+              forceMobile
+                ? { fontSize: 28, lineHeight: "34px" }
+                : undefined
+            }
           >
             {content.title}
           </h1>
@@ -132,10 +202,25 @@ export function Hero(props?: {
         {/* Signature + CTA row */}
         <div
           className="lg:absolute lg:left-[81px] lg:top-[668px] flex items-center gap-[32px]"
-          style={forceMobile ? { position: 'relative', left: 'auto', top: 'auto' } : undefined}
+          style={
+            forceMobile
+              ? {
+                  position: "relative",
+                  left: "auto",
+                  top: "auto",
+                }
+              : undefined
+          }
         >
           {/* SVG assinatura Lidiane Sousa Araújo */}
-          <div className="w-[160px] lg:w-[200px] h-[30px] lg:h-[38px] text-white" style={forceMobile ? { width: 160, height: 30 } : undefined}>
+          <div
+            className="w-[160px] lg:w-[200px] h-[30px] lg:h-[38px] text-white"
+            style={
+              forceMobile
+                ? { width: 160, height: 30 }
+                : undefined
+            }
+          >
             <LidianeSousaAraujo />
           </div>
 
@@ -144,7 +229,7 @@ export function Hero(props?: {
             href={content.ctaHref}
             className="inline-flex items-center gap-[10px] px-[22px] py-[10px] border-[1.5px] border-[#a57255] bg-transparent text-white font-['Noto_Sans'] font-medium text-[13px] md:text-[14px] leading-[25px] tracking-[-0.225px] hover:bg-[#a57255]/10 transition-all duration-300 group"
             style={forceMobile ? { fontSize: 13 } : undefined}
-            onClick={() => trackCtaClick('home')}
+            onClick={() => trackCtaClick("home")}
           >
             <span>{content.ctaText}</span>
             <svg
@@ -152,19 +237,33 @@ export function Hero(props?: {
               fill="none"
               viewBox="0 0 10 10"
             >
-              <path d={svgArrow.p1238f200} stroke="currentColor" strokeWidth="1.02093" />
+              <path
+                d={svgArrow.p1238f200}
+                stroke="currentColor"
+                strokeWidth="1.02093"
+              />
             </svg>
           </a>
         </div>
 
         {/* Play Button — posicionado mais à esquerda, com pulse radial */}
-        <div className="hidden lg:block absolute left-[1000px] top-[440px]" style={forceMobile ? { display: 'none' } : undefined}>
+        <div
+          className="hidden lg:block absolute left-[1000px] top-[440px]"
+          style={forceMobile ? { display: "none" } : undefined}
+        >
           <PlayButton videoUrl={content.videoUrl} />
         </div>
 
         {/* Mobile Play Button */}
-        <div className="lg:hidden mt-[24px]" style={forceMobile ? { display: 'block', marginTop: 24 } : undefined}>
-          <PlayButton size={80} videoUrl={content.videoUrl} />
+        <div
+          className="lg:hidden mt-[28px] self-start"
+          style={
+            forceMobile
+              ? { display: "block", marginTop: 24 }
+              : undefined
+          }
+        >
+          <PlayButton size={72} videoUrl={content.videoUrl} />
         </div>
       </div>
     </section>

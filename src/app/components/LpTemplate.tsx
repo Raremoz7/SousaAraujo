@@ -304,7 +304,7 @@ function PageHero({ data }: { data: ServiceData }) {
         <div className="absolute inset-x-0 top-0 h-[120px]" style={{ background: 'linear-gradient(to bottom, rgba(22,19,18,0.55) 0%, transparent 100%)' }} />
       </div>
       <div
-        className="relative max-w-[1440px] mx-auto px-[110px] pt-[365px] pb-[12px]"
+        className="relative max-w-[1440px] mx-auto px-[20px] sm:px-[40px] lg:px-[110px] pt-[160px] sm:pt-[220px] md:pt-[280px] lg:pt-[365px] pb-[50px] md:pb-[30px] lg:pb-[12px]"
         style={forceMobile ? { padding: '0 20px', paddingTop: 320, paddingBottom: 60, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' } : undefined}
       >
         <FadeIn>

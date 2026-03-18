@@ -71,12 +71,12 @@ export function Contact() {
           decoding="async"
         />
         {/* Dark overlay for mobile readability */}
-        <div className="absolute inset-0 bg-[#161312]/40 md:bg-transparent" />
+        <div className="absolute inset-0 bg-[#161312]/50 md:bg-[#161312]/20" />
       </div>
 
       {/* Mobile: full-width centered form / Desktop: right-aligned */}
-      <div className="relative md:absolute md:top-[60px] lg:top-[80px] md:bottom-[60px] lg:bottom-[80px] md:right-[40px] lg:right-[80px] w-full md:w-[500px] lg:w-[650px] backdrop-blur-[9px] bg-[rgba(22,19,18,0.36)]">
-        <div className="px-[20px] sm:px-[30px] md:px-[40px] lg:px-[60px] py-[40px] md:py-[40px] lg:py-[50px] h-full flex flex-col">
+      <div className="relative md:absolute md:top-[60px] lg:top-[80px] md:bottom-[60px] lg:bottom-[80px] md:right-[40px] lg:right-[80px] w-full md:w-[500px] lg:w-[650px] backdrop-blur-[9px] bg-[rgba(22,19,18,0.45)]">
+        <div className="px-[20px] sm:px-[30px] md:px-[40px] lg:px-[60px] py-[36px] md:py-[40px] lg:py-[50px] h-full flex flex-col">
           {/* Title */}
           <h2 className="font-['Lora'] text-[28px] sm:text-[32px] md:text-[38px] lg:text-[43px] leading-[1.2] lg:leading-[52px] tracking-[-0.516px] text-white mb-[16px] md:mb-[20px]">
             {panelTitle.split('\n').map((line, i) => (
@@ -125,7 +125,7 @@ export function Contact() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="flex flex-col flex-1">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-[20px]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-[20px]">
               <div className="border-b border-white h-[38px] mb-[20px]">
                 <input
                   type="text"

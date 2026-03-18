@@ -1,7 +1,6 @@
 /**
  * PlayButton — botao circular play com efeito radial pulsante
- * Ondas expandindo tipo radar em loop
- * Circulo externo com stroke copper, circulo interno branco semi-transparente com blur, icone play
+ * Ondas expandindo tipo radar em loop — versão com visibilidade amplificada
  */
 
 import svgPaths from '../../../imports/svg-he7mfdirs7';
@@ -28,52 +27,77 @@ const SafeDiv = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEle
 SafeDiv.displayName = 'SafeDiv';
 
 export function PlayButton({ className = '', size = 133, onClick, videoUrl }: PlayButtonProps) {
-  const pulseSize = size * 1.6; // pulse rings go beyond the button
+  const pulseSize = size * 2.2; // espaço extra para as ondas expandirem
 
-  // Inner visual content (no interactive wrapper — the parent handles that)
   const innerContent = (
     <>
+      {/* ── Keyframes ── */}
+      <style>{`
+        @keyframes heroPulse1 {
+          0%   { transform: translate(-50%, -50%) scale(0.85); opacity: 1; }
+          100% { transform: translate(-50%, -50%) scale(2.1);  opacity: 0; }
+        }
+        @keyframes heroPulse2 {
+          0%   { transform: translate(-50%, -50%) scale(0.85); opacity: 0.85; }
+          100% { transform: translate(-50%, -50%) scale(2.1);  opacity: 0; }
+        }
+        @keyframes heroPulse3 {
+          0%   { transform: translate(-50%, -50%) scale(0.85); opacity: 0.65; }
+          100% { transform: translate(-50%, -50%) scale(2.1);  opacity: 0; }
+        }
+        @keyframes playGlow {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(172, 121, 95, 0); }
+          50%       { box-shadow: 0 0 24px 6px rgba(172, 121, 95, 0.45); }
+        }
+      `}</style>
+
       {/* ── Pulsing radial rings ── */}
       <span
-        className="absolute rounded-full border border-[#AC795F]/40 animate-[heroPulse1_3s_ease-out_infinite]"
+        className="absolute rounded-full animate-[heroPulse1_2.4s_ease-out_infinite]"
         style={{
           width: size,
           height: size,
           top: '50%',
           left: '50%',
-          transform: 'translate(-50%, -50%) scale(1)',
+          transform: 'translate(-50%, -50%) scale(0.85)',
+          border: '2px solid rgba(172, 121, 95, 0.9)',
+          background: 'rgba(172, 121, 95, 0.08)',
         }}
       />
       <span
-        className="absolute rounded-full border border-[#AC795F]/25 animate-[heroPulse2_3s_ease-out_infinite_0.8s] pl-[200px] pr-[0px] py-[0px]"
+        className="absolute rounded-full animate-[heroPulse2_2.4s_ease-out_infinite_0.75s]"
         style={{
           width: size,
           height: size,
           top: '50%',
           left: '50%',
-          transform: 'translate(-50%, -50%) scale(1)',
+          transform: 'translate(-50%, -50%) scale(0.85)',
+          border: '1.5px solid rgba(172, 121, 95, 0.65)',
+          background: 'rgba(172, 121, 95, 0.04)',
         }}
       />
       <span
-        className="absolute rounded-full border border-[#AC795F]/15 animate-[heroPulse3_3s_ease-out_infinite_1.6s]"
+        className="absolute rounded-full animate-[heroPulse3_2.4s_ease-out_infinite_1.5s]"
         style={{
           width: size,
           height: size,
           top: '50%',
           left: '50%',
-          transform: 'translate(-50%, -50%) scale(1)',
+          transform: 'translate(-50%, -50%) scale(0.85)',
+          border: '1px solid rgba(172, 121, 95, 0.4)',
         }}
       />
 
       {/* ── Main button circle ── */}
       <svg
-        className="absolute transition-transform duration-500 group-hover:scale-105"
+        className="absolute transition-transform duration-400 group-hover:scale-110"
         style={{
           width: size,
           height: size,
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
+          filter: 'drop-shadow(0 0 10px rgba(172,121,95,0.5))',
         }}
         fill="none"
         preserveAspectRatio="xMidYMid meet"
@@ -85,44 +109,39 @@ export function PlayButton({ className = '', size = 133, onClick, videoUrl }: Pl
           cy="66.5"
           r="65"
           stroke="#AC795F"
-          strokeOpacity="0.4"
-          strokeWidth="3"
+          strokeOpacity="0.9"
+          strokeWidth="2"
         />
-        {/* Inner filled circle with blur */}
+        {/* Inner filled circle */}
         <circle
           cx="66.4996"
           cy="66.5"
           r="51.7222"
           fill="white"
-          fillOpacity="0.3"
+          fillOpacity="0.18"
           filter="url(#playBlur)"
         />
+        {/* Solid copper inner ring accent */}
+        <circle
+          cx="66.5"
+          cy="66.5"
+          r="51.7222"
+          stroke="#AC795F"
+          strokeOpacity="0.35"
+          strokeWidth="1"
+          fill="none"
+        />
         {/* Play triangle */}
-        <path d={svgPaths.p1e6c1300} fill="white" />
+        <path d={svgPaths.p1e6c1300} fill="white" fillOpacity="0.95" />
       </svg>
+
       <svg width="0" height="0" className="absolute">
         <defs>
           <filter id="playBlur">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="3.11" />
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" />
           </filter>
         </defs>
       </svg>
-
-      {/* ── Pulse keyframes (injected once) ── */}
-      <style>{`
-        @keyframes heroPulse1 {
-          0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.5; }
-          100% { transform: translate(-50%, -50%) scale(1.55); opacity: 0; }
-        }
-        @keyframes heroPulse2 {
-          0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.35; }
-          100% { transform: translate(-50%, -50%) scale(1.55); opacity: 0; }
-        }
-        @keyframes heroPulse3 {
-          0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.2; }
-          100% { transform: translate(-50%, -50%) scale(1.55); opacity: 0; }
-        }
-      `}</style>
     </>
   );
 
